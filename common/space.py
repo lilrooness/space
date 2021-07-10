@@ -18,6 +18,16 @@ class Entity():
             self.id = id
         if id_fun:
             self.id = id_fun()
+    
+    def marshalled_fields(self):
+        return []
+
+    def marshal(self):
+        stringified_fields = [
+            str(self.__dict__[field]) 
+            for field in self.marshalled_fields()
+        ]
+        return ":".join(stringified_fields)
 
 class Warp():
 
@@ -46,6 +56,15 @@ class Ship(Entity):
                 dp = (self.warp.vector[0] * self.warp.speed, self.warp.vector[1] * self.warp.speed)
                 self.x += dp[0]
                 self.y += dp[1]
+    
+    def marshalled_fields(self):
+        return [
+            "id",
+            "x",
+            "y",
+            "health",
+            "ammo"
+        ]
 
 
 class SolarSystem(Entity):
