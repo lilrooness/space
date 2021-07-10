@@ -17,9 +17,10 @@ if __name__ == "__main__":
     while run:
         readable, _, _ =  select([client_socket], [], [], 0)
         if len(readable) > 0:
-            bytes = client_socket.recv(4)
-            solar_system  = int.from_bytes(bytes, 'big')
-            print(solar_system)
+            header = client_socket.recv(4)
+            message_size = int.from_bytes(header, 'big')
+            message = client_socket.recv(message_size)
+            print(message.decode())
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

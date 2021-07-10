@@ -94,6 +94,7 @@ if __name__ == "__main__":
                         [session_ship_object]
                     ).marshal()
 
-                    print(message)
-                    session.connection.send(message.encode())
-                    
+                    bytes = message.encode()
+                    message_size = len(bytes)
+                    header = message_size.to_bytes(4, "big")
+                    session.connection.send(header + bytes)
