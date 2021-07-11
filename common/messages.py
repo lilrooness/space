@@ -1,3 +1,6 @@
+from common.space import Entity, Ship
+
+
 class Message():
 
     MESSAGE_NAME = None
@@ -32,12 +35,13 @@ class ServerTickMessage(Message):
     def unmarshal(cls, encoded):
         parts = encoded.split(":")
         message_name = parts[0]
-        nships = parts[1]
+        nships = int(parts[1])
+        encoded_ships = parts[1:1 + nships*len(Ship.marshalled_fields())]
+        ships = Entity.unmarshall_multiple_of_type(":".join(encoded_ships), Ship)
         ship_id = parts[1 + nships]
-        solar_system_id = parts[2 + nships]
+        solar_system_id = int(parts[2 + nships])
 
-        print("message_name: {}, nships: {}, ship_id: {}, solar_system_id: {}")
-        return
+        return ServerTickMessage(ship_id, solar_system_id, ships)
 
 messages = {
     ServerTickMessage.MESSAGE_NAME: ServerTickMessage

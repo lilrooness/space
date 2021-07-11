@@ -21,9 +21,9 @@ if __name__ == "__main__":
             header = client_socket.recv(4)
             message_size = int.from_bytes(header, 'big')
             message = client_socket.recv(message_size)
-            message_name = message.decode().split(":")[0]
-            print(message.decode())
-            print(message_types[message_name])
+            parts = message.decode().split(":")
+            message_name = parts[0]
+            message = message_types[message_name].unmarshal(message.decode())
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

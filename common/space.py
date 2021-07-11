@@ -28,6 +28,28 @@ class Entity():
             for field in self.marshalled_fields()
         ]
         return ":".join(stringified_fields)
+    
+    @classmethod
+    def unmarshall_multiple_of_type(cls, encoded_entities, type):
+        fields = type.marshalled_fields()
+        parts = encoded_entities.split(":")
+
+        entities = []
+                
+        while len(parts) >= len(fields):
+            entity_fields = {}
+            for i in range(len(fields)):
+                field_name = fields[i]
+                value = parts[i]
+                entity_fields[field_name] = value
+            
+            entities.append(type(**entity_fields))
+            parts = parts[len(fields):]
+        
+        return  entities
+
+
+
 
 class Warp():
 
@@ -41,7 +63,7 @@ class Warp():
 
 class Ship(Entity):
 
-    def __init__(self, x, y, type_id=1, id=None, id_fun=None):
+    def __init__(self, x, y, type_id=1, id=None, id_fun=None, ammo=1, health=100):
         super().__init__(id, id_fun)
         self.ammo = 1
         self.health = 100
@@ -57,7 +79,8 @@ class Ship(Entity):
                 self.x += dp[0]
                 self.y += dp[1]
     
-    def marshalled_fields(self):
+    @classmethod
+    def marshalled_fields(cls):
         return [
             "id",
             "x",
