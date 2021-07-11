@@ -19,7 +19,8 @@ class Entity():
         if id_fun:
             self.id = id_fun()
     
-    def marshalled_fields(self):
+    @classmethod
+    def marshalled_fields(cls):
         return []
 
     def marshal(self):
