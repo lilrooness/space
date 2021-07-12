@@ -21,7 +21,11 @@ class Entity():
     
     @classmethod
     def marshalled_fields(cls):
-        return []
+        return list(cls.marshalled_field_types().keys())
+
+    @classmethod
+    def marshalled_field_types():
+        return {}
 
     def marshal(self):
         stringified_fields = [
@@ -36,19 +40,18 @@ class Entity():
         parts = encoded_entities.split(":")
 
         entities = []
-                
+
         while len(parts) >= len(fields):
             entity_fields = {}
             for i in range(len(fields)):
                 field_name = fields[i]
                 value = parts[i]
-                entity_fields[field_name] = value
-            
+                entity_fields[field_name] = type.marshalled_field_types()[field_name](value)
+
             entities.append(type(**entity_fields))
             parts = parts[len(fields):]
-        
-        return  entities
 
+        return  entities
 
 
 
@@ -79,16 +82,19 @@ class Ship(Entity):
                 dp = (self.warp.vector[0] * self.warp.speed, self.warp.vector[1] * self.warp.speed)
                 self.x += dp[0]
                 self.y += dp[1]
+        else:
+            self.x += 2
+            self.y += 2
     
     @classmethod
-    def marshalled_fields(cls):
-        return [
-            "id",
-            "x",
-            "y",
-            "health",
-            "ammo"
-        ]
+    def marshalled_field_types(cls):
+        return {
+            "id": lambda id: int(id),
+            "x" : lambda x: int(x),
+            "y" : lambda y :int(y),
+            "health": lambda health : int(health),
+            "ammo": lambda ammo : int(ammo)
+        }
 
 
 class SolarSystem(Entity):

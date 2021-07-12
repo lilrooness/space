@@ -50,7 +50,7 @@ def accept_new_connections(server_socket, sessions, systems):
     readable, _, _  = select([server_socket], [], [], 0)
     if len(readable) == 1:
         connection, address = server_socket.accept()
-        new_ship = Ship(0, 0, id_fun=new_id)
+        new_ship = Ship(10, 10, id_fun=new_id)
         systems[1].ships[new_ship.id] = new_ship
         new_session = Session(connection, address, 1, new_ship.id)
         sessions.append(new_session)
