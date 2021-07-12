@@ -1,3 +1,4 @@
+from common.net_const import HEADER_SIZE
 from common.messages import ServerTickMessage
 from math import e
 import socket
@@ -96,5 +97,5 @@ if __name__ == "__main__":
 
                     bytes = message.encode()
                     message_size = len(bytes)
-                    header = message_size.to_bytes(4, "big")
+                    header = message_size.to_bytes(HEADER_SIZE, "big")
                     session.connection.send(header + bytes)
