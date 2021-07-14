@@ -15,20 +15,24 @@ class ServerTickMessage(Message):
 
     MESSAGE_NAME = "server_tick"
 
-    def __init__(self, ship_id, solar_system_id, ships, resources={}):
+    def __init__(self, ship_id, solar_system_id, ships, projectiles={}, resources={}):
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
         self.ships = ships
+        self.projectiles = projectiles
         self.resources = resources
 
     def marshal(self):
         marshalled_ships = [ship.marshal() for ship in self.ships]
+        marshalled_projectiles = [proj.marshall() for proj in self.projectiles]
         return ":".join([
             self.MESSAGE_NAME,
             "%d" % len(self.ships),
             ":".join(marshalled_ships),
             "%d" % self.ship_id,
             "%d" % self.solar_system_id,
+            "%d" % len(self.projectiles),
+            ":".join(marshalled_projectiles),
         ])
     
     @classmethod
