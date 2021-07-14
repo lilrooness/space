@@ -65,6 +65,35 @@ class Warp():
         self.vector = ((endPos[0] - startPos[0]) / d, (endPos[1] - startPos[1]) / d)
         self.speed = dist / 5
 
+
+class ProjectileSlug(Entity):
+    def __init__(self, id, id_fun, vx, vy, x, y, damage):
+        super().__init__(id=id, id_fun=id_fun)
+        self.vx = vx
+        self.vy = vy
+        self.x = x
+        self.y = y
+        self.damage = damage
+        self.lastx = x
+        self.lasty = y
+    
+    @classmethod
+    def marshalled_field_types(cls):
+        return {
+            "id": lambda id: int(id),
+            "vx": lambda vx: float(vx),
+            "vy": lambda vy: float(vy),
+            "x": lambda x: float(x),
+            "y": lambda y: float(y),
+            "damage": lambda damage: int(damage),
+        }
+    
+    def tick(self):
+        self.lastx = self.x
+        self.lasty = self.y
+        self.x += self.vx
+        self.y += self.vy
+
 class Ship(Entity):
 
     def __init__(self, x, y, type_id=1, id=None, id_fun=None, ammo=1, health=100):
@@ -99,11 +128,16 @@ class Ship(Entity):
 
 class SolarSystem(Entity):
     
-    def __init__(self, ships={}, id=None, id_fun=None):
+    def __init__(self, ships={}, projectiles={}, id=None, id_fun=None):
         super().__init__(id=id, id_fun=id_fun)
         self.ships = ships
+        self.projectiles = projectiles
 
     def tick(self):
         for _id, ship in self.ships.items():
             ship.tick()
+        
+        for _id, projectile in self.projectiles.items():
+            projectile.tick()
 
+            
