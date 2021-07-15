@@ -1,6 +1,5 @@
 from common.net_const import HEADER_SIZE
 from common.messages import ServerTickMessage
-from math import e
 import socket
 from select import select
 from datetime import datetime
