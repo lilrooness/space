@@ -24,7 +24,7 @@ class Entity():
         return list(cls.marshalled_field_types().keys())
 
     @classmethod
-    def marshalled_field_types():
+    def marshalled_field_types(cls):
         return {}
 
     def marshal(self):
@@ -104,6 +104,8 @@ class Ship(Entity):
         self.y = y
         self.type_id=type_id
         self.warp = None
+        self.vx = 2
+        self.vy = 2
     
     def tick(self):
         if self.warp:
@@ -112,15 +114,15 @@ class Ship(Entity):
                 self.x += dp[0]
                 self.y += dp[1]
         else:
-            self.x += 2
-            self.y += 2
+            self.x += self.vx
+            self.y += self.vy
     
     @classmethod
     def marshalled_field_types(cls):
         return {
             "id": lambda id: int(id),
-            "x" : lambda x: int(x),
-            "y" : lambda y :int(y),
+            "x" : lambda x: float(x),
+            "y" : lambda y :float(y),
             "health": lambda health : int(health),
             "ammo": lambda ammo : int(ammo)
         }
@@ -139,5 +141,3 @@ class SolarSystem(Entity):
         
         for _id, projectile in self.projectiles.items():
             projectile.tick()
-
-            

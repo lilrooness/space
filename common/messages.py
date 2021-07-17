@@ -42,8 +42,8 @@ class ServerTickMessage(Message):
         nships = int(parts[1])
         encoded_ships = parts[2:2 + nships*len(Ship.marshalled_fields())]
         ships = Entity.unmarshall_multiple_of_type(":".join(encoded_ships), Ship)
-        ship_id = parts[1 + nships]
-        solar_system_id = int(parts[2 + nships])
+        ship_id = parts[2 + nships*len(Ship.marshalled_fields())]
+        solar_system_id = int(parts[2 + nships*len(Ship.marshalled_fields())])
 
         return ServerTickMessage(ship_id, solar_system_id, ships)
 

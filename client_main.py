@@ -1,3 +1,4 @@
+from common.commands.request_moveto import RequestMoveToCommand
 from common.net_const import HEADER_SIZE
 import socket
 from select import select
@@ -17,11 +18,32 @@ def receive(client_socket):
         message = client_socket.recv(message_size)
         parts = message.decode().split(":")
         message_name = parts[0]
+        print(parts)
         message = message_types[message_name].unmarshal(message.decode())
         return message
     
     return None
-            
+
+def send_request(client_socket, request):
+    bytes = request.marshal().encode()
+    message_size = len(bytes)
+    header = message_size.to_bytes(HEADER_SIZE, "big")
+    print("sending message {}".format(header + bytes))
+    client_socket.send(header + bytes)
+
+def queue_to_send(out_message_queue, request):
+
+    out_message_queue.append(request)
+
+def process_out_message_queue(out_message_queue, client_socket):
+    if out_message_queue:
+        _, writable, _ = select([], [client_socket], [], 0)
+        if len(writable) > 0:
+            send_request(client_socket, out_message_queue[0])
+            out_message_queue = out_message_queue[1:]
+
+    return out_message_queue
+
 if __name__ == "__main__":
     client_socket = socket.socket()
     client_socket.connect(("localhost", 12345))
@@ -32,6 +54,10 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
     
     game = Game()
+    mouseX = 0
+    mouseY = 0
+
+    out_message_queue = []
 
     while run:
         message = receive(client_socket)
@@ -43,6 +69,11 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 run = False
                 continue
+            if event.type == pygame.MOUSEMOTION:
+                mouseX, mouseY = event.pos
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                queue_to_send(out_message_queue, RequestMoveToCommand(mouseX, mouseY))
         
         pygame.draw.rect(screen, WHITE, screenRect)
         for x in range(10):
@@ -73,3 +104,4 @@ if __name__ == "__main__":
             pygame.draw.circle(screen, BLACK, (ship.x, ship.y), 5)
 
         pygame.display.flip()
+        out_message_queue = process_out_message_queue(out_message_queue, client_socket)

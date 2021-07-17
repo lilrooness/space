@@ -1,3 +1,4 @@
+from common.commands.commands import commands
 from common.net_const import HEADER_SIZE
 from common.messages import ServerTickMessage
 import socket
@@ -5,6 +6,7 @@ from select import select
 from datetime import datetime
 
 from common.space import Ship, SolarSystem, Warp
+from server.commands import process_command
 
 LAST_ID = 0
 
@@ -45,6 +47,18 @@ class Session():
 
         ship.warp = Warp((ship.x, ship.y), (x, y))
 
+    def receive_request(self):
+        readable, _, _ = select([self.connection], [], [], 0)
+        if len(readable) > 0:
+            header = self.connection.recv(HEADER_SIZE)
+            message_size = int.from_bytes(header, "big")
+            message = self.connection.recv(message_size)
+            parts = message.decode().split(":")
+            request_name = parts[0]
+            request = commands[request_name].unmarshal(message.decode())
+            return request
+
+        return None
 
 def accept_new_connections(server_socket, sessions, systems):
     readable, _, _  = select([server_socket], [], [], 0)
@@ -77,6 +91,21 @@ if __name__ == "__main__":
         accept_new_connections(serverSocket, sessions, systems)
         
         delta = datetime.now() - lastTick
+
+        for session in sessions:
+            if not session.alive:
+                sessions.remove(session)
+
+        # receive from clients
+        for session in sessions:
+            if session.check_alive():
+                try:
+                    request = session.receive_request()
+                except Exception:
+                    session.alive = False
+                if request:
+                    process_command(systems, session, request)
+
         if delta.microseconds >= tickFrequency:
 
             for _, system in systems.items():
@@ -97,4 +126,7 @@ if __name__ == "__main__":
                     bytes = message.encode()
                     message_size = len(bytes)
                     header = message_size.to_bytes(HEADER_SIZE, "big")
-                    session.connection.send(header + bytes)
+                    try:
+                        session.connection.send(header + bytes)
+                    except Exception:
+                        session.alive = False
