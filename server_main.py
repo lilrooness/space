@@ -69,6 +69,15 @@ def accept_new_connections(server_socket, sessions, systems):
         new_session = Session(connection, address, 1, new_ship.id)
         sessions.append(new_session)
 
+def get_visible_ships_list(_session, ships):
+    visible_ships = []
+    for id, ship in ships.items():
+        visible_ships.append(ship)
+
+    return visible_ships
+
+
+
 if __name__ == "__main__":
 
     systems = {
@@ -94,6 +103,7 @@ if __name__ == "__main__":
 
         for session in sessions:
             if not session.alive:
+                del systems[session.solar_system_id].ships[session.ship_id]
                 sessions.remove(session)
 
         # receive from clients
@@ -116,11 +126,12 @@ if __name__ == "__main__":
             for session in sessions:
                 if session.check_alive():
                     session_ship_object = systems[session.solar_system_id].ships[session.ship_id]
-                    
+
+                    visible_ships = get_visible_ships_list(session, systems[session.solar_system_id].ships)
                     message = ServerTickMessage(
                         session.ship_id,
                         session.solar_system_id,
-                        [session_ship_object]
+                        visible_ships
                     ).marshal()
 
                     bytes = message.encode()
@@ -130,3 +141,4 @@ if __name__ == "__main__":
                         session.connection.send(header + bytes)
                     except Exception:
                         session.alive = False
+
