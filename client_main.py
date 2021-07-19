@@ -1,10 +1,11 @@
+from pygame.constants import MOUSEBUTTONDOWN
 from common.commands.request_moveto import RequestMoveToCommand
 from common.net_const import HEADER_SIZE
 import socket
 from select import select
 import pygame
 from common.messages import messages as message_types
-from client.const import WHITE, BLACK
+from client.const import scheme, WHITE, BLACK
 from client.game import Game, message_handlers
 
 SCREEN_W = 640
@@ -64,7 +65,7 @@ if __name__ == "__main__":
 
         if message:
             message_handlers[message.__class__](game, message)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -75,14 +76,14 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONUP:
                 queue_to_send(out_message_queue, RequestMoveToCommand(mouseX, mouseY))
         
-        pygame.draw.rect(screen, WHITE, screenRect)
+        pygame.draw.rect(screen, scheme["background"], screenRect)
         for x in range(10):
             if x == 0:
                 continue
             xpos = SCREEN_W / 10 * x
             pygame.draw.line(
                 screen,
-                BLACK,
+                scheme["foreground"],
                 (xpos, 0),
                 (xpos, SCREEN_H),
                 width=1,
@@ -94,14 +95,14 @@ if __name__ == "__main__":
             ypos = SCREEN_H / 10 * y
             pygame.draw.line(
                 screen,
-                BLACK,
+                scheme["foreground"],
                 (0, ypos),
                 (SCREEN_W, ypos),
                 width=1
             )
 
         for _id, ship in game.ships.items():
-            pygame.draw.circle(screen, BLACK, (ship.x, ship.y), 5)
+            pygame.draw.circle(screen, scheme["entity"], (ship.x, ship.y), 5)
 
         pygame.display.flip()
         out_message_queue = process_out_message_queue(out_message_queue, client_socket)
