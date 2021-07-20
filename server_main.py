@@ -1,6 +1,7 @@
 from common.commands.commands import commands
+from common.messages.server_tick import ServerTickMessage
 from common.net_const import HEADER_SIZE
-from common.messages import ServerTickMessage
+
 import socket
 from select import select
 from datetime import datetime
@@ -12,7 +13,6 @@ LAST_ID = 0
 
 def new_id():
     global LAST_ID
-    print(LAST_ID) 
     LAST_ID += 1
     return LAST_ID
 
@@ -136,6 +136,13 @@ if __name__ == "__main__":
 
                     bytes = message.encode()
                     message_size = len(bytes)
+
+                    if message_size == 0:
+                        # this was happening ... but I guess not anymore -
+                        # keeping this here just in case
+                        print("WARNING!! WE'RE SENDING A ZERO HEADER!")
+                        print("message: {}".format(message))
+
                     header = message_size.to_bytes(HEADER_SIZE, "big")
                     try:
                         session.connection.send(header + bytes)

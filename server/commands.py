@@ -1,4 +1,5 @@
 from common.commands.request_moveto import RequestMoveToCommand
+from common.commands.request_shoot import RequestShootCommand
 from common.utils import mag
 
 
@@ -10,3 +11,7 @@ def process_command(systems, session, command):
         unit_vector = (vector[0]/magnitude, vector[1]/magnitude)
         ship.vx = unit_vector[0] * 2
         ship.vy = unit_vector[1] * 2
+
+    if command.COMMAND_NAME == RequestShootCommand.COMMAND_NAME:
+        print("RECEIVED REQUEST SHOOT COMMAND: {} from: {}".format(command, session))
+

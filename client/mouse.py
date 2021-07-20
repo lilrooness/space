@@ -8,15 +8,25 @@ class _MouseData:
         self.mouse_down = False
         self.mouse_moved_this_frame = False
 
-    def tick(self, x, y, mouse_down):
-        self.mouse_moved_this_frame = self.x != x or self.y != y:
-        self.down_this_frame = (mouse_down and not self.mouse_down)
-        self.up_this_frame = (not mouse_down and self.mouse_down)
-        self.mouse_down = mouse_down
+    def set_mouse_down(self):
+        self.mouse_down = True
+        self.down_this_frame = True
+
+    def set_mouse_up(self):
+        self.up_this_frame = True
+        self.mouse_down = False
+
+    def set_pos(self, x, y):
+        self.mouse_moved_this_frame = self.x != x or self.y != y
         self.x = x
-        self.y = y        
+        self.y = y
 
-_mouse_data = _MouseData(0, 0)
+    def new_input_frame(self):
+        self.down_this_frame = False
+        self.up_this_frame = False
+        self.mouse_moved_this_frame = False
 
-def get_mouse_data():
-    return _mouse_data
+_mouse = _MouseData(0, 0)
+
+def get_mouse():
+    return _mouse

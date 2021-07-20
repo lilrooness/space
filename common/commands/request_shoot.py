@@ -6,11 +6,10 @@ class RequestShootCommand(Command):
     COMMAND_NAME = "request_shoot"
 
     def __init__(self, target_ship_id):
-        super(RequestShootCommand, self).__init__(self)
         self.target_ship_id = target_ship_id
 
     def marshal(self):
-        return self.COMMAND_NAME + ":" + self.target_ship_id
+        return self.COMMAND_NAME + ":" + str(self.target_ship_id)
 
     @classmethod
     def unmarshal(cls, serialized_string):

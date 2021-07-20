@@ -1,4 +1,4 @@
-from common.messages import ServerTickMessage
+from common.messages.messages import ServerTickMessage
 
 
 class Game():
@@ -15,6 +15,7 @@ def handle_server_tick_message(game, message):
     ships = {}
     for ship in message.ships:
         ships[ship.id] = ship
+
     game.ships = ships
     game.resources = message.resources
 
