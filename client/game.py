@@ -1,4 +1,5 @@
 from common.messages.messages import ServerTickMessage
+from client.const import SHIP_HEIGHT, SHIP_WIDTH
 
 
 class Game():
@@ -18,6 +19,13 @@ def handle_server_tick_message(game, message):
 
     game.ships = ships
     game.resources = message.resources
+
+
+def pick_ship(ship, mouse):
+    if mouse.x >= ship.x - SHIP_WIDTH/2 and mouse.x <= ship.x + SHIP_WIDTH/2:
+        if mouse.y >= ship.y - SHIP_HEIGHT/2 and mouse.y <= ship.y + SHIP_HEIGHT/2:
+            return True
+    return False
 
 message_handlers = {
     ServerTickMessage: handle_server_tick_message

@@ -3,16 +3,14 @@ from select import select
 
 import pygame
 
-from client.const import scheme
-from client.game import Game, message_handlers
+from client.const import SCREEN_H, SCREEN_W
+from client.game import Game, message_handlers, pick_ship
 from client.mouse import get_mouse
 from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_shoot import RequestShootCommand
 from common.messages.messages import message_types
 from common.net_const import HEADER_SIZE
-
-SCREEN_W = 640
-SCREEN_H = 480
+from client.render import render_game
 
 
 def receive(client_socket):
@@ -64,18 +62,13 @@ def process_input(game):
 
         queue_to_send(out_message_queue, RequestMoveToCommand(mouseX, mouseY))
 
-def pick_ship(ship, mouse):
-    if mouse.x >= ship.x - 2.5 and mouse.x <= ship.x + 2.5:
-        if mouse.y >= ship.y - 2.5 and mouse.y <= ship.y + 2.5:
-            return True
-    return False
 
 if __name__ == "__main__":
     client_socket = socket.socket()
     client_socket.connect(("localhost", 12345))
 
     pygame.init()
-    screenRect = pygame.Rect(0,0, SCREEN_W, SCREEN_H)
+    screenRect = pygame.Rect(0,0, SCREEN_H, SCREEN_H)
     run = True
     screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
     
@@ -108,33 +101,7 @@ if __name__ == "__main__":
 
         process_input(game)
 
-        pygame.draw.rect(screen, scheme["background"], screenRect)
-        for x in range(10):
-            if x == 0:
-                continue
-            xpos = SCREEN_W / 10 * x
-            pygame.draw.line(
-                screen,
-                scheme["foreground"],
-                (xpos, 0),
-                (xpos, SCREEN_H),
-                width=1,
-            )
-        
-        for y in range(10):
-            if y == 0:
-                continue
-            ypos = SCREEN_H / 10 * y
-            pygame.draw.line(
-                screen,
-                scheme["foreground"],
-                (0, ypos),
-                (SCREEN_W, ypos),
-                width=1
-            )
-
-        for _id, ship in game.ships.items():
-            pygame.draw.circle(screen, scheme["entity"], (ship.x, ship.y), 5)
+        render_game(game, screen, screenRect)
 
         pygame.display.flip()
         out_message_queue = process_out_message_queue(out_message_queue, client_socket)
