@@ -35,6 +35,6 @@ def render_game(game, screen, screenRect):
         reticule = pygame.Rect(ship.x - 10, ship.y - 10, 20, 20)
         if ship_id == game.targeting_ship_id:
             pygame.draw.rect(screen, scheme["targeted_reticule"], reticule, width=2)
-        if pick_ship(ship, get_mouse()):
+        if ship_id != game.ship_id and pick_ship(ship, get_mouse()):
             pygame.draw.rect(screen, scheme["hover_reticule"], reticule, width=2)
         pygame.draw.circle(screen, scheme["entity"], (ship.x, ship.y), 5)

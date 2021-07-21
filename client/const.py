@@ -18,5 +18,6 @@ scheme = {
     "entity": WHITE,
     "foreground": GRAY,
     "hover_reticule": YELLOW,
-    "targeted_reticule": RED,
+    "targeted_reticule": GREEN,
+    "targeted_by_reticule": RED,
 }
