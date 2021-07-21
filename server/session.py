@@ -1,0 +1,85 @@
+from select import select
+
+from common.commands.commands import commands
+from common.messages.server_tick import ServerTickMessage
+from common.net_const import HEADER_SIZE
+from common.space import Warp
+
+
+class Session():
+    def __init__(self, connection, address, solar_system_id, ship_id, alive=True):
+        self.connection = connection
+        self.address = address
+        self.solar_system_id = solar_system_id
+        self.ship_id = ship_id
+        self.alive = alive
+
+    # should only be used before sending data to the client
+    # between syncronisation ticks, just check alive flag
+    def check_alive(self):
+        if not self.alive:
+            return False
+
+        if self.connection.fileno() == -1:
+            self.alive = False
+            return False
+
+        return True
+
+    # TODO: move this to command handler
+    def request_warp_to(self, systems, x, y):
+        current_system = systems[self.solar_system_id]
+        ship = current_system.ships[self.ship_id]
+
+        if ship.warp:
+            # already in warp
+            return
+
+        ship.warp = Warp((ship.x, ship.y), (x, y))
+
+    def receive_request(self):
+        readable, _, _ = select([self.connection], [], [], 0)
+        if len(readable) > 0:
+            header = self.connection.recv(HEADER_SIZE)
+            message_size = int.from_bytes(header, "big")
+            message = self.connection.recv(message_size)
+            parts = message.decode().split(":")
+            request_name = parts[0]
+            request = commands[request_name].unmarshal(message.decode())
+            return request
+
+        return None
+
+    def send_server_tick(self, systems):
+        if self.check_alive():
+            session_ship_object = systems[self.solar_system_id].ships[self.ship_id]
+
+            visible_ships = self._get_visible_ships_list(systems[self.solar_system_id].ships)
+            message = ServerTickMessage(
+                self.ship_id,
+                self.solar_system_id,
+                visible_ships,
+                targeting_ship_id=session_ship_object.targeting_ship_id,
+            ).marshal()
+
+            bytes = message.encode()
+            message_size = len(bytes)
+
+            if message_size == 0:
+                # this was happening ... but I guess not anymore -
+                # keeping this here just in case
+                print("WARNING!! WE'RE SENDING A ZERO HEADER!")
+                print("message: {}".format(message))
+
+            header = message_size.to_bytes(HEADER_SIZE, "big")
+            try:
+                self.connection.send(header + bytes)
+            except Exception:
+                self.alive = False
+
+    def _get_visible_ships_list(self, ships):
+        visible_ships = []
+        for id, ship in ships.items():
+            visible_ships.append(ship)
+
+        return visible_ships

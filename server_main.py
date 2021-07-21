@@ -1,13 +1,10 @@
-from common.commands.commands import commands
-from common.messages.server_tick import ServerTickMessage
-from common.net_const import HEADER_SIZE
-
 import socket
-from select import select
 from datetime import datetime
+from select import select
 
-from common.space import Ship, SolarSystem, Warp
+from common.space import Ship, SolarSystem
 from server.commands import process_command
+from server.session import Session
 
 LAST_ID = 0
 
@@ -16,49 +13,6 @@ def new_id():
     LAST_ID += 1
     return LAST_ID
 
-class Session():
-    def __init__(self, connection, address, solar_system_id, ship_id, alive=True):
-        self.connection = connection
-        self.address = address
-        self.solar_system_id = solar_system_id
-        self.ship_id = ship_id
-        self.alive = alive
-    
-    # should only be used before sending data to the client
-    # between syncronisation ticks, just check alive flag
-    def check_alive(self):
-        if not self.alive:
-            return False
-         
-        if self.connection.fileno() == -1:
-            self.alive = False
-            return False
-        
-        return True
-
-    
-    def request_warp_to(self, x, y):
-        current_system = systems[self.solar_system_id]
-        ship = current_system.ships[session.ship_id]
-
-        if ship.warp:
-            # already in warp
-            return
-
-        ship.warp = Warp((ship.x, ship.y), (x, y))
-
-    def receive_request(self):
-        readable, _, _ = select([self.connection], [], [], 0)
-        if len(readable) > 0:
-            header = self.connection.recv(HEADER_SIZE)
-            message_size = int.from_bytes(header, "big")
-            message = self.connection.recv(message_size)
-            parts = message.decode().split(":")
-            request_name = parts[0]
-            request = commands[request_name].unmarshal(message.decode())
-            return request
-
-        return None
 
 def accept_new_connections(server_socket, sessions, systems):
     readable, _, _  = select([server_socket], [], [], 0)
@@ -68,14 +22,6 @@ def accept_new_connections(server_socket, sessions, systems):
         systems[1].ships[new_ship.id] = new_ship
         new_session = Session(connection, address, 1, new_ship.id)
         sessions.append(new_session)
-
-def get_visible_ships_list(_session, ships):
-    visible_ships = []
-    for id, ship in ships.items():
-        visible_ships.append(ship)
-
-    return visible_ships
-
 
 
 if __name__ == "__main__":
@@ -124,29 +70,4 @@ if __name__ == "__main__":
             # push state to all clients
             lastTick = datetime.now()
             for session in sessions:
-                if session.check_alive():
-                    session_ship_object = systems[session.solar_system_id].ships[session.ship_id]
-
-                    visible_ships = get_visible_ships_list(session, systems[session.solar_system_id].ships)
-                    message = ServerTickMessage(
-                        session.ship_id,
-                        session.solar_system_id,
-                        visible_ships,
-                        targeting_ship_id=session_ship_object.targeting_ship_id,
-                    ).marshal()
-
-                    bytes = message.encode()
-                    message_size = len(bytes)
-
-                    if message_size == 0:
-                        # this was happening ... but I guess not anymore -
-                        # keeping this here just in case
-                        print("WARNING!! WE'RE SENDING A ZERO HEADER!")
-                        print("message: {}".format(message))
-
-                    header = message_size.to_bytes(HEADER_SIZE, "big")
-                    try:
-                        session.connection.send(header + bytes)
-                    except Exception:
-                        session.alive = False
-
+                session.send_server_tick(systems)
