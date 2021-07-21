@@ -2,9 +2,10 @@ import pygame
 
 BLACK = pygame.Color(0, 0, 0, 255)
 WHITE = pygame.Color(255, 255, 255, 255)
-GRAY = pygame.Color(127, 127, 127, 127)
+GRAY = pygame.Color(100, 100, 100, 50)
 GREEN = pygame.Color(0, 255, 0, 255)
 YELLOW = pygame.Color(255, 255, 0, 255)
+RED = pygame.Color(255, 0, 0, 255)
 
 SCREEN_W = 640
 SCREEN_H = 480
@@ -17,4 +18,5 @@ scheme = {
     "entity": WHITE,
     "foreground": GRAY,
     "hover_reticule": YELLOW,
+    "targeted_reticule": RED,
 }

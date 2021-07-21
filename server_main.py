@@ -131,7 +131,8 @@ if __name__ == "__main__":
                     message = ServerTickMessage(
                         session.ship_id,
                         session.solar_system_id,
-                        visible_ships
+                        visible_ships,
+                        targeting_ship_id=session_ship_object.targeting_ship_id,
                     ).marshal()
 
                     bytes = message.encode()

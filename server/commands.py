@@ -13,5 +13,8 @@ def process_command(systems, session, command):
         ship.vy = unit_vector[1] * 2
 
     if command.COMMAND_NAME == RequestShootCommand.COMMAND_NAME:
-        print("RECEIVED REQUEST SHOOT COMMAND: {} from: {}".format(command, session))
-
+        target_ship_id = command.target_ship_id
+        if target_ship_id != session.ship_id:
+            session_ship = systems[session.solar_system_id].ships[session.ship_id]
+            session_ship.targeting_ship_id = target_ship_id
+            

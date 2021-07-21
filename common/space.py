@@ -106,6 +106,7 @@ class Ship(Entity):
         self.warp = None
         self.vx = 2
         self.vy = 2
+        self.targeting_ship_id = None
     
     def tick(self):
         if self.warp:
