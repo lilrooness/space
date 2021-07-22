@@ -58,14 +58,12 @@ class ServerTickMessage(Message):
     @classmethod
     def unmarshal(cls, encoded):
         fields_map = ServerTickMessage._unmarshal_fields_map(encoded)
-        active_laser_shots = {}
-        if "active_laser_shots" in fields_map:
-            active_laser_shots = fields_map["active_laser_shots"]
+
         return ServerTickMessage(
             fields_map["ship_id"],
             fields_map["solar_system_id"],
             fields_map["ships"],
             targeted_by_ship_id=fields_map["targeted_by_ship_id"],
             targeting_ship_id=fields_map["targeting_ship_id"],
-            active_laser_shots=active_laser_shots,
+            active_laser_shots=fields_map["active_laser_shots"],
         )

@@ -41,6 +41,7 @@ class Message():
                 entity_type = type_info[1]
                 nEntities = int(part)
                 if nEntities == 0:
+                    extracted_fields[field_name] = []
                     increment = 2
                 else:
                     entities_idx = position + 1
