@@ -1,4 +1,4 @@
-from common.space import Entity, Ship, LaserShot
+from common.space import Entity
 
 FIELD_TYPE_VALUE = 1
 FIELD_TYPE_MULTIPLE_ENTITIES = 2
