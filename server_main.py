@@ -4,15 +4,9 @@ from select import select
 
 from common.space import Ship, SolarSystem
 from server.commands import process_command
+from server.game.server_game import get_new_laser_shots
+from server.id import new_id
 from server.session import Session
-
-LAST_ID = 0
-
-def new_id():
-    global LAST_ID
-    LAST_ID += 1
-    return LAST_ID
-
 
 def accept_new_connections(server_socket, sessions, systems):
     readable, _, _  = select([server_socket], [], [], 0)
@@ -37,6 +31,8 @@ if __name__ == "__main__":
     serverSocket.listen()
 
     sessions = []
+
+    ticks = 0
 
     lastTick = datetime.now()
     tickFrequency = 500000 #in microseconds
@@ -63,9 +59,11 @@ if __name__ == "__main__":
                     process_command(systems, session, request)
 
         if delta.microseconds >= tickFrequency:
+            ticks += 1
 
             for _, system in systems.items():
                 system.tick()
+                system.active_laser_shots = get_new_laser_shots(system, ticks)
 
             # push state to all clients
             lastTick = datetime.now()

@@ -20,4 +20,5 @@ scheme = {
     "hover_reticule": YELLOW,
     "targeted_reticule": GREEN,
     "targeted_by_reticule": RED,
+    "laser": YELLOW,
 }

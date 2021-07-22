@@ -38,3 +38,8 @@ def render_game(game, screen, screenRect):
         if ship_id != game.ship_id and pick_ship(ship, get_mouse()):
             pygame.draw.rect(screen, scheme["hover_reticule"], reticule, width=2)
         pygame.draw.circle(screen, scheme["entity"], (ship.x, ship.y), 5)
+
+    for _, laser_shot in game.active_laser_shots.items():
+        shooter_ship = game.ships[laser_shot.shooter_ship_id]
+        being_shot_ship = game.ships[laser_shot.being_shot_ship_id]
+        pygame.draw.line(screen, scheme["laser"], (shooter_ship.x, shooter_ship.y), (being_shot_ship.x, being_shot_ship.y), width=1)

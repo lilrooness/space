@@ -1,8 +1,9 @@
-from common.space import Entity, Ship
+from common.space import Entity, Ship, LaserShot
 
 FIELD_TYPE_VALUE = 1
 FIELD_TYPE_MULTIPLE_SHIPS = 2
 FIELD_TYPE_MULTIPLE_PROJECTILES = 3
+FIELD_TYPE_MULTIPLE_LASER_SHOTS = 4
 
 class Message():
 
@@ -45,7 +46,16 @@ class Message():
                 ships = Entity.unmarshall_multiple_of_type(":".join(encoded_ships), Ship)
                 extracted_fields[field_name] = ships
                 increment = 1 + nships * len(Ship.marshalled_fields())
-
+            elif type_info[0] == FIELD_TYPE_MULTIPLE_LASER_SHOTS:
+                nlasers = int(part)
+                if nlasers == 0:
+                    increment = 2
+                else:
+                    lasers_idx = position+1
+                    encoded_lasers = parts[lasers_idx: lasers_idx + nlasers*len(LaserShot.marshalled_fields())]
+                    lasers = Entity.unmarshall_multiple_of_type(":".join(encoded_lasers), LaserShot)
+                    extracted_fields[field_name] = lasers
+                    increment = 1 + nlasers * len(LaserShot.marshalled_fields())
             position += increment
 
         return extracted_fields

@@ -94,6 +94,23 @@ class ProjectileSlug(Entity):
         self.x += self.vx
         self.y += self.vy
 
+class LaserShot(Entity):
+
+    def __init__(self, shooter_ship_id, being_shot_ship_id, power, id=None, id_fun=None):
+        super().__init__(id, id_fun)
+        self.shooter_ship_id = shooter_ship_id
+        self.being_shot_ship_id = being_shot_ship_id
+        self.power = power
+
+    @classmethod
+    def marshalled_field_types(cls):
+        return {
+            "id": lambda id: int(id),
+            "shooter_ship_id": lambda id: int(id),
+            "being_shot_ship_id": lambda id: int(id),
+            "power": lambda id: int(id),
+        }
+
 class Ship(Entity):
 
     def __init__(self, x, y, type_id=1, id=None, id_fun=None, ammo=1, health=100):
@@ -107,7 +124,9 @@ class Ship(Entity):
         self.vx = 2
         self.vy = 2
         self.targeting_ship_id = None
-    
+        self.last_shot_time = -1
+        self.shot_frequency = 0.5
+
     def tick(self):
         if self.warp:
             if self.x != self.warp.endPos[0] or self.y != self.warp.endPos[1]:
@@ -131,10 +150,11 @@ class Ship(Entity):
 
 class SolarSystem(Entity):
     
-    def __init__(self, ships={}, projectiles={}, id=None, id_fun=None):
+    def __init__(self, ships={}, projectiles={}, active_laser_shots={}, id=None, id_fun=None):
         super().__init__(id=id, id_fun=id_fun)
         self.ships = ships
         self.projectiles = projectiles
+        self.active_laser_shots = active_laser_shots
 
     def tick(self):
         for _id, ship in self.ships.items():

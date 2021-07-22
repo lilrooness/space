@@ -11,6 +11,7 @@ class Game():
         self.resources = resources
         self.targeting_ship_id = None
         self.targeted_by_ship_id = None
+        self.active_laser_shots = {}
 
 def handle_server_tick_message(game, message):
     game.ship_id = message.ship_id
@@ -19,8 +20,14 @@ def handle_server_tick_message(game, message):
     for ship in message.ships:
         ships[ship.id] = ship
 
+    active_laser_shots = {}
+    for laser in message.active_laser_shots:
+        active_laser_shots[laser.id] = laser
+
+    game.active_laser_shots = active_laser_shots
     game.ships = ships
     game.resources = message.resources
+
     if message.targeting_ship_id > -1:
         game.targeting_ship_id = message.targeting_ship_id
     else:

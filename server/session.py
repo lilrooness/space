@@ -52,14 +52,17 @@ class Session():
 
     def send_server_tick(self, systems):
         if self.check_alive():
-            session_ship_object = systems[self.solar_system_id].ships[self.ship_id]
+            session_system_object = systems[self.solar_system_id]
+            session_ship_object = session_system_object.ships[self.ship_id]
 
-            visible_ships = self._get_visible_ships_list(systems[self.solar_system_id].ships)
+            visible_ships = self._get_visible_ships_list(session_system_object.ships)
+            active_laser_shots = [shot for _, shot in session_system_object.active_laser_shots.items()]
             message = ServerTickMessage(
                 self.ship_id,
                 self.solar_system_id,
                 visible_ships,
                 targeting_ship_id=session_ship_object.targeting_ship_id,
+                active_laser_shots=active_laser_shots,
             ).marshal()
 
             bytes = message.encode()
