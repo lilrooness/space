@@ -1,9 +1,7 @@
 from common.space import Entity, Ship, LaserShot
 
 FIELD_TYPE_VALUE = 1
-FIELD_TYPE_MULTIPLE_SHIPS = 2
-FIELD_TYPE_MULTIPLE_PROJECTILES = 3
-FIELD_TYPE_MULTIPLE_LASER_SHOTS = 4
+FIELD_TYPE_MULTIPLE_ENTITIES = 2
 
 class Message():
 
@@ -39,23 +37,17 @@ class Message():
             increment = 1
             if type_info[0] == FIELD_TYPE_VALUE:
                 extracted_fields[field_name] = type_info[1](part)
-            elif type_info[0] == FIELD_TYPE_MULTIPLE_SHIPS:
-                nships = int(part)
-                ships_idx = position+1
-                encoded_ships = parts[ships_idx: ships_idx + nships*len(Ship.marshalled_fields())]
-                ships = Entity.unmarshall_multiple_of_type(":".join(encoded_ships), Ship)
-                extracted_fields[field_name] = ships
-                increment = 1 + nships * len(Ship.marshalled_fields())
-            elif type_info[0] == FIELD_TYPE_MULTIPLE_LASER_SHOTS:
-                nlasers = int(part)
-                if nlasers == 0:
+            elif type_info[0] == FIELD_TYPE_MULTIPLE_ENTITIES:
+                entity_type = type_info[1]
+                nEntities = int(part)
+                if nEntities == 0:
                     increment = 2
                 else:
-                    lasers_idx = position+1
-                    encoded_lasers = parts[lasers_idx: lasers_idx + nlasers*len(LaserShot.marshalled_fields())]
-                    lasers = Entity.unmarshall_multiple_of_type(":".join(encoded_lasers), LaserShot)
-                    extracted_fields[field_name] = lasers
-                    increment = 1 + nlasers * len(LaserShot.marshalled_fields())
+                    entities_idx = position + 1
+                    encoded_entities = parts[entities_idx: entities_idx + nEntities * len(entity_type.marshalled_fields())]
+                    entities = Entity.unmarshall_multiple_of_type(":".join(encoded_entities), entity_type)
+                    extracted_fields[field_name] = entities
+                    increment = 1 + nEntities * len(entity_type.marshalled_fields())
             position += increment
 
         return extracted_fields

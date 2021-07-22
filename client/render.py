@@ -1,9 +1,9 @@
-from common.space import Entity
 import pygame
 
 from client.const import SCREEN_H, SCREEN_W, scheme
 from client.game import pick_ship
 from client.mouse import get_mouse
+
 
 def render_game(game, screen, screenRect):
     pygame.draw.rect(screen, scheme["background"], screenRect)

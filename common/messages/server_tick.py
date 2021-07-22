@@ -1,5 +1,5 @@
-from common.messages.message import FIELD_TYPE_MULTIPLE_SHIPS, FIELD_TYPE_VALUE, Message, \
-    FIELD_TYPE_MULTIPLE_LASER_SHOTS
+from common.messages.message import FIELD_TYPE_VALUE, Message, \
+    FIELD_TYPE_MULTIPLE_ENTITIES
 from common.net_const import NONE_MARKER
 from common.space import Ship, LaserShot
 
@@ -30,12 +30,12 @@ class ServerTickMessage(Message):
     @classmethod
     def fields(cls):
         return {
-            "ships": (FIELD_TYPE_MULTIPLE_SHIPS, Ship),
+            "ships": (FIELD_TYPE_MULTIPLE_ENTITIES, Ship),
             "ship_id": (FIELD_TYPE_VALUE, int),
             "solar_system_id": (FIELD_TYPE_VALUE, int),
             "targeting_ship_id": (FIELD_TYPE_VALUE, int),
             "targeted_by_ship_id": (FIELD_TYPE_VALUE, int),
-            "active_laser_shots": (FIELD_TYPE_MULTIPLE_LASER_SHOTS, LaserShot)
+            "active_laser_shots": (FIELD_TYPE_MULTIPLE_ENTITIES, LaserShot)
         }
 
     def marshal(self):
