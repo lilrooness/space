@@ -2,11 +2,11 @@ import pygame
 
 BLACK = pygame.Color(0, 0, 0, 255)
 WHITE = pygame.Color(255, 255, 255, 255)
-GRAY = pygame.Color(100, 100, 100, 50)
+GRAY = pygame.Color(100, 100, 100, 100)
 GREEN = pygame.Color(0, 255, 0, 255)
 YELLOW = pygame.Color(255, 255, 0, 255)
 RED = pygame.Color(255, 0, 0, 255)
-RED_TRANSPARENT = pygame.Color(255, 0, 0, 50)
+RED_TRANSPARENT = pygame.Color(255, 0, 0, 1)
 CYAN = pygame.Color(0, 255, 255, 255)
 
 SCREEN_W = 640

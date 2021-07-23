@@ -70,7 +70,7 @@ if __name__ == "__main__":
     client_socket.connect(("localhost", 12345))
 
     pygame.init()
-    screenRect = pygame.Rect(0,0, SCREEN_H, SCREEN_H)
+    screenRect = pygame.Rect(0,0, SCREEN_W, SCREEN_H)
     run = True
     screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
     

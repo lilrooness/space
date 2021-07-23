@@ -151,7 +151,7 @@ class Ship(Entity):
             "y" : lambda y :float(y),
             "health": lambda health : int(health),
             "shield": lambda shield : int(shield),
-            "dead": lambda dead : bool(dead),
+            "dead": lambda dead : string_to_bool(dead),
         }
 
 
