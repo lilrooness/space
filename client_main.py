@@ -18,6 +18,8 @@ def receive(client_socket):
         readable, _, _ = select([client_socket], [], [], 0)
         return len(readable) > 0
 
+    messages = []
+
     while can_rcv():
         header = client_socket.recv(HEADER_SIZE)
         message_size = int.from_bytes(header, 'big')
@@ -25,9 +27,9 @@ def receive(client_socket):
         parts = message.decode().split(":")
         message_name = parts[0]
         message = message_types[message_name].unmarshal(message.decode())
-        return message
+        messages.append(message)
 
-    return None
+    return messages
 
 def send_request(client_socket, request):
     bytes = request.marshal().encode()
@@ -80,10 +82,11 @@ if __name__ == "__main__":
 
     while run:
         get_mouse().new_input_frame()
-        message = receive(client_socket)
+        messages = receive(client_socket)
 
-        if message:
-            message_handlers[message.__class__](game, message)
+        if messages:
+            for message in messages:
+                message_handlers[message.__class__](game, message)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

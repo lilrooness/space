@@ -1,6 +1,10 @@
 from common.space import LaserShot
 from server.id import new_id
 
+def tick(systems, ticks):
+    for _, system in systems.items():
+        system.tick()
+        system.active_laser_shots = get_new_laser_shots(system, ticks)
 
 def get_new_laser_shots(system, ticks):
     shots = {}

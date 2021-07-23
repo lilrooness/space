@@ -43,3 +43,6 @@ def render_game(game, screen, screenRect):
         shooter_ship = game.ships[laser_shot.shooter_ship_id]
         being_shot_ship = game.ships[laser_shot.being_shot_ship_id]
         pygame.draw.line(screen, scheme["laser"], (shooter_ship.x, shooter_ship.y), (being_shot_ship.x, being_shot_ship.y), width=1)
+
+    if game.ship_id not in game.ships:
+        pygame.draw.rect(screen, scheme["death_overlay"], screenRect)
