@@ -6,7 +6,8 @@ from common.space import Ship, SolarSystem
 from server.commands import process_command
 from server.game import server_game
 from server.id import new_id
-from server.session import Session
+from server.sessions.session import Session
+from server.sessions.sessions import get_sessions, get_message_queue
 
 
 def accept_new_connections(server_socket, sessions, systems):
@@ -16,8 +17,14 @@ def accept_new_connections(server_socket, sessions, systems):
         new_ship = Ship(10, 10, id_fun=new_id)
         systems[1].ships[new_ship.id] = new_ship
         new_session = Session(connection, address, 1, new_ship.id)
-        sessions.append(new_session)
+        sessions[new_session.id] = new_session
 
+def process_out_message_queue(message_queue, sessions):
+    for session_id, messages in message_queue.items():
+        if session_id in sessions:
+            session = sessions[session_id]
+            remaining_messages = session.send_messages(messages)
+            message_queue[session_id] = remaining_messages
 
 if __name__ == "__main__":
 
@@ -31,7 +38,7 @@ if __name__ == "__main__":
     serverSocket.bind(("0.0.0.0", 12345))
     serverSocket.listen()
 
-    sessions = []
+    message_queue = {}
 
     ticks = 0
 
@@ -40,17 +47,21 @@ if __name__ == "__main__":
 
     while(serverSocket.fileno() != -1):
 
-        accept_new_connections(serverSocket, sessions, systems)
+        accept_new_connections(serverSocket, get_sessions(), systems)
         
         delta = datetime.now() - lastTick
 
-        for session in sessions:
+        sessions_to_delete = []
+        for session_id, session in get_sessions().items():
             if not session.alive:
                 del systems[session.solar_system_id].ships[session.ship_id]
-                sessions.remove(session)
+                sessions_to_delete.append(session_id)
+
+        for session_id in sessions_to_delete:
+            del get_sessions()[session_id]
 
         # receive from clients
-        for session in sessions:
+        for _, session in get_sessions().items():
             if session.check_alive():
                 try:
                     request = session.receive_request()
@@ -66,5 +77,7 @@ if __name__ == "__main__":
 
             # push state to all clients
             lastTick = datetime.now()
-            for session in sessions:
+            for _, session in get_sessions().items():
                 session.send_server_tick(systems)
+
+            process_out_message_queue(get_message_queue(), get_sessions())

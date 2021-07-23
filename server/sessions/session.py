@@ -4,6 +4,7 @@ from common.commands.commands import commands
 from common.messages.server_tick import ServerTickMessage
 from common.net_const import HEADER_SIZE
 from common.space import Warp
+from server.id import new_id
 
 
 class Session():
@@ -13,6 +14,7 @@ class Session():
         self.solar_system_id = solar_system_id
         self.ship_id = ship_id
         self.alive = alive
+        self.id = new_id()
 
     # should only be used before sending data to the client
     # between syncronisation ticks, just check alive flag
@@ -49,6 +51,23 @@ class Session():
             return request
 
         return None
+
+    def send_messages(self, messages):
+        def can_snd():
+            _, writable, _ = select([], [self.connection], [], 0)
+            return len(writable) > 0
+        while can_snd() and messages:
+            message = messages[0]
+            bytes = message.marshal().encode()
+            length = len(bytes)
+            header = length.to_bytes(HEADER_SIZE, "big")
+            try:
+                self.connection.send(header + bytes)
+                messages = messages[1:]
+            except Exception:
+                self.alive = False
+
+        return messages
 
     def send_server_tick(self, systems):
         if self.check_alive():

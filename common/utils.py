@@ -1,5 +1,11 @@
 from math import sqrt, pow
 
+def string_to_bool(s):
+    if s in ["False", "0"]:
+        return False
+    else:
+        return True
+
 def dot(a, b):
     return a[0] * b[0] + a[1] * b[1]
 

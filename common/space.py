@@ -1,5 +1,6 @@
 from math import sqrt, pow
 
+from common.utils import string_to_bool
 
 system_ids = [
     1,2
@@ -46,7 +47,10 @@ class Entity():
             for i in range(len(fields)):
                 field_name = fields[i]
                 value = parts[i]
-                entity_fields[field_name] = type.marshalled_field_types()[field_name](value)
+                if type.marshalled_field_types()[field_name] == bool:
+                    entity_fields[field_name] = string_to_bool(value)
+                else:
+                    entity_fields[field_name] = type.marshalled_field_types()[field_name](value)
 
             entities.append(type(**entity_fields))
             parts = parts[len(fields):]
@@ -113,10 +117,11 @@ class LaserShot(Entity):
 
 class Ship(Entity):
 
-    def __init__(self, x, y, type_id=1, id=None, id_fun=None, ammo=1, health=100):
+    def __init__(self, x, y, type_id=1, id=None, id_fun=None, ammo=1, health=100, shield=100, dead=False):
         super().__init__(id, id_fun)
-        self.ammo = 1
-        self.health = 100
+        self.ammo = ammo
+        self.health = health
+        self.shield = shield
         self.x = x
         self.y = y
         self.type_id=type_id
@@ -126,6 +131,7 @@ class Ship(Entity):
         self.targeting_ship_id = None
         self.last_shot_time = -1
         self.shot_frequency = 0.5
+        self.dead = dead
 
     def tick(self):
         if self.warp:
@@ -144,7 +150,8 @@ class Ship(Entity):
             "x" : lambda x: float(x),
             "y" : lambda y :float(y),
             "health": lambda health : int(health),
-            "ammo": lambda ammo : int(ammo)
+            "shield": lambda shield : int(shield),
+            "dead": lambda dead : bool(dead),
         }
 
 

@@ -1,5 +1,6 @@
 from common.messages.messages import ServerTickMessage
 from client.const import SHIP_HEIGHT, SHIP_WIDTH
+from common.messages.ship_damage import ShipDamageMessage
 
 
 class Game():
@@ -37,6 +38,8 @@ def handle_server_tick_message(game, message):
     else:
         game.targeted_by_ship_id = None
 
+def handle_ship_damage_message(game, message):
+    print("some damage init")
 
 def pick_ship(ship, mouse):
     if mouse.x >= ship.x - SHIP_WIDTH/2 and mouse.x <= ship.x + SHIP_WIDTH/2:
@@ -45,5 +48,6 @@ def pick_ship(ship, mouse):
     return False
 
 message_handlers = {
-    ServerTickMessage: handle_server_tick_message
+    ServerTickMessage: handle_server_tick_message,
+    ShipDamageMessage: handle_ship_damage_message,
 }

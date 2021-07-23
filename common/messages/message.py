@@ -1,4 +1,5 @@
 from common.space import Entity
+from common.utils import string_to_bool
 
 FIELD_TYPE_VALUE = 1
 FIELD_TYPE_MULTIPLE_ENTITIES = 2
@@ -36,7 +37,10 @@ class Message():
             part = parts[position]
             increment = 1
             if type_info[0] == FIELD_TYPE_VALUE:
-                extracted_fields[field_name] = type_info[1](part)
+                if type_info[1] == bool:
+                    extracted_fields[field_name] = string_to_bool(part)
+                else:
+                    extracted_fields[field_name] = type_info[1](part)
             elif type_info[0] == FIELD_TYPE_MULTIPLE_ENTITIES:
                 entity_type = type_info[1]
                 nEntities = int(part)
