@@ -1,7 +1,8 @@
+from common.entities.laser_shot import LaserShot
+from common.entities.ship import Ship
 from common.messages.message import FIELD_TYPE_VALUE, Message, \
     FIELD_TYPE_MULTIPLE_ENTITIES
 from common.net_const import NONE_MARKER
-from common.space import Ship, LaserShot
 
 
 class ServerTickMessage(Message):

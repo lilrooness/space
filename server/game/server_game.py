@@ -1,5 +1,5 @@
+from common.entities.laser_shot import LaserShot
 from common.messages.ship_damage import ShipDamageMessage
-from common.space import LaserShot
 from server.id import new_id
 from server.sessions.sessions import queue_message_for_broadcast
 

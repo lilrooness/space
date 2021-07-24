@@ -2,7 +2,8 @@ import socket
 from datetime import datetime
 from select import select
 
-from common.space import Ship, SolarSystem
+from common.entities.ship import Ship
+from common.entities.solar_system import SolarSystem
 from server.commands import process_command
 from server.game import server_game
 from server.id import new_id

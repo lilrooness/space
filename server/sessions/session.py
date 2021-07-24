@@ -1,9 +1,9 @@
 from select import select
 
 from common.commands.commands import commands
+from common.entities.ship import Warp
 from common.messages.server_tick import ServerTickMessage
 from common.net_const import HEADER_SIZE
-from common.space import Warp
 from server.id import new_id
 
 

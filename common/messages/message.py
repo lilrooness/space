@@ -1,4 +1,4 @@
-from common.space import Entity
+from common.entities.entity import Entity
 from common.utils import string_to_bool
 
 FIELD_TYPE_VALUE = 1
