@@ -13,6 +13,9 @@ class Game():
         self.targeting_ship_id = None
         self.targeted_by_ship_id = None
         self.active_laser_shots = {}
+        self.power_allocation_guns = 1.0
+        self.power_allocation_shields = 0.0
+        self.power_allocation_engines = 0.0
 
 def handle_server_tick_message(game, message):
     game.ship_id = message.ship_id
@@ -28,6 +31,9 @@ def handle_server_tick_message(game, message):
     game.active_laser_shots = active_laser_shots
     game.ships = ships
     game.resources = message.resources
+    game.power_allocation_shields = message.power_allocation_shields
+    game.power_allocation_guns = message.power_allocation_guns
+    game.power_allocation_engines = message.power_allocation_engines
 
     if message.targeting_ship_id > -1:
         game.targeting_ship_id = message.targeting_ship_id
@@ -41,9 +47,11 @@ def handle_server_tick_message(game, message):
 def handle_ship_damage_message(game, message):
     print("some damage init")
 
-def pick_ship(ship, mouse):
-    if mouse.x >= ship.x - SHIP_WIDTH/2 and mouse.x <= ship.x + SHIP_WIDTH/2:
-        if mouse.y >= ship.y - SHIP_HEIGHT/2 and mouse.y <= ship.y + SHIP_HEIGHT/2:
+def pick_ship(ship, mouse, camera_x_transform, camera_y_transform):
+    shipX = ship.x - camera_x_transform
+    shipY = ship.y - camera_y_transform
+    if mouse.x >= shipX - SHIP_WIDTH/2 and mouse.x <= shipX + SHIP_WIDTH/2:
+        if mouse.y >= shipY - SHIP_HEIGHT/2 and mouse.y <= shipY + SHIP_HEIGHT/2:
             return True
     return False
 

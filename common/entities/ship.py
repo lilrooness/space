@@ -19,6 +19,9 @@ class Ship(Entity):
         self.last_shot_time = -1
         self.shot_frequency = 0.5
         self.dead = dead
+        self.power_allocation_guns = 0.5
+        self.power_allocation_shields = 0.25
+        self.power_allocation_engines = 0.25
 
     def tick(self):
         if self.warp:

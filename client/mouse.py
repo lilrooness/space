@@ -26,7 +26,12 @@ class _MouseData:
         self.up_this_frame = False
         self.mouse_moved_this_frame = False
 
+    def use_button_event(self):
+        self.down_this_frame = False
+        self.up_this_frame = False
+
 _mouse = _MouseData(0, 0)
 
 def get_mouse():
+    global _mouse
     return _mouse

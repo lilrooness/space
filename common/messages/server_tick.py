@@ -18,6 +18,9 @@ class ServerTickMessage(Message):
             targeting_ship_id=None,
             targeted_by_ship_id=None,
             active_laser_shots={},
+            power_allocation_guns = None,
+            power_allocation_shields = None,
+            power_allocation_engines = None,
     ):
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
@@ -27,6 +30,9 @@ class ServerTickMessage(Message):
         self.targeting_ship_id = targeting_ship_id
         self.targeted_by_ship_id = targeted_by_ship_id
         self.active_laser_shots = active_laser_shots
+        self.power_allocation_guns = power_allocation_guns
+        self.power_allocation_shields = power_allocation_shields
+        self.power_allocation_engines = power_allocation_engines
 
     @classmethod
     def fields(cls):
@@ -36,7 +42,10 @@ class ServerTickMessage(Message):
             "solar_system_id": (FIELD_TYPE_VALUE, int),
             "targeting_ship_id": (FIELD_TYPE_VALUE, int),
             "targeted_by_ship_id": (FIELD_TYPE_VALUE, int),
-            "active_laser_shots": (FIELD_TYPE_MULTIPLE_ENTITIES, LaserShot)
+            "active_laser_shots": (FIELD_TYPE_MULTIPLE_ENTITIES, LaserShot),
+            "power_allocation_guns": (FIELD_TYPE_VALUE, float),
+            "power_allocation_shields": (FIELD_TYPE_VALUE, float),
+            "power_allocation_engines": (FIELD_TYPE_VALUE, float),
         }
 
     def marshal(self):
@@ -52,6 +61,9 @@ class ServerTickMessage(Message):
             "%d" % (self.targeted_by_ship_id or NONE_MARKER),
             "%d" % len(self.active_laser_shots),
             ":".join(active_laser_shots or [str(NONE_MARKER)]),
+            "%f" % self.power_allocation_guns,
+            "%f" % self.power_allocation_shields,
+            "%f" % self.power_allocation_engines,
         ]
 
         return ":".join(message)
@@ -67,4 +79,7 @@ class ServerTickMessage(Message):
             targeted_by_ship_id=fields_map["targeted_by_ship_id"],
             targeting_ship_id=fields_map["targeting_ship_id"],
             active_laser_shots=fields_map["active_laser_shots"],
+            power_allocation_guns=fields_map["power_allocation_guns"],
+            power_allocation_shields=fields_map["power_allocation_shields"],
+            power_allocation_engines=fields_map["power_allocation_engines"],
         )

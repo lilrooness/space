@@ -1,5 +1,3 @@
-from math import sqrt, pow
-
 from common.utils import string_to_bool
 
 system_ids = [

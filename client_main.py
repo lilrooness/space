@@ -3,6 +3,8 @@ from select import select
 
 import pygame
 
+from client import camera
+from client.camera import set_camera
 from client.const import SCREEN_H, SCREEN_W
 from client.game import Game, message_handlers, pick_ship
 from client.mouse import get_mouse
@@ -10,7 +12,7 @@ from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_shoot import RequestShootCommand
 from common.messages.messages import message_types
 from common.net_const import HEADER_SIZE
-from client.render import render_game
+from client.render import render_game, render_static_ui
 
 
 def receive(client_socket):
@@ -55,14 +57,15 @@ def process_out_message_queue(out_message_queue, client_socket):
     return out_message_queue
 
 def process_input(game):
+    camera_x_transform, camera_y_transform = camera.get_camera()
     if get_mouse().down_this_frame:
         for ship_id, ship in game.ships.items():
             if ship_id != game.ship_id:
-                if pick_ship(ship, get_mouse()):
+                if pick_ship(ship, get_mouse(), camera_x_transform, camera_y_transform):
                     queue_to_send(out_message_queue, RequestShootCommand(ship_id))
                     return
 
-        queue_to_send(out_message_queue, RequestMoveToCommand(mouseX, mouseY))
+        queue_to_send(out_message_queue, RequestMoveToCommand(mouseX + camera_x_transform, mouseY + camera_y_transform))
 
 
 if __name__ == "__main__":
@@ -88,6 +91,12 @@ if __name__ == "__main__":
             for message in messages:
                 message_handlers[message.__class__](game, message)
 
+        if game.ship_id:
+            set_camera(
+                game.ships[game.ship_id].x - SCREEN_W / 2,
+                game.ships[game.ship_id].y - SCREEN_H / 2,
+            )
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -102,9 +111,10 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 get_mouse().set_mouse_down()
 
-        process_input(game)
-
         render_game(game, screen, screenRect)
+        render_static_ui(game, screen)
+
+        process_input(game)
 
         pygame.display.flip()
         out_message_queue = process_out_message_queue(out_message_queue, client_socket)

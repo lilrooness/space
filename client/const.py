@@ -2,7 +2,9 @@ import pygame
 
 BLACK = pygame.Color(0, 0, 0, 255)
 WHITE = pygame.Color(255, 255, 255, 255)
+LIGHT_GRAY = pygame.Color(150, 150, 150, 100)
 GRAY = pygame.Color(100, 100, 100, 100)
+DARK_GRAY = pygame.Color(50, 50, 50, 100)
 GREEN = pygame.Color(0, 255, 0, 255)
 YELLOW = pygame.Color(255, 255, 0, 255)
 RED = pygame.Color(255, 0, 0, 255)
@@ -31,4 +33,14 @@ scheme = {
     "death_overlay": RED_TRANSPARENT,
     "health": WHITE,
     "shield": CYAN,
+    "ui_background": GRAY,
+    "ui_boarder": LIGHT_GRAY,
+    "ui_background_highlight": LIGHT_GRAY,
+    "engines_power": RED,
+    "shields_power": CYAN,
+    "guns_power": YELLOW,
+    "power": WHITE,
+    "button_idle": DARK_GRAY,
+    "button_hover": LIGHT_GRAY,
+    "button_down": BLACK,
 }
