@@ -4,7 +4,7 @@ from select import select
 import pygame
 
 from client import camera
-from client.camera import set_camera
+from client.camera import set_camera, get_camera_zoom, set_camera_zoom
 from client.const import SCREEN_H, SCREEN_W
 from client.game import Game, message_handlers, pick_ship
 from client.mouse import get_mouse
@@ -39,12 +39,14 @@ def process_input(game):
     if get_mouse().down_this_frame:
         for ship_id, ship in game.ships.items():
             if ship_id != game.ship_id:
-                if pick_ship(ship, get_mouse(), camera_x_transform, camera_y_transform):
+                if pick_ship(game, ship, get_mouse()):
                     queue_to_send(RequestShootCommand(ship_id))
                     return
 
         queue_to_send(RequestMoveToCommand(mouseX + camera_x_transform, mouseY + camera_y_transform))
 
+    if get_mouse().wheel_scroll_amount:
+        set_camera_zoom(get_camera_zoom() + get_mouse().wheel_scroll_amount)
 
 if __name__ == "__main__":
     client_socket = socket.socket()
@@ -82,15 +84,18 @@ if __name__ == "__main__":
                 get_mouse().set_pos(mouseX, mouseY)
 
             if event.type == pygame.MOUSEBUTTONUP:
-                get_mouse().set_mouse_up()
+                get_mouse().set_mouse_up(pygame.mouse.get_pressed(num_buttons=3))
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                get_mouse().set_mouse_down()
+                get_mouse().set_mouse_down(pygame.mouse.get_pressed(num_buttons=3))
 
-        render_game(game, screen, screenRect)
-        render_static_ui(game, screen)
+            if event.type == pygame.MOUSEWHEEL:
+                get_mouse().set_wheel_scrolled(event.y)
 
-        process_input(game)
+        if game.ship_id:
+            render_game(game, screen, screenRect)
+            render_static_ui(game, screen)
+            process_input(game)
 
         pygame.display.flip()
         out_message_queue = process_out_message_queue(client_socket)

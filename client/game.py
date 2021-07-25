@@ -1,3 +1,4 @@
+from client import camera
 from common.messages.messages import ServerTickMessage
 from client.const import SHIP_HEIGHT, SHIP_WIDTH
 from common.messages.ship_damage import ShipDamageMessage
@@ -47,9 +48,8 @@ def handle_server_tick_message(game, message):
 def handle_ship_damage_message(game, message):
     print("some damage init")
 
-def pick_ship(ship, mouse, camera_x_transform, camera_y_transform):
-    shipX = ship.x - camera_x_transform
-    shipY = ship.y - camera_y_transform
+def pick_ship(game, ship, mouse):
+    shipX, shipY = camera.world_to_screen(game, ship.x, ship.y)
     if mouse.x >= shipX - SHIP_WIDTH/2 and mouse.x <= shipX + SHIP_WIDTH/2:
         if mouse.y >= shipY - SHIP_HEIGHT/2 and mouse.y <= shipY + SHIP_HEIGHT/2:
             return True

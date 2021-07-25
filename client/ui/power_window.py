@@ -1,9 +1,10 @@
-from common.commands.request_power_change import RequestPowerChange
 import pygame
 
 from client.const import SCREEN_W, scheme
-from client.mouse import get_mouse
 from client.session import queue_to_send
+from client.ui.components.button import button
+from client.ui.components.gauge import verticle_gauge
+from common.commands.request_power_change import RequestPowerChange
 
 
 def power_window(game, screen):
@@ -112,33 +113,3 @@ def guns_power_change(game, delta):
 def request_power_change(engines, shields, guns):
     queue_to_send(RequestPowerChange(engines, shields, guns))
 
-def verticle_gauge(screen, background_color, foreground_color, container_rect, value):
-    value_rect = pygame.Rect(
-        container_rect.x,
-        container_rect.height - (container_rect.height * value) + container_rect.y,
-        container_rect.width,
-        (container_rect.height * value),
-    )
-    pygame.draw.rect(screen, background_color, container_rect)
-    pygame.draw.rect(screen, foreground_color, value_rect)
-
-def button(screen, rect, callback=lambda : None):
-    mouse = get_mouse()
-    color = scheme["button_idle"]
-    trigger_callback = False
-    collision = rect.collidepoint(mouse.x, mouse.y)
-
-    if collision and mouse.up_this_frame:
-        trigger_callback = True
-        mouse.use_button_event()
-        color = scheme["button_hover"]
-    elif collision and mouse.mouse_down:
-        color = scheme["button_down"]
-        mouse.use_button_event()
-    elif collision:
-        color = scheme["button_hover"]
-
-    pygame.draw.rect(screen, color, rect)
-
-    if trigger_callback:
-        callback()
