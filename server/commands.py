@@ -1,7 +1,7 @@
+from common.commands.request_power_change import RequestPowerChange
 from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_shoot import RequestShootCommand
 from common.utils import mag
-
 
 def process_command(systems, session, command):
     if command.COMMAND_NAME == RequestMoveToCommand.COMMAND_NAME:
@@ -17,4 +17,6 @@ def process_command(systems, session, command):
         if target_ship_id != session.ship_id:
             session_ship = systems[session.solar_system_id].ships[session.ship_id]
             session_ship.targeting_ship_id = target_ship_id
-            
+    
+    if command.COMMAND_NAME == RequestPowerChange.COMMAND_NAME:
+        print("CLIENT REQUESTED POWER CHANGE")
