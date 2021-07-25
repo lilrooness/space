@@ -32,7 +32,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : engine_power_change(game, 1),
+        callback=lambda : engine_power_change(game, 0.05),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 5,
@@ -40,7 +40,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : engine_power_change(game, -1),
+        callback=lambda : engine_power_change(game, -0.05),
     )
 
     shields_power_cont_rect = pygame.Rect(
@@ -56,7 +56,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : shield_power_change(game, 1),
+        callback=lambda : shield_power_change(game, 0.05),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 30,
@@ -64,7 +64,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : shield_power_change(game, -1),
+        callback=lambda : shield_power_change(game, -0.05),
     )
 
     guns_power_cont_rect = pygame.Rect(
@@ -80,7 +80,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : guns_power_change(game, -1),
+        callback=lambda : guns_power_change(game, 0.05),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 55,
@@ -88,7 +88,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : guns_power_change(game, -1),
+        callback=lambda : guns_power_change(game, -0.05),
     )
 
     remaining_power_cont_rect = pygame.Rect(

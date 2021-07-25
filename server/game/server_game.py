@@ -12,8 +12,13 @@ def tick(systems, ticks):
 
 def resolve_laser_damage(system):
     for _id, shot in system.active_laser_shots.items():
+        shooting_ship = system.ships[shot.shooter_ship_id]
         target_ship = system.ships[shot.being_shot_ship_id]
-        apply_damage_to_ship(target_ship, shot.power)
+        if not shooting_ship.dead and not target_ship.dead:
+            target_ship = system.ships[shot.being_shot_ship_id]
+            apply_damage_to_ship(target_ship, shot.power)
+        else:
+            shooting_ship.targeting_ship_id = None
 
 def get_new_laser_shots(system, ticks):
     shots = {}
