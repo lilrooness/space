@@ -10,8 +10,9 @@ class _MouseData:
         self.wheel_scroll_amount = 0
 
     def set_mouse_down(self, button_states):
-        self.mouse_down = True
-        self.down_this_frame = True
+        if button_states[0]:
+            self.mouse_down = True
+            self.down_this_frame = True
 
     def set_mouse_up(self, button_states):
         self.up_this_frame = True
