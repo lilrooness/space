@@ -25,6 +25,8 @@ SHIP_SHIELD_ARC_DIAM = 30
 scheme = {
     "background": BLACK,
     "entity": WHITE,
+    "map_me": GREEN,
+    "map_other": RED,
     "foreground": GRAY,
     "hover_reticule": YELLOW,
     "targeted_reticule": GREEN,

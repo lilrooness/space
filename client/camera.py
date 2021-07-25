@@ -1,6 +1,7 @@
 _camera_x_transform = 0
 _camera_y_transform = 0
 _zoom = 2
+_max_zoom = 8
 
 def get_camera():
     return _camera_x_transform, _camera_y_transform,
@@ -14,7 +15,7 @@ def set_camera_zoom(zoom):
     if zoom == 0:
         return
 
-    _zoom = zoom
+    _zoom = min(zoom, _max_zoom)
 
 def set_camera(x_transform, y_transform):
     global _camera_y_transform

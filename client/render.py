@@ -15,6 +15,27 @@ def render_static_ui(game, screen):
 def render_game(game, screen, screenRect):
     pygame.draw.rect(screen, scheme["background"], screenRect)
 
+    if get_camera_zoom() < 8:
+        render_game_view(game, screen, screenRect)
+    else:
+        render_map_view(game, screen, screenRect)
+
+def render_map_view(game, screen, _screenRect):
+    for ship_id, ship in game.ships.items():
+        ship_screen_space_coords = world_to_screen(
+            game,
+            ship.x,
+            ship.y,
+        )
+
+        color = scheme["map_other"]
+
+        if ship_id == game.ship_id:
+            color = scheme["map_me"]
+
+        pygame.draw.circle(screen, color, ship_screen_space_coords, 2)
+
+def render_game_view(game, screen, screenRect):
     ship = game.ships[game.ship_id]
 
     grid_width = 2000
