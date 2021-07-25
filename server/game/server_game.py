@@ -37,11 +37,15 @@ def get_new_laser_shots(system, ticks):
     return shots
 
 def apply_damage_to_ship(ship, damage):
-    ship.health -= damage
     death = False
-    if ship.health <= 0:
-        ship.health = 0
-        death = True
-        ship.dead = True
+    shield_after_damage = max(ship.shield - damage, 0)
+    if shield_after_damage == 0:
+        damage_after_shield = max(damage - ship.shield, 0)
+        ship.health = max(ship.health - damage_after_shield, 0)
+        if ship.health == 0:
+            death = True
+            ship.dead = True
+
+    ship.shield = shield_after_damage
 
     queue_message_for_broadcast(ShipDamageMessage(ship.id, damage, death=death))
