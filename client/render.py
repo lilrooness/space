@@ -3,10 +3,11 @@ import math
 import pygame
 
 from client.camera import get_camera_zoom, world_to_screen
-from client.const import SCREEN_H, SCREEN_W, scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, RETICULE_SIZE
+from client.const import scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, RETICULE_SIZE
 from client.game import pick_ship
 from client.mouse import get_mouse
 from client.ui.power_window.power_window import power_window
+from common.const import get_laser_range
 
 
 def render_static_ui(game, screen, old_state):
@@ -39,11 +40,11 @@ def render_map_view(game, screen, _screenRect):
 def render_game_view(game, screen, screenRect):
     ship = game.ships[game.ship_id]
 
-    grid_width = 2000
-    grid_height = 2000
+    grid_width = 500
+    grid_height = 500
 
-    x_step = (SCREEN_W / 10) / get_camera_zoom()
-    y_step = (SCREEN_H / 10) / get_camera_zoom()
+    x_step = 100 / get_camera_zoom()
+    y_step = 100 / get_camera_zoom()
 
     for x in range(grid_width):
         if x == 0:
@@ -52,11 +53,11 @@ def render_game_view(game, screen, screenRect):
         pygame.draw.line(
             screen,
             scheme["foreground"],
-            (xpos, 0),
-            (xpos, SCREEN_H),
+            world_to_screen(game, xpos, 0),
+            world_to_screen(game, xpos, grid_height*y_step),
             width=1,
         )
-    
+
     for y in range(grid_height):
         if y == 0:
             continue
@@ -64,10 +65,25 @@ def render_game_view(game, screen, screenRect):
         pygame.draw.line(
             screen,
             scheme["foreground"],
-            (0, ypos),
-            (SCREEN_W, ypos),
+            world_to_screen(game, 0, ypos),
+            world_to_screen(game, grid_width*x_step, ypos),
             width=1
         )
+
+    session_ship_screen_space_coords = world_to_screen(
+        game,
+        ship.x,
+        ship.y,
+    )
+
+    laser_range = get_laser_range(game.power_allocation_guns) / float(get_camera_zoom())
+    laserRangeRect = pygame.Rect(
+        session_ship_screen_space_coords[0] - laser_range,
+        session_ship_screen_space_coords[1] - laser_range,
+        laser_range * 2,
+        laser_range * 2,
+    )
+    pygame.draw.arc(screen, scheme["range_marker"], laserRangeRect, 0, math.pi * 2, width=1)
 
     for ship_id, ship in game.ships.items():
 

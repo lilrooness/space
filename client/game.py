@@ -1,7 +1,10 @@
+from datetime import datetime
+
 from client import camera
 from common.messages.messages import ServerTickMessage
 from client.const import SHIP_HEIGHT, SHIP_WIDTH
 from common.messages.ship_damage import ShipDamageMessage
+from common.net_const import SERVER_TICK_TIME
 
 
 class Game():
@@ -18,8 +21,20 @@ class Game():
         self.power_allocation_shields = 0.0
         self.power_allocation_engines = 0.0
         self.tick_number = 0
+        self.last_tick_time = datetime.now()
+        self.last_delta = 0
+
+    def tick(self):
+        time_since_last_tick = datetime.now() - self.last_tick_time
+        delta = float(time_since_last_tick.microseconds) / float(SERVER_TICK_TIME)
+        for _id, ship in self.ships.items():
+            ship.tick(delta=2*(delta - self.last_delta))
+
+        self.last_delta = delta
+
 
 def handle_server_tick_message(game, message):
+    game.last_tick_time = datetime.now()
     game.tick_number += 1
     game.ship_id = message.ship_id
     game.solar_system_id = message.solar_system_id

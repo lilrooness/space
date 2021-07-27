@@ -1,7 +1,9 @@
 from common.commands.request_power_change import RequestPowerChange
 from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_shoot import RequestShootCommand
-from common.utils import mag
+from common.const import get_laser_range
+from common.utils import mag, dist
+
 
 def process_command(systems, session, command):
 
@@ -10,15 +12,19 @@ def process_command(systems, session, command):
         vector = (command.x - ship.x, command.y - ship.y)
         magnitude = mag(vector)
         unit_vector = (vector[0]/magnitude, vector[1]/magnitude)
-        ship.vx = unit_vector[0] * 2
-        ship.vy = unit_vector[1] * 2
+        ship.vx = unit_vector[0]
+        ship.vy = unit_vector[1]
         return
 
     if command.COMMAND_NAME == RequestShootCommand.COMMAND_NAME:
         target_ship_id = command.target_ship_id
         if target_ship_id != session.ship_id:
             session_ship = systems[session.solar_system_id].ships[session.ship_id]
-            session_ship.targeting_ship_id = target_ship_id
+            target_ship = systems[session.solar_system_id].ships[target_ship_id]
+            range = dist(session_ship.x, session_ship.y, target_ship.x, target_ship.y)
+            if range <= get_laser_range(session_ship.power_allocation_guns):
+                session_ship = systems[session.solar_system_id].ships[session.ship_id]
+                session_ship.targeting_ship_id = target_ship_id
         return
     
     if command.COMMAND_NAME == RequestPowerChange.COMMAND_NAME:

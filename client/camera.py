@@ -1,6 +1,6 @@
 _camera_x_transform = 0
 _camera_y_transform = 0
-_zoom = 2
+_zoom = 1
 _max_zoom = 8
 
 def get_camera():

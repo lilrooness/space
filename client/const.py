@@ -45,4 +45,5 @@ scheme = {
     "button_idle": DARK_GRAY,
     "button_hover": LIGHT_GRAY,
     "button_down": BLACK,
+    "range_marker": YELLOW,
 }

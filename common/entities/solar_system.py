@@ -9,9 +9,6 @@ class SolarSystem(Entity):
         self.projectiles = projectiles
         self.active_laser_shots = active_laser_shots
 
-    def tick(self):
+    def tick(self, delta=1.0):
         for _id, ship in self.ships.items():
-            ship.tick()
-
-        for _id, projectile in self.projectiles.items():
-            projectile.tick()
+            ship.tick(delta=delta)

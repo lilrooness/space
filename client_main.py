@@ -1,4 +1,5 @@
 import socket
+from datetime import datetime
 from select import select
 
 import pygame
@@ -65,6 +66,9 @@ if __name__ == "__main__":
     static_ui_state = None
 
     while run:
+
+        game.tick()
+
         get_mouse().new_input_frame()
         messages = receive(client_socket)
 

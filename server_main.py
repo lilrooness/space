@@ -4,6 +4,7 @@ from select import select
 
 from common.entities.ship import Ship
 from common.entities.solar_system import SolarSystem
+from common.net_const import SERVER_TICK_TIME
 from server.commands import process_command
 from server.game import server_game
 from server.id import new_id
@@ -44,7 +45,6 @@ if __name__ == "__main__":
     ticks = 0
 
     lastTick = datetime.now()
-    tickFrequency = 500000 #in microseconds
 
     while(serverSocket.fileno() != -1):
 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
                 if request:
                     process_command(systems, session, request)
 
-        if delta.microseconds >= tickFrequency:
+        if delta.microseconds >= SERVER_TICK_TIME:
             ticks += 1
 
             server_game.tick(systems, ticks)

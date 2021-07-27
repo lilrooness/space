@@ -1,4 +1,5 @@
-BASE_LASER_DAMAGE = 20
+BASE_LASER_DAMAGE = 10
+BASE_LASER_RANGE = 1000
 
 # above this threshold, the ship will take more damage when hit by weapons
 ENGINE_POWER_DAMAGE_THRESHOLD = 0.3
@@ -9,3 +10,11 @@ ENGINE_POWER_DAMAGE_THRESHOLD = 0.3
 # (20 * (0.2 * 1.6)) = 6.4
 # final_damage = 6.4 + 20
 ENGINE_DAMAGE_INCREASE_RATE = 1.6
+
+BASE_SPEED = 10.0
+
+def get_speed(engines_power_allocation):
+    return BASE_SPEED * engines_power_allocation
+
+def get_laser_range(guns_power_allocation):
+    return BASE_LASER_RANGE * guns_power_allocation
