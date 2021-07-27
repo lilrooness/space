@@ -11,8 +11,8 @@ RED = pygame.Color(255, 0, 0, 255)
 RED_TRANSPARENT = pygame.Color(255, 0, 0, 1)
 CYAN = pygame.Color(0, 255, 255, 255)
 
-SCREEN_W = 640
-SCREEN_H = 480
+SCREEN_W = 640*2
+SCREEN_H = 480*2
 
 SHIP_WIDTH = 20
 SHIP_HEIGHT = 20

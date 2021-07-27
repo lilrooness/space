@@ -39,8 +39,8 @@ class Ship(Entity):
             "id": lambda id: int(id),
             "x": lambda x: float(x),
             "y": lambda y: float(y),
-            "health": lambda health: int(health),
-            "shield": lambda shield: int(shield),
+            "health": lambda health: float(health),
+            "shield": lambda shield: float(shield),
             "dead": lambda dead: string_to_bool(dead),
         }
 

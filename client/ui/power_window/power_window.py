@@ -1,6 +1,7 @@
 import pygame
 
 from client.const import SCREEN_W, scheme
+from client.mouse import get_mouse
 from client.ui.components.button import button
 from client.ui.components.gauge import verticle_gauge
 from client.ui.power_window.state import PowerWindowState
@@ -39,7 +40,7 @@ def power_window(game, screen, last_state):
         scheme["engines_power"],
         engine_power_cont_rect,
         game.power_allocation_engines + new_state.engines,
-        scroll_callback=lambda change : engine_power_change(0.05 * change, new_state)
+        scroll_callback=lambda change : engine_power_change(0.05 * change, new_state, game)
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 5,
@@ -47,7 +48,7 @@ def power_window(game, screen, last_state):
         20,
         20,
         ),
-        callback=lambda : engine_power_change(0.05, new_state),
+        callback=lambda : engine_power_change(0.05, new_state, game),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 5,
@@ -55,7 +56,7 @@ def power_window(game, screen, last_state):
         20,
         20,
         ),
-        callback=lambda : engine_power_change(-0.05, new_state),
+        callback=lambda : engine_power_change(-0.05, new_state, game),
     )
 
     shields_power_cont_rect = pygame.Rect(
@@ -70,7 +71,7 @@ def power_window(game, screen, last_state):
         scheme["shields_power"],
         shields_power_cont_rect,
         game.power_allocation_shields + new_state.shields,
-        scroll_callback=lambda change: shield_power_change(0.05 * change, new_state)
+        scroll_callback=lambda change: shield_power_change(0.05 * change, new_state, game)
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 30,
@@ -78,7 +79,7 @@ def power_window(game, screen, last_state):
         20,
         20,
         ),
-        callback=lambda : shield_power_change(0.05, new_state),
+        callback=lambda : shield_power_change(0.05, new_state, game),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 30,
@@ -86,7 +87,7 @@ def power_window(game, screen, last_state):
         20,
         20,
         ),
-        callback=lambda : shield_power_change(-0.05, new_state),
+        callback=lambda : shield_power_change(-0.05, new_state, game),
     )
 
     guns_power_cont_rect = pygame.Rect(
@@ -101,7 +102,7 @@ def power_window(game, screen, last_state):
         scheme["guns_power"],
         guns_power_cont_rect,
         game.power_allocation_guns + new_state.guns,
-        scroll_callback=lambda change: guns_power_change(0.05 * change, new_state)
+        scroll_callback=lambda change: guns_power_change(0.05 * change, new_state, game)
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 55,
@@ -109,7 +110,7 @@ def power_window(game, screen, last_state):
         20,
         20,
         ),
-        callback=lambda : guns_power_change(0.05, new_state),
+        callback=lambda : guns_power_change(0.05, new_state, game),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 55,
@@ -117,7 +118,7 @@ def power_window(game, screen, last_state):
         20,
         20,
         ),
-        callback=lambda : guns_power_change(-0.05, new_state),
+        callback=lambda : guns_power_change(-0.05, new_state, game),
     )
 
     remaining_power_cont_rect = pygame.Rect(
@@ -129,18 +130,19 @@ def power_window(game, screen, last_state):
     verticle_gauge(screen, scheme["ui_background_highlight"], scheme["power"], remaining_power_cont_rect,
                    1.0 - (game.power_allocation_guns + game.power_allocation_shields + game.power_allocation_engines))
 
+    # make the window intercept any scroll events that haven't been captures
+    mouse = get_mouse()
+    if power_container_rect.collidepoint(mouse.x, mouse.y):
+        mouse.use_all_button_events()
+
     return new_state
 
-def engine_power_change(delta, state):
-    request_power_change(delta, 0, 0, state)
+def engine_power_change(delta, state, game):
+    state.request_power_change(game, delta, 0, 0)
 
-def shield_power_change(delta, state):
-    request_power_change(0, delta, 0, state)
+def shield_power_change(delta, state, game):
+    state.request_power_change(game, 0, delta, 0)
 
-def guns_power_change(delta, state):
-    request_power_change(0, 0, delta, state)
+def guns_power_change(delta, state, game):
+    state.request_power_change(game, 0, 0, delta)
 
-def request_power_change(engines, shields, guns, state):
-    state.engines += engines
-    state.shields += shields
-    state.guns += guns

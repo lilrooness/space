@@ -14,6 +14,22 @@ class PowerWindowState():
         self.last_sync = datetime.now()
         self.game_tick = game_tick
 
+    def request_power_change(self, game, engines, shields, guns):
+        newEngines = self.engines + engines
+        newShields = self.shields + shields
+        newGuns = self.guns + guns
+
+        totalNewPowerAllocation = game.power_allocation_shields + newShields \
+                                  + game.power_allocation_engines + newEngines \
+                                  + game.power_allocation_guns + newGuns
+
+        if totalNewPowerAllocation > 1.0 or totalNewPowerAllocation < 0:
+            return
+
+        self.engines = newEngines
+        self.shields = newShields
+        self.guns = newGuns
+
     def tick(self, game):
         now = datetime.now()
         time_since_last_sync = now - self.last_sync
@@ -27,7 +43,6 @@ class PowerWindowState():
             self.engines = 0
             self.shields = 0
             self.guns = 0
-
 
     def _push_request(self, game):
         if self.engines or self.shields or self.guns:

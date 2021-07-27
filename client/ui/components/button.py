@@ -24,3 +24,4 @@ def button(screen, rect, callback=lambda : None):
 
     if trigger_callback:
         callback()
+        mouse.use_all_button_events()
