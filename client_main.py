@@ -45,8 +45,9 @@ def process_input(game):
 
         queue_to_send(RequestMoveToCommand(mouseX + camera_x_transform, mouseY + camera_y_transform))
 
-    if get_mouse().wheel_scroll_amount:
+    if get_mouse().wheel_scrolled:
         set_camera_zoom(get_camera_zoom() + get_mouse().wheel_scroll_amount)
+        get_mouse().use_button_event("wheel_scrolled")
 
 if __name__ == "__main__":
     client_socket = socket.socket()
@@ -60,6 +61,8 @@ if __name__ == "__main__":
     game = Game()
     mouseX = 0
     mouseY = 0
+
+    static_ui_state = None
 
     while run:
         get_mouse().new_input_frame()
@@ -94,7 +97,7 @@ if __name__ == "__main__":
 
         if game.ship_id:
             render_game(game, screen, screenRect)
-            render_static_ui(game, screen)
+            static_ui_state = render_static_ui(game, screen, static_ui_state)
             process_input(game)
 
         pygame.display.flip()

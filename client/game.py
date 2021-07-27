@@ -7,7 +7,7 @@ from common.messages.ship_damage import ShipDamageMessage
 class Game():
 
     def __init__(self, ships={}, ship_id=None, solar_system_id=None, resources=None):
-        self.ships = {}
+        self.ships = ships
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
         self.resources = resources
@@ -17,8 +17,10 @@ class Game():
         self.power_allocation_guns = 1.0
         self.power_allocation_shields = 0.0
         self.power_allocation_engines = 0.0
+        self.tick_number = 0
 
 def handle_server_tick_message(game, message):
+    game.tick_number += 1
     game.ship_id = message.ship_id
     game.solar_system_id = message.solar_system_id
     ships = {}

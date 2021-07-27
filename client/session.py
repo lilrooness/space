@@ -1,6 +1,6 @@
-from common.net_const import HEADER_SIZE
-import socket
 from select import select
+
+from common.net_const import HEADER_SIZE
 
 _out_message_queue = []
 

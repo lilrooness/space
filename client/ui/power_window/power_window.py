@@ -1,13 +1,20 @@
 import pygame
 
 from client.const import SCREEN_W, scheme
-from client.session import queue_to_send
 from client.ui.components.button import button
 from client.ui.components.gauge import verticle_gauge
-from common.commands.request_power_change import RequestPowerChange
+from client.ui.power_window.state import PowerWindowState
 
 
-def power_window(game, screen):
+def power_window(game, screen, last_state):
+
+    new_state = None
+    if last_state is None:
+        new_state = PowerWindowState(game_tick=game.tick_number)
+    else:
+        last_state.tick(game)
+        new_state = last_state
+
     power_cont_W = 160
     power_cont_H = 320
     power_container_rect = pygame.Rect(
@@ -26,14 +33,21 @@ def power_window(game, screen):
         20,
         bar_height
     )
-    verticle_gauge(screen, scheme["ui_background_highlight"], scheme["engines_power"], engine_power_cont_rect, game.power_allocation_engines)
+    verticle_gauge(
+        screen,
+        scheme["ui_background_highlight"],
+        scheme["engines_power"],
+        engine_power_cont_rect,
+        game.power_allocation_engines + new_state.engines,
+        scroll_callback=lambda change : engine_power_change(0.05 * change, new_state)
+    )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 5,
         bar_height + 15,
         20,
         20,
         ),
-        callback=lambda : engine_power_change(game, 0.05),
+        callback=lambda : engine_power_change(0.05, new_state),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 5,
@@ -41,7 +55,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : engine_power_change(game, -0.05),
+        callback=lambda : engine_power_change(-0.05, new_state),
     )
 
     shields_power_cont_rect = pygame.Rect(
@@ -50,14 +64,21 @@ def power_window(game, screen):
         20,
         bar_height
     )
-    verticle_gauge(screen, scheme["ui_background_highlight"], scheme["shields_power"], shields_power_cont_rect, game.power_allocation_shields)
+    verticle_gauge(
+        screen,
+        scheme["ui_background_highlight"],
+        scheme["shields_power"],
+        shields_power_cont_rect,
+        game.power_allocation_shields + new_state.shields,
+        scroll_callback=lambda change: shield_power_change(0.05 * change, new_state)
+    )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 30,
         bar_height + 15,
         20,
         20,
         ),
-        callback=lambda : shield_power_change(game, 0.05),
+        callback=lambda : shield_power_change(0.05, new_state),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 30,
@@ -65,7 +86,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : shield_power_change(game, -0.05),
+        callback=lambda : shield_power_change(-0.05, new_state),
     )
 
     guns_power_cont_rect = pygame.Rect(
@@ -74,14 +95,21 @@ def power_window(game, screen):
         20,
         bar_height
     )
-    verticle_gauge(screen, scheme["ui_background_highlight"], scheme["guns_power"], guns_power_cont_rect, game.power_allocation_guns)
+    verticle_gauge(
+        screen,
+        scheme["ui_background_highlight"],
+        scheme["guns_power"],
+        guns_power_cont_rect,
+        game.power_allocation_guns + new_state.guns,
+        scroll_callback=lambda change: guns_power_change(0.05 * change, new_state)
+    )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 55,
         bar_height + 15,
         20,
         20,
         ),
-        callback=lambda : guns_power_change(game, 0.05),
+        callback=lambda : guns_power_change(0.05, new_state),
     )
     button(screen, pygame.Rect(
         SCREEN_W - power_cont_W + 55,
@@ -89,7 +117,7 @@ def power_window(game, screen):
         20,
         20,
         ),
-        callback=lambda : guns_power_change(game, -0.05),
+        callback=lambda : guns_power_change(-0.05, new_state),
     )
 
     remaining_power_cont_rect = pygame.Rect(
@@ -101,15 +129,18 @@ def power_window(game, screen):
     verticle_gauge(screen, scheme["ui_background_highlight"], scheme["power"], remaining_power_cont_rect,
                    1.0 - (game.power_allocation_guns + game.power_allocation_shields + game.power_allocation_engines))
 
-def engine_power_change(game, delta):
-    request_power_change(game.power_allocation_engines + delta, game.power_allocation_shields, game.power_allocation_guns)
+    return new_state
 
-def shield_power_change(game, delta):
-    request_power_change(game.power_allocation_engines, game.power_allocation_shields + delta, game.power_allocation_guns)
+def engine_power_change(delta, state):
+    request_power_change(delta, 0, 0, state)
 
-def guns_power_change(game, delta):
-    request_power_change(game.power_allocation_engines, game.power_allocation_shields, game.power_allocation_guns + delta)
+def shield_power_change(delta, state):
+    request_power_change(0, delta, 0, state)
 
-def request_power_change(engines, shields, guns):
-    queue_to_send(RequestPowerChange(engines, shields, guns))
+def guns_power_change(delta, state):
+    request_power_change(0, 0, delta, state)
 
+def request_power_change(engines, shields, guns, state):
+    state.engines += engines
+    state.shields += shields
+    state.guns += guns

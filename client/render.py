@@ -2,15 +2,16 @@ import math
 
 import pygame
 
-from client.camera import get_camera, get_camera_zoom, world_to_screen
+from client.camera import get_camera_zoom, world_to_screen
 from client.const import SCREEN_H, SCREEN_W, scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, RETICULE_SIZE
 from client.game import pick_ship
 from client.mouse import get_mouse
-from client.ui.power_window import power_window
+from client.ui.power_window.power_window import power_window
 
 
-def render_static_ui(game, screen):
-    power_window(game, screen)
+def render_static_ui(game, screen, old_state):
+    state = power_window(game, screen, old_state)
+    return state
 
 def render_game(game, screen, screenRect):
     pygame.draw.rect(screen, scheme["background"], screenRect)

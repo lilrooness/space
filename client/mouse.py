@@ -8,6 +8,7 @@ class _MouseData:
         self.mouse_down = False
         self.mouse_moved_this_frame = False
         self.wheel_scroll_amount = 0
+        self.wheel_scrolled = False
 
     def set_mouse_down(self, button_states):
         if button_states[0]:
@@ -33,6 +34,7 @@ class _MouseData:
         self.__dict__[key] = False
 
     def set_wheel_scrolled(self, amount):
+        self.wheel_scrolled = True
         self.wheel_scroll_amount += amount
 
 _mouse = _MouseData(0, 0)
