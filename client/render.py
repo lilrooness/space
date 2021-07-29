@@ -76,7 +76,7 @@ def render_game_view(game, screen, screenRect):
         ship.y,
     )
 
-    laser_range = get_laser_range(game.power_allocation_guns) / float(get_camera_zoom())
+    laser_range = get_laser_range() / float(get_camera_zoom())
     laserRangeRect = pygame.Rect(
         session_ship_screen_space_coords[0] - laser_range,
         session_ship_screen_space_coords[1] - laser_range,

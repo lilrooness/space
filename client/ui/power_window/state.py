@@ -16,19 +16,13 @@ class PowerWindowState():
 
     def request_power_change(self, game, engines, shields, guns):
         newEngines = self.engines + engines
-        newShields = self.shields + shields
-        newGuns = self.guns + guns
 
-        totalNewPowerAllocation = game.power_allocation_shields + newShields \
-                                  + game.power_allocation_engines + newEngines \
-                                  + game.power_allocation_guns + newGuns
+        totalNewPowerAllocation = game.power_allocation_engines + newEngines
 
         if totalNewPowerAllocation > 1.0 or totalNewPowerAllocation < 0:
             return
 
         self.engines = newEngines
-        self.shields = newShields
-        self.guns = newGuns
 
     def tick(self, game):
         now = datetime.now()

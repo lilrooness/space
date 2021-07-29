@@ -19,7 +19,7 @@ def _resolve_laser_damage(system):
         shooting_ship = system.ships[shot.shooter_ship_id]
         target_ship = system.ships[shot.being_shot_ship_id]
         range = dist(target_ship.x, target_ship.y, shooting_ship.x, shooting_ship.y)
-        laser_range = get_laser_range(shooting_ship.power_allocation_guns)
+        laser_range = get_laser_range()
 
         if not shooting_ship.dead and not target_ship.dead and range <= laser_range:
             target_ship = system.ships[shot.being_shot_ship_id]

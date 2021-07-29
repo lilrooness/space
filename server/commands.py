@@ -22,22 +22,17 @@ def process_command(systems, session, command):
             session_ship = systems[session.solar_system_id].ships[session.ship_id]
             target_ship = systems[session.solar_system_id].ships[target_ship_id]
             range = dist(session_ship.x, session_ship.y, target_ship.x, target_ship.y)
-            if range <= get_laser_range(session_ship.power_allocation_guns):
+            if range <= get_laser_range():
                 session_ship = systems[session.solar_system_id].ships[session.ship_id]
                 session_ship.targeting_ship_id = target_ship_id
         return
     
     if command.COMMAND_NAME == RequestPowerChange.COMMAND_NAME:
-        totalPower = command.engines + command.shields + command.guns
+        totalPower = command.engines
         if totalPower > 1.0:
-            print("Not Enough Power")
             return
         else:
             ship = systems[session.solar_system_id].ships[session.ship_id]
 
             if command.engines >= 0:
                 ship.power_allocation_engines = command.engines
-            if command.shields >= 0:
-                ship.power_allocation_shields = command.shields
-            if command.guns > 0:
-                ship.power_allocation_guns = command.guns
