@@ -1,4 +1,5 @@
-from common.messages.message import Message, FIELD_TYPE_VALUE
+from common.messages.message import Message
+from common.serializable.serializable import FIELD_TYPE_VALUE
 
 
 class ShipDamageMessage(Message):
@@ -29,7 +30,7 @@ class ShipDamageMessage(Message):
 
     @classmethod
     def unmarshal(cls, encoded):
-        fields_map = ShipDamageMessage._unmarshal_fields_map(encoded)
+        fields_map, _remaining = ShipDamageMessage.message_unmarshal_fields_map(encoded)
 
         return ShipDamageMessage(
             fields_map["ship_id"],

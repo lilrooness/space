@@ -1,7 +1,7 @@
 from common.entities.entity import Entity
-from common.net_const import SERVER_TICK_TIME
+from common.serializable.serializable import FIELD_TYPE_VALUE
 from common.utils import string_to_bool, dist
-from common.const import BASE_SPEED, get_speed
+from common.const import get_speed
 
 
 class Ship(Entity):
@@ -53,19 +53,19 @@ class Ship(Entity):
             self.y += (self.vy * speed) * delta
 
     @classmethod
-    def marshalled_field_types(cls):
+    def fields(cls):
         return {
-            "id": lambda id: int(id),
-            "x": lambda x: float(x),
-            "y": lambda y: float(y),
-            "vx": lambda vx: float(vx),
-            "vy": lambda vy: float(vy),
-            "health": lambda health: float(health),
-            "shield": lambda shield: float(shield),
-            "dead": lambda dead: string_to_bool(dead),
-            "power_allocation_guns": lambda power: float(power),
-            "power_allocation_shields": lambda power: float(power),
-            "power_allocation_engines": lambda power: float(power),
+            "id": (FIELD_TYPE_VALUE, int),
+            "x": (FIELD_TYPE_VALUE, float),
+            "y": (FIELD_TYPE_VALUE, float),
+            "vx": (FIELD_TYPE_VALUE, float),
+            "vy": (FIELD_TYPE_VALUE, float),
+            "health": (FIELD_TYPE_VALUE, float),
+            "shield": (FIELD_TYPE_VALUE, float),
+            "dead": (FIELD_TYPE_VALUE, bool),
+            "power_allocation_guns": (FIELD_TYPE_VALUE, float),
+            "power_allocation_shields": (FIELD_TYPE_VALUE, float),
+            "power_allocation_engines": (FIELD_TYPE_VALUE, float),
         }
 
 class Warp():

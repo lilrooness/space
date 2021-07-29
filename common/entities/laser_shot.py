@@ -1,4 +1,5 @@
 from common.entities.entity import Entity
+from common.serializable.serializable import FIELD_TYPE_VALUE
 
 
 class LaserShot(Entity):
@@ -10,11 +11,9 @@ class LaserShot(Entity):
         self.power = power
 
     @classmethod
-    def marshalled_field_types(cls):
+    def fields(cls):
         return {
-            "id": lambda id: int(id),
-            "shooter_ship_id": lambda id: int(id),
-            "being_shot_ship_id": lambda id: int(id),
-            "power": lambda id: int(id),
+            "shooter_ship_id": (FIELD_TYPE_VALUE, int),
+            "being_shot_ship_id": (FIELD_TYPE_VALUE, int),
+            "power": (FIELD_TYPE_VALUE, float),
         }
-

@@ -5,6 +5,7 @@ class Command():
     def marshal(self):
         pass
 
-    def unmarshal(self, _serialized_string):
+    @classmethod
+    def unmarshal(cls, _serialized_string):
         pass
 

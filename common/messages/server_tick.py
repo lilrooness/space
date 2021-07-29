@@ -1,6 +1,7 @@
 from common.entities.laser_shot import LaserShot
 from common.entities.ship import Ship
-from common.messages.message import FIELD_TYPE_VALUE, Message, \
+from common.messages.message import Message
+from common.serializable.serializable import FIELD_TYPE_VALUE, Serializable, \
     FIELD_TYPE_MULTIPLE_ENTITIES
 from common.net_const import NONE_MARKER
 
@@ -70,7 +71,7 @@ class ServerTickMessage(Message):
 
     @classmethod
     def unmarshal(cls, encoded):
-        fields_map = ServerTickMessage._unmarshal_fields_map(encoded)
+        fields_map, _remaining = ServerTickMessage.message_unmarshal_fields_map(encoded)
 
         return ServerTickMessage(
             fields_map["ship_id"],
