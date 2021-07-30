@@ -1,8 +1,11 @@
+from common.commands.request_look_in_crate import RequestLookInCrateCommand
 from common.commands.request_power_change import RequestPowerChange
 from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_shoot import RequestShootCommand
-from common.const import get_laser_range
+from common.const import get_laser_range, CRATE_LOOT_RANGE
+from common.messages.crate_contents import CrateContentsMessage
 from common.utils import mag, dist
+from server.sessions.sessions import queue_message
 
 
 def process_command(systems, session, command):
@@ -36,3 +39,14 @@ def process_command(systems, session, command):
 
             if command.engines >= 0:
                 ship.power_allocation_engines = command.engines
+
+    if command.COMMAND_NAME == RequestLookInCrateCommand.COMMAND_NAME:
+        session_system = systems[session.solar_system_id]
+        session_ship  = session_system.ships[session.ship_id]
+        if command.crate_id in session_system.crates:
+            crate = session_system.crates[command.crate_id]
+            if dist(session_ship.x, session_ship.y, crate.x, crate.y) <= CRATE_LOOT_RANGE:
+                print("LOOTING CRATE {}".format(crate.id))
+                queue_message(CrateContentsMessage(crate.id, crate.contents), [session.id])
+        else:
+            print("CRATE {} DOES NOT EXIST IN SYSTEM {}".format(command.crate_id, session.solar_system_id))

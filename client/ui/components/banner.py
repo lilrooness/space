@@ -14,3 +14,4 @@ def banner(screen, x, y, text, font, padding=0, top=0, left=0):
     instructionImage = font.render(text, True, scheme["banner_foreground"])
     textPos = (rect.x + padding + left, rect.y + padding)
     screen.blit(instructionImage, textPos)
+    return rect

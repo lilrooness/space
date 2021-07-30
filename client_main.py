@@ -1,5 +1,4 @@
 import socket
-from datetime import datetime
 from select import select
 
 import pygame
@@ -9,12 +8,12 @@ from client.camera import set_camera, get_camera_zoom, set_camera_zoom
 from client.const import SCREEN_H, SCREEN_W
 from client.game import Game, message_handlers, pick_ship
 from client.mouse import get_mouse
+from client.render import render_game, render_static_ui
+from client.session import process_out_message_queue, queue_to_send
 from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_shoot import RequestShootCommand
 from common.messages.messages import message_types
 from common.net_const import HEADER_SIZE
-from client.render import render_game, render_static_ui
-from client.session import process_out_message_queue, queue_to_send
 
 
 def receive(client_socket):

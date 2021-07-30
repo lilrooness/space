@@ -4,7 +4,7 @@ from client.const import scheme
 from client.mouse import get_mouse
 
 
-def button(screen, rect, callback=lambda : None):
+def button(screen, rect, callback=lambda : None, icon_surface=None):
     mouse = get_mouse()
     color = scheme["button_idle"]
     trigger_callback = False

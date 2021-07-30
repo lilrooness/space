@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from client import camera
+from common.messages.crate_contents import CrateContentsMessage
 from common.messages.messages import ServerTickMessage
 from client.const import SHIP_HEIGHT, SHIP_WIDTH
 from common.messages.ship_damage import ShipDamageMessage
@@ -71,6 +72,9 @@ def handle_server_tick_message(game, message):
 def handle_ship_damage_message(game, message):
     print("some damage init")
 
+def handle_crate_contents_message(game, message):
+    print("Here are some things {}".format(message.contents[0].type_id))
+
 def pick_ship(game, ship, mouse):
     shipX, shipY = camera.world_to_screen(game, ship.x, ship.y)
     if mouse.x >= shipX - SHIP_WIDTH/2 and mouse.x <= shipX + SHIP_WIDTH/2:
@@ -81,4 +85,5 @@ def pick_ship(game, ship, mouse):
 message_handlers = {
     ServerTickMessage: handle_server_tick_message,
     ShipDamageMessage: handle_ship_damage_message,
+    CrateContentsMessage: handle_crate_contents_message,
 }
