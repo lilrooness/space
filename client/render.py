@@ -6,9 +6,6 @@ from client.camera import get_camera_zoom, world_to_screen
 from client.const import scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, RETICULE_SIZE, CRATE_WIDTH, CRATE_HEIGHT
 from client.game import pick_ship
 from client.mouse import get_mouse
-from client.session import request_crate_content
-from client.ui.components.banner import banner
-from client.ui.components.button import button
 from client.ui.crate_window.crate_window import crate_window
 from client.ui.power_window.power_window import power_window
 from common.const import get_laser_range, CRATE_LOOT_RANGE
@@ -16,28 +13,14 @@ from common.utils import dist
 
 
 def render_static_ui(game, screen, old_state, font):
+    client_ship = game.ships[game.ship_id]
+
     state = power_window(game, screen, old_state)
 
-    client_ship = game.ships[game.ship_id]
     for crate_id, crate in game.crates.items():
         dist_to_crate = dist(client_ship.x, client_ship.y, crate.x, crate.y)
-        crate_screen_space_coords = world_to_screen(game, crate.x, crate.y)
-
         if dist_to_crate <= CRATE_LOOT_RANGE:
-            if crate_id in game.open_crates:
-                crate_window(game, screen, font, crate_screen_space_coords[0], crate_screen_space_coords[1], crate_id)
-            else:
-                banner_rect = banner(screen, crate_screen_space_coords[0], crate_screen_space_coords[1], "Open", font, top=-10)
-                button_rect = pygame.Rect(
-                    banner_rect.x + banner_rect.width + 5,
-                    banner_rect.y,
-                    banner_rect.height,
-                    banner_rect.height,
-                )
-                def _reqest_crate():
-                    request_crate_content(game, crate_id)
-
-                button(screen, button_rect, callback=_reqest_crate)
+            crate_window(game, screen, font, crate_id)
 
     return state
 
