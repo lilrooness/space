@@ -1,6 +1,7 @@
 from common.entities.crate import Crate
 from common.entities.laser_shot import LaserShot
 from common.entities.ship import Ship
+from common.entities.slot import Slot
 from common.messages.message import Message
 from common.serializable.serializable import FIELD_TYPE_VALUE, Serializable, \
     FIELD_TYPE_MULTIPLE_ENTITIES
@@ -23,7 +24,11 @@ class ServerTickMessage(Message):
             power_allocation_guns = None,
             power_allocation_shields = None,
             power_allocation_engines = None,
-            crates = []
+            crates = [],
+            shield_slots = [],
+            engine_slots = [],
+            weapon_slots = [],
+            hull_slots = [],
     ):
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
@@ -37,6 +42,10 @@ class ServerTickMessage(Message):
         self.power_allocation_shields = power_allocation_shields
         self.power_allocation_engines = power_allocation_engines
         self.crates = crates
+        self.shield_slots = shield_slots
+        self.engine_slots = engine_slots
+        self.weapon_slots = weapon_slots
+        self.hull_slots   = hull_slots
 
     @classmethod
     def fields(cls):
@@ -51,12 +60,22 @@ class ServerTickMessage(Message):
             "power_allocation_shields": (FIELD_TYPE_VALUE, float),
             "power_allocation_engines": (FIELD_TYPE_VALUE, float),
             "crates": (FIELD_TYPE_MULTIPLE_ENTITIES, Crate),
+            "shield_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
+            "engine_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
+            "weapon_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
+            "hull_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
         }
 
     def marshal(self):
+
         marshalled_ships = [ship.marshal() for ship in self.ships]
         active_laser_shots = [laser.marshal() for laser in self.active_laser_shots]
         marshalled_crates = [crate.marshal() for crate in self.crates]
+        marshalled_shield_slots = [slot.marshal() for slot in self.shield_slots]
+        marshalled_engine_slots = [slot.marshal() for slot in self.engine_slots]
+        marshalled_weapon_slots = [slot.marshal() for slot in self.weapon_slots]
+        marshalled_hull_slots = [slot.marshal() for slot in self.hull_slots]
+
         message = [
             self.MESSAGE_NAME,
             "%d" % len(self.ships),
@@ -72,6 +91,14 @@ class ServerTickMessage(Message):
             "%f" % self.power_allocation_engines,
             "%d" % len(self.crates),
             ":".join(marshalled_crates or [str(NONE_MARKER)]),
+            "%d" % len(self.shield_slots),
+            ":".join(marshalled_shield_slots),
+            "%d" % len(self.engine_slots),
+            ":".join(marshalled_engine_slots),
+            "%d" % len(self.weapon_slots),
+            ":".join(marshalled_weapon_slots),
+            "%d" % len(self.hull_slots),
+            ":".join(marshalled_hull_slots),
         ]
 
         return ":".join(message)

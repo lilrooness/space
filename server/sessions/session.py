@@ -87,6 +87,10 @@ class Session():
                 power_allocation_shields=session_ship_object.power_allocation_shields,
                 power_allocation_engines=session_ship_object.power_allocation_engines,
                 crates=visible_crates,
+                weapon_slots=session_ship_object.weapon_slots,
+                shield_slots=session_ship_object.shield_slots,
+                engine_slots=session_ship_object.engine_slots,
+                hull_slots=session_ship_object.hull_slots,
             ).marshal()
 
             bytes = message.encode()

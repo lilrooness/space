@@ -27,6 +27,10 @@ class Game():
         self.crates = {}
         self.crate_requests = []
         self.open_crates = []
+        self.weapon_slots =[]
+        self.shield_slots =[]
+        self.engine_slots =[]
+        self.hull_slots =[]
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
@@ -63,6 +67,10 @@ def handle_server_tick_message(game, message):
     game.power_allocation_shields = message.power_allocation_shields
     game.power_allocation_guns = message.power_allocation_guns
     game.power_allocation_engines = message.power_allocation_engines
+    game.weapon_slots = message.weapon_slots
+    game.shield_slots = message.shield_slots
+    game.engine_slots = message.engine_slots
+    game.hull_slots = message.hull_slots
 
     if message.targeting_ship_id > -1:
         game.targeting_ship_id = message.targeting_ship_id
