@@ -47,6 +47,10 @@ def process_command(systems, session, command):
             crate = session_system.crates[command.crate_id]
             if dist(session_ship.x, session_ship.y, crate.x, crate.y) <= CRATE_LOOT_RANGE:
                 print("LOOTING CRATE {}".format(crate.id))
-                queue_message(CrateContentsMessage(crate.id, crate.contents), [session.id])
+                contents = []
+                for _id, loot in crate.contents.items():
+                    contents.append(loot)
+
+                queue_message(CrateContentsMessage(crate.id, contents), [session.id])
         else:
             print("CRATE {} DOES NOT EXIST IN SYSTEM {}".format(command.crate_id, session.solar_system_id))

@@ -25,6 +25,8 @@ class Game():
         self.last_tick_time = datetime.now()
         self.last_delta = 0
         self.crates = {}
+        self.crate_requests = []
+        self.open_crates = []
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
@@ -50,6 +52,8 @@ def handle_server_tick_message(game, message):
 
     crates = {}
     for crate in message.crates:
+        if crate.id in game.crates:
+            crate.contents = game.crates[crate.id].contents
         crates[crate.id] = crate
 
     game.active_laser_shots = active_laser_shots
@@ -73,7 +77,13 @@ def handle_ship_damage_message(game, message):
     print("some damage init")
 
 def handle_crate_contents_message(game, message):
-    print("Here are some things {}".format(message.contents[0].type_id))
+    contents = {}
+    for item in message.contents:
+        contents[item.id] = item
+
+    game.crates[message.crate_id].contents = contents
+    if message.crate_id in game.crate_requests:
+        game.crate_requests.remove(message.crate_id)
 
 def pick_ship(game, ship, mouse):
     shipX, shipY = camera.world_to_screen(game, ship.x, ship.y)

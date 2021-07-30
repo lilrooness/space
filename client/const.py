@@ -25,6 +25,9 @@ SHIP_SHIELD_ARC_DIAM = 30
 CRATE_WIDTH = 10
 CRATE_HEIGHT = 10
 
+LOOT_ICON_WIDTH = 30
+LOOT_ICON_HEIGHT = 30
+
 scheme = {
     "background": BLACK,
     "entity": WHITE,

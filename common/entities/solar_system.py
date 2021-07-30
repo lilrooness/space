@@ -11,7 +11,8 @@ class SolarSystem(Entity):
         self.ships = ships
         self.projectiles = projectiles
         self.active_laser_shots = active_laser_shots
-        crate = Crate(x=500, y=500, id_fun=new_id,  contents=[LootItem(id_fun=new_id)])
+        item = LootItem(id_fun=new_id)
+        crate = Crate(x=250, y=250, id_fun=new_id,  contents={item.id: item})
         self.crates = {
             crate.id: crate,
         }

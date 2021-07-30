@@ -2,7 +2,7 @@ import pygame.draw
 
 from client.const import scheme
 
-def banner(screen, x, y, text, font, padding=0, top=0, left=0):
+def banner(screen, x, y, text, font, padding=2, top=0, left=0):
     width, height = font.size(text)
     rect = pygame.Rect(
         x - width/2 - padding + left,

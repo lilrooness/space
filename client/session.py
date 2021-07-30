@@ -1,5 +1,6 @@
 from select import select
 
+from common.commands.request_look_in_crate import RequestLookInCrateCommand
 from common.net_const import HEADER_SIZE
 
 _out_message_queue = []
@@ -28,3 +29,11 @@ def process_out_message_queue(client_socket):
         _out_message_queue = _out_message_queue[1:]
 
     return _out_message_queue
+
+def request_crate_content(game, crate_id):
+    queue_to_send(RequestLookInCrateCommand(crate_id))
+    if crate_id not in game.crate_requests:
+        game.crate_requests.append(crate_id)
+
+    if crate_id not in game.open_crates:
+        game.open_crates.append(crate_id)
