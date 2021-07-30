@@ -1,4 +1,4 @@
-from common.serializable.serializable import Serializable
+from common.serializable.serializable import Serializable, FIELD_TYPE_VALUE, FIELD_TYPE_MULTIPLE_ENTITIES
 
 system_ids = [
     1,2
@@ -16,15 +16,18 @@ class Entity(Serializable):
             self.id = id_fun()
 
     def marshal(self):
-        stringified_fields = [
-            str(self.__dict__[field])
-            for field in self.fields().keys()
-        ]
+        stringified_fields = []
+
+        for field_name, type_info in self.fields().items():
+            if type_info[0] == FIELD_TYPE_VALUE:
+                stringified_fields.append(str(self.__dict__[field_name]))
+            else:
+                raise Exception("only FIELD_TYPE_VALUE allowed in Entity types")
+
         return ":".join(stringified_fields)
 
     @classmethod
     def unmarshall_multiple_of_type(cls, encoded_entities, type):
-        # fields = type.marshalled_fields()
         parts = encoded_entities.split(":")
 
         entities = []

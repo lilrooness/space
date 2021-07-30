@@ -1,3 +1,4 @@
+from common.entities.crate import Crate
 from common.entities.laser_shot import LaserShot
 from common.entities.ship import Ship
 from common.messages.message import Message
@@ -22,6 +23,7 @@ class ServerTickMessage(Message):
             power_allocation_guns = None,
             power_allocation_shields = None,
             power_allocation_engines = None,
+            crates = []
     ):
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
@@ -34,6 +36,7 @@ class ServerTickMessage(Message):
         self.power_allocation_guns = power_allocation_guns
         self.power_allocation_shields = power_allocation_shields
         self.power_allocation_engines = power_allocation_engines
+        self.crates = crates
 
     @classmethod
     def fields(cls):
@@ -47,11 +50,13 @@ class ServerTickMessage(Message):
             "power_allocation_guns": (FIELD_TYPE_VALUE, float),
             "power_allocation_shields": (FIELD_TYPE_VALUE, float),
             "power_allocation_engines": (FIELD_TYPE_VALUE, float),
+            "crates": (FIELD_TYPE_MULTIPLE_ENTITIES, Crate),
         }
 
     def marshal(self):
         marshalled_ships = [ship.marshal() for ship in self.ships]
         active_laser_shots = [laser.marshal() for laser in self.active_laser_shots]
+        marshalled_crates = [crate.marshal() for crate in self.crates]
         message = [
             self.MESSAGE_NAME,
             "%d" % len(self.ships),
@@ -65,6 +70,8 @@ class ServerTickMessage(Message):
             "%f" % self.power_allocation_guns,
             "%f" % self.power_allocation_shields,
             "%f" % self.power_allocation_engines,
+            "%d" % len(self.crates),
+            ":".join(marshalled_crates or [str(NONE_MARKER)]),
         ]
 
         return ":".join(message)
@@ -83,4 +90,5 @@ class ServerTickMessage(Message):
             power_allocation_guns=fields_map["power_allocation_guns"],
             power_allocation_shields=fields_map["power_allocation_shields"],
             power_allocation_engines=fields_map["power_allocation_engines"],
+            crates=fields_map["crates"],
         )

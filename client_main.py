@@ -55,6 +55,8 @@ if __name__ == "__main__":
     client_socket.connect(("localhost", 12345))
 
     pygame.init()
+    pygame.font.init()
+    font = pygame.font.SysFont("sourcecodeproblack", 27)
     screenRect = pygame.Rect(0,0, SCREEN_W, SCREEN_H)
     run = True
     screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
@@ -101,7 +103,7 @@ if __name__ == "__main__":
 
         if game.ship_id:
             render_game(game, screen, screenRect)
-            static_ui_state = render_static_ui(game, screen, static_ui_state)
+            static_ui_state = render_static_ui(game, screen, static_ui_state, font)
             process_input(game)
 
         pygame.display.flip()

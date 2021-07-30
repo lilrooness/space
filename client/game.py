@@ -23,6 +23,7 @@ class Game():
         self.tick_number = 0
         self.last_tick_time = datetime.now()
         self.last_delta = 0
+        self.crates = {}
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
@@ -46,8 +47,13 @@ def handle_server_tick_message(game, message):
     for laser in message.active_laser_shots:
         active_laser_shots[laser.id] = laser
 
+    crates = {}
+    for crate in message.crates:
+        crates[crate.id] = crate
+
     game.active_laser_shots = active_laser_shots
     game.ships = ships
+    game.crates = crates
     game.resources = message.resources
     game.power_allocation_shields = message.power_allocation_shields
     game.power_allocation_guns = message.power_allocation_guns

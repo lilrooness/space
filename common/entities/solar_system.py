@@ -1,4 +1,7 @@
+from common.entities.crate import Crate
 from common.entities.entity import Entity
+from common.entities.loot.lootitem import LootItem
+from server.id import new_id
 
 
 class SolarSystem(Entity):
@@ -8,6 +11,10 @@ class SolarSystem(Entity):
         self.ships = ships
         self.projectiles = projectiles
         self.active_laser_shots = active_laser_shots
+        crate = Crate(x=500, y=500, id_fun=new_id,  contents=[LootItem(id_fun=new_id)])
+        self.crates = {
+            crate.id: crate,
+        }
 
     def tick(self, delta=1.0):
         for _id, ship in self.ships.items():

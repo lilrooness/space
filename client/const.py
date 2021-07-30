@@ -22,6 +22,9 @@ RETICULE_SIZE = 50
 SHIP_HEALTH_ARC_DIAM = 20
 SHIP_SHIELD_ARC_DIAM = 30
 
+CRATE_WIDTH = 10
+CRATE_HEIGHT = 10
+
 scheme = {
     "background": BLACK,
     "entity": WHITE,
@@ -46,4 +49,7 @@ scheme = {
     "button_hover": LIGHT_GRAY,
     "button_down": BLACK,
     "range_marker": YELLOW,
+    "crate": WHITE,
+    "banner_background": DARK_GRAY,
+    "banner_foreground": WHITE,
 }

@@ -13,6 +13,8 @@ ENGINE_DAMAGE_INCREASE_RATE = 1.6
 
 BASE_SPEED = 10.0
 
+CRATE_LOOT_RANGE = 100
+
 def get_speed(engines_power_allocation):
     return BASE_SPEED * engines_power_allocation
 
