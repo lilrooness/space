@@ -2,7 +2,7 @@ from common.entities.entity import Entity
 from common.entities.slot import Slot, SHIELD_CONSTRAINT, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, HULL_CONSTRAINT
 from common.serializable.serializable import FIELD_TYPE_VALUE
 from common.utils import string_to_bool, dist
-from common.const import get_speed
+from common.const import get_speed, LASER_TURRET
 
 
 class Ship(Entity):
@@ -44,7 +44,7 @@ class Ship(Entity):
 
         self.shield_slots = [Slot(type_constraint=SHIELD_CONSTRAINT)]
         self.engine_slots = [Slot(type_constraint=ENGINE_CONSTRAINT)]
-        self.weapon_slots = [Slot(type_constraint=WEAPON_CONSTRAINT)]
+        self.weapon_slots = [Slot(type_constraint=WEAPON_CONSTRAINT, type_id=LASER_TURRET)]
         self.hull_slots   = [Slot(type_constraint=HULL_CONSTRAINT)]
 
     def tick(self, delta=1.0):

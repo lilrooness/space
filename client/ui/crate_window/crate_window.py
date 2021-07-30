@@ -5,6 +5,7 @@ from client.const import LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT, scheme
 from client.session import request_crate_content
 from client.ui.components.banner import banner
 from client.ui.components.button import button
+from client.ui.components.icon import icon
 
 
 def crate_window(game, screen, font, crate_id):
@@ -35,13 +36,32 @@ def _crate_window_contents(game, screen, font, x, y, crate_id):
 
     crate = game.crates[crate_id]
 
+
     width = LOOT_ICON_WIDTH * len(crate.contents)
     height = LOOT_ICON_HEIGHT
+    xpos = x - width/2
+    ypos = y - height/2
+
     windowRect = pygame.Rect(
-        x - width/2,
-        y - height/2,
+        xpos,
+        ypos,
         width,
         height,
     )
     pygame.draw.rect(screen, scheme["ui_background"], windowRect)
     pygame.draw.rect(screen, scheme["ui_boarder"], windowRect, width=2)
+
+    x_counter = 0
+    for _id, item in crate.contents.items():
+        icon(
+            screen,
+            item.type_id,
+            pygame.Rect(
+                xpos+2 + x_counter,
+                ypos+2,
+                LOOT_ICON_WIDTH-4,
+                LOOT_ICON_HEIGHT-4,
+            )
+        )
+        x_counter += LOOT_ICON_WIDTH
+

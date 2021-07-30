@@ -1,3 +1,4 @@
+from common.const import MISSILE_LAUNCHER
 from common.entities.crate import Crate
 from common.entities.entity import Entity
 from common.entities.loot.lootitem import LootItem
@@ -11,7 +12,7 @@ class SolarSystem(Entity):
         self.ships = ships
         self.projectiles = projectiles
         self.active_laser_shots = active_laser_shots
-        item = LootItem(id_fun=new_id)
+        item = LootItem(id_fun=new_id, type_id=MISSILE_LAUNCHER)
         crate = Crate(x=250, y=250, id_fun=new_id,  contents={item.id: item})
         self.crates = {
             crate.id: crate,

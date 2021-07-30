@@ -1,5 +1,7 @@
 import pygame
 
+from common.const import MINI_GUN, LASER_TURRET, MISSILE_LAUNCHER
+
 BLACK = pygame.Color(0, 0, 0, 255)
 WHITE = pygame.Color(255, 255, 255, 255)
 LIGHT_GRAY = pygame.Color(150, 150, 150, 100)
@@ -25,8 +27,8 @@ SHIP_SHIELD_ARC_DIAM = 30
 CRATE_WIDTH = 10
 CRATE_HEIGHT = 10
 
-LOOT_ICON_WIDTH = 30
-LOOT_ICON_HEIGHT = 30
+LOOT_ICON_WIDTH = 50
+LOOT_ICON_HEIGHT = 50
 
 scheme = {
     "background": BLACK,
@@ -55,4 +57,14 @@ scheme = {
     "crate": WHITE,
     "banner_background": DARK_GRAY,
     "banner_foreground": WHITE,
+}
+
+MISSILE_LAUNCHER_ICON = "client/res/ui/texture/icons/missile-pod.png"
+LASER_TURRET_ICON = "client/res/ui/texture/icons/laser-turret.png"
+MINI_GUN_ICON = "client/res/ui/texture/icons/minigun.png"
+
+loot_type_icons = {
+    MINI_GUN: MINI_GUN_ICON,
+    LASER_TURRET: LASER_TURRET_ICON,
+    MISSILE_LAUNCHER: MISSILE_LAUNCHER_ICON,
 }

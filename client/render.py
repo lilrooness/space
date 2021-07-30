@@ -8,6 +8,7 @@ from client.game import pick_ship
 from client.mouse import get_mouse
 from client.ui.crate_window.crate_window import crate_window
 from client.ui.power_window.power_window import power_window
+from client.ui.slot_window.slot_window import slot_window
 from common.const import get_laser_range, CRATE_LOOT_RANGE
 from common.utils import dist
 
@@ -22,6 +23,7 @@ def render_static_ui(game, screen, old_state, font):
         if dist_to_crate <= CRATE_LOOT_RANGE:
             crate_window(game, screen, font, crate_id)
 
+    slot_window(screen, game, 50, 50)
     return state
 
 def render_game(game, screen, screenRect):

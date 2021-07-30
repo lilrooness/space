@@ -10,6 +10,7 @@ from client.game import Game, message_handlers, pick_ship
 from client.mouse import get_mouse
 from client.render import render_game, render_static_ui
 from client.session import process_out_message_queue, queue_to_send
+from client.texture import load_loot_icon_textures
 from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_shoot import RequestShootCommand
 from common.messages.messages import message_types
@@ -55,6 +56,10 @@ if __name__ == "__main__":
 
     pygame.init()
     pygame.font.init()
+    pygame.image.get_extended()
+
+    load_loot_icon_textures()
+
     font = pygame.font.SysFont("sourcecodeproblack", 27)
     screenRect = pygame.Rect(0,0, SCREEN_W, SCREEN_H)
     run = True

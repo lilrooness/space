@@ -118,4 +118,9 @@ class ServerTickMessage(Message):
             power_allocation_shields=fields_map["power_allocation_shields"],
             power_allocation_engines=fields_map["power_allocation_engines"],
             crates=fields_map["crates"],
+            hull_slots=fields_map["hull_slots"],
+            weapon_slots=fields_map["weapon_slots"],
+            engine_slots=fields_map["engine_slots"],
+            shield_slots=fields_map["shield_slots"],
+
         )

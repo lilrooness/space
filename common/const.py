@@ -15,6 +15,10 @@ BASE_SPEED = 10.0
 
 CRATE_LOOT_RANGE = 100
 
+MISSILE_LAUNCHER = 1
+LASER_TURRET = 2
+MINI_GUN = 3
+
 def get_speed(engines_power_allocation):
     return BASE_SPEED * engines_power_allocation
 
