@@ -1,3 +1,4 @@
+import math
 from math import sqrt, pow
 
 def string_to_bool(s):
@@ -14,6 +15,31 @@ def mag(v):
 
 def dist(ax, ay, bx, by):
     return mag((bx - ax, by - ay))
+
+def get_transversal_from_perspective_of_a(ax, ay, avx, avy, bx, by, bvx, bvy):
+    bvx_relative = bvx - avx
+    bvy_relative = bvy - avy
+
+    # if the velocities are identical, there is no transversal
+    if mag((bvx_relative, bvy_relative)) == 0.0:
+        return 0.0
+
+    transversal_circle_radius = dist(ax, ay, bx, by)
+
+    print("bvx_relative: {}".format(bvx_relative))
+    print("bvy_relative: {}".format(bvy_relative))
+
+    b_from_a_1 = (bx - ax, by - ay)
+    b_from_a_2 = (bx + bvx_relative - ax, by + bvy_relative - ay)
+
+    print(round(dot(b_from_a_1, b_from_a_2) / (mag(b_from_a_1)*mag(b_from_a_2)), 3))
+
+    change_in_angle = math.acos(
+        round(dot(b_from_a_1, b_from_a_2) /
+        (mag(b_from_a_1)*mag(b_from_a_2)), 6)
+    )
+
+    return change_in_angle * transversal_circle_radius
 
 def line_circle_intersect(ax, ay, bx, by, cx, cy, r):
     # Change coordinate origin to be at the circle center
