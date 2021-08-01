@@ -15,7 +15,7 @@ class Game():
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
         self.resources = resources
-        self.targeting_ship_id = None
+        # self.targeting_ship_id = None
         self.targeted_by_ship_id = None
         self.active_laser_shots = {}
         self.power_allocation_guns = 1.0
@@ -31,6 +31,7 @@ class Game():
         self.shield_slots =[]
         self.engine_slots =[]
         self.hull_slots =[]
+        self.selected_slot_id = None
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
@@ -72,10 +73,10 @@ def handle_server_tick_message(game, message):
     game.engine_slots = message.engine_slots
     game.hull_slots = message.hull_slots
 
-    if message.targeting_ship_id > -1:
-        game.targeting_ship_id = message.targeting_ship_id
-    else:
-        game.targeting_ship_id = None
+    # if message.targeting_ship_id > -1:
+    #     game.targeting_ship_id = message.targeting_ship_id
+    # else:
+    #     game.targeting_ship_id = None
     if message.targeted_by_ship_id > -1:
         game.targeted_by_ship_id = message.targeted_by_ship_id
     else:

@@ -2,7 +2,9 @@ import socket
 from datetime import datetime
 from select import select
 
+from common.const import LASER_TURRET
 from common.entities.ship import Ship
+from common.entities.slot import Slot, SHIELD_CONSTRAINT, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, HULL_CONSTRAINT
 from common.entities.solar_system import SolarSystem
 from common.net_const import SERVER_TICK_TIME
 from server.commands import process_command
@@ -16,7 +18,22 @@ def accept_new_connections(server_socket, sessions, systems):
     readable, _, _  = select([server_socket], [], [], 0)
     if len(readable) == 1:
         connection, address = server_socket.accept()
-        new_ship = Ship(10, 10, id_fun=new_id)
+
+        weapon_slot = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=LASER_TURRET, id_fun=new_id)
+        engine_slot = Slot(type_constraint=ENGINE_CONSTRAINT, id_fun=new_id)
+        shield_slot = Slot(type_constraint=SHIELD_CONSTRAINT, id_fun=new_id)
+        hull_slot = Slot(type_constraint=HULL_CONSTRAINT, id_fun=new_id)
+
+        new_ship = Ship(
+            10,
+            10,
+            id_fun=new_id,
+            shield_slots= {shield_slot.id: shield_slot},
+            engine_slots = {engine_slot.id: engine_slot},
+            weapon_slots = {weapon_slot.id: weapon_slot},
+            hull_slots = {hull_slot.id: hull_slot},
+        )
+
         systems[1].ships[new_ship.id] = new_ship
         new_session = Session(connection, address, 1, new_ship.id)
         sessions[new_session.id] = new_session

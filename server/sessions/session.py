@@ -81,16 +81,16 @@ class Session():
                 self.ship_id,
                 self.solar_system_id,
                 visible_ships,
-                targeting_ship_id=session_ship_object.targeting_ship_id,
+                # targeting_ship_id=session_ship_object.targeting_ship_id,
                 active_laser_shots=active_laser_shots,
                 power_allocation_guns=session_ship_object.power_allocation_guns,
                 power_allocation_shields=session_ship_object.power_allocation_shields,
                 power_allocation_engines=session_ship_object.power_allocation_engines,
                 crates=visible_crates,
-                weapon_slots=session_ship_object.weapon_slots,
-                shield_slots=session_ship_object.shield_slots,
-                engine_slots=session_ship_object.engine_slots,
-                hull_slots=session_ship_object.hull_slots,
+                weapon_slots=list(session_ship_object.weapon_slots.values()),
+                shield_slots=list(session_ship_object.shield_slots.values()),
+                engine_slots=list(session_ship_object.engine_slots.values()),
+                hull_slots=list(session_ship_object.hull_slots.values()),
             ).marshal()
 
             bytes = message.encode()

@@ -12,7 +12,7 @@ from client.render import render_game, render_static_ui
 from client.session import process_out_message_queue, queue_to_send
 from client.texture import load_loot_icon_textures
 from common.commands.request_moveto import RequestMoveToCommand
-from common.commands.request_shoot import RequestShootCommand
+from common.commands.request_target import RequestTargetCommand
 from common.messages.messages import message_types
 from common.net_const import HEADER_SIZE
 
@@ -39,9 +39,9 @@ def process_input(game):
     camera_x_transform, camera_y_transform = camera.get_camera()
     if get_mouse().down_this_frame:
         for ship_id, ship in game.ships.items():
-            if ship_id != game.ship_id:
+            if ship_id != game.ship_id and game.selected_slot_id:
                 if pick_ship(game, ship, get_mouse()):
-                    queue_to_send(RequestShootCommand(ship_id))
+                    queue_to_send(RequestTargetCommand(ship_id, game.selected_slot_id))
                     return
 
         queue_to_send(RequestMoveToCommand(mouseX + camera_x_transform, mouseY + camera_y_transform))

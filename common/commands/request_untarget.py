@@ -1,21 +1,21 @@
 from common.commands.command import Command
 
 
-class RequestShootCommand(Command):
+class RequestUnTargetCommand(Command):
+    COMMAND_NAME = "request_un_target"
 
-    COMMAND_NAME = "request_shoot"
-
-    def __init__(self, target_ship_id):
+    def __init__(self, target_ship_id, slot_id):
         self.target_ship_id = target_ship_id
+        self.slot_id = slot_id
 
     def marshal(self):
-        return self.COMMAND_NAME + ":" + str(self.target_ship_id)
+        return self.COMMAND_NAME + ":" + str(self.target_ship_id) + ":" + str(self.slot_id)
 
     @classmethod
     def unmarshal(cls, serialized_string):
         parts = serialized_string.split(":")
 
-        if len(parts) != 2:
+        if len(parts) != 3:
             print(cls.COMMAND_NAME + " COMMAND SIZE WRONG: <'{}'>".format(serialized_string))
             return
 
@@ -24,4 +24,5 @@ class RequestShootCommand(Command):
             print(cls.COMMAND_NAME + " WRONG NAME <'{}'>".format(serialized_string))
 
         target_ship_id = int(parts[1])
-        return RequestShootCommand(target_ship_id)
+        slot_id = int(parts[2])
+        return RequestUnTargetCommand(target_ship_id, slot_id)

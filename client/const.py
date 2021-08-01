@@ -45,6 +45,8 @@ scheme = {
     "shield": CYAN,
     "ui_background": GRAY,
     "ui_boarder": LIGHT_GRAY,
+    "ui_boarder_highlight": WHITE,
+    "ui_boarder_selected": YELLOW,
     "ui_background_highlight": LIGHT_GRAY,
     "engines_power": RED,
     "shields_power": CYAN,

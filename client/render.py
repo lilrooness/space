@@ -83,8 +83,8 @@ def render_game_view(game, screen, screenRect):
         )
 
         reticule = pygame.Rect(ship_screen_space_coords[0] - RETICULE_SIZE/2, ship_screen_space_coords[1] - RETICULE_SIZE/2, RETICULE_SIZE, RETICULE_SIZE)
-        if ship_id == game.targeting_ship_id:
-            pygame.draw.rect(screen, scheme["targeted_reticule"], reticule, width=2)
+        # if ship_id == game.targeting_ship_id:
+        #     pygame.draw.rect(screen, scheme["targeted_reticule"], reticule, width=2)
         if ship_id != game.ship_id and pick_ship(game, ship, get_mouse()):
             pygame.draw.rect(screen, scheme["hover_reticule"], reticule, width=2)
 

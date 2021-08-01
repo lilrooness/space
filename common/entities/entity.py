@@ -1,4 +1,5 @@
-from common.serializable.serializable import Serializable, FIELD_TYPE_VALUE, FIELD_TYPE_MULTIPLE_ENTITIES
+from common.net_const import NONE_MARKER
+from common.serializable.serializable import Serializable, FIELD_TYPE_VALUE, FIELD_TYPE_MULTIPLE_VALUES
 
 system_ids = [
     1,2
@@ -21,6 +22,12 @@ class Entity(Serializable):
         for field_name, type_info in self.fields().items():
             if type_info[0] == FIELD_TYPE_VALUE:
                 stringified_fields.append(str(self.__dict__[field_name]))
+            elif type_info[0] == FIELD_TYPE_MULTIPLE_VALUES:
+                field_value = [str(value) for value in self.__dict__[field_name]]
+                if field_value:
+                    stringified_fields.append(",".join(field_value))
+                else:
+                    stringified_fields.append(",".join([str(NONE_MARKER)]))
             else:
                 raise Exception("only FIELD_TYPE_VALUE allowed in Entity types")
 

@@ -1,8 +1,7 @@
+from common.const import get_speed
 from common.entities.entity import Entity
-from common.entities.slot import Slot, SHIELD_CONSTRAINT, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, HULL_CONSTRAINT
 from common.serializable.serializable import FIELD_TYPE_VALUE
-from common.utils import string_to_bool, dist
-from common.const import get_speed, LASER_TURRET
+from common.utils import dist
 
 
 class Ship(Entity):
@@ -23,6 +22,10 @@ class Ship(Entity):
             power_allocation_guns=0.5,
             power_allocation_shields = 0.25,
             power_allocation_engines = 0.25,
+            shield_slots = [],
+            engine_slots = [],
+            weapon_slots = [],
+            hull_slots = [],
     ):
         super().__init__(id, id_fun)
         self.ammo = ammo
@@ -34,7 +37,6 @@ class Ship(Entity):
         self.warp = None
         self.vx = vx
         self.vy = vy
-        self.targeting_ship_id = None
         self.last_shot_time = -1
         self.shot_frequency = 0.5
         self.dead = dead
@@ -42,10 +44,10 @@ class Ship(Entity):
         self.power_allocation_shields = power_allocation_shields
         self.power_allocation_engines = power_allocation_engines
 
-        self.shield_slots = [Slot(type_constraint=SHIELD_CONSTRAINT)]
-        self.engine_slots = [Slot(type_constraint=ENGINE_CONSTRAINT)]
-        self.weapon_slots = [Slot(type_constraint=WEAPON_CONSTRAINT, type_id=LASER_TURRET)]
-        self.hull_slots   = [Slot(type_constraint=HULL_CONSTRAINT)]
+        self.shield_slots = shield_slots
+        self.engine_slots = engine_slots
+        self.weapon_slots = weapon_slots
+        self.hull_slots   = hull_slots
 
     def tick(self, delta=1.0):
         if self.warp:

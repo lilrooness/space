@@ -1,7 +1,9 @@
+from common.net_const import NONE_MARKER
 from common.utils import string_to_bool
 
 FIELD_TYPE_VALUE = 1
 FIELD_TYPE_MULTIPLE_ENTITIES = 2
+FIELD_TYPE_MULTIPLE_VALUES = 3
 
 class Serializable():
 
@@ -49,6 +51,20 @@ class Serializable():
                     entities = entity_type.unmarshall_multiple_of_type(":".join(encoded_entities), entity_type)
                     extracted_fields[field_name] = entities
                     increment = 1 + nEntities * len(entity_type.fields().keys())
+            elif type_info[0] == FIELD_TYPE_MULTIPLE_VALUES:
+                value_type = type_info[1]
+                if value_type not in [int, float]:
+                    print("ERROR: FIELD_TYPE_MULTIPLE_VALUES doesnt support {}".format(value_type))
+                    raise
+
+                string_list = part.split(",")
+                unmarshalled_list = [value_type(elem) for elem in string_list]
+                if unmarshalled_list == [NONE_MARKER]:
+                    extracted_fields[field_name] = []
+                else:
+                    extracted_fields[field_name] = unmarshalled_list
+
+
             position += increment
 
         return extracted_fields, parts[position:]
