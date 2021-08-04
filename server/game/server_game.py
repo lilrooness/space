@@ -1,4 +1,5 @@
 from common.const import ENGINE_POWER_DAMAGE_THRESHOLD, ENGINE_DAMAGE_INCREASE_RATE, get_laser_range
+from common.messages.explosion import ExplosionMessage
 from common.messages.ship_damage import ShipDamageMessage
 from common.utils import dist
 from server.game.slot_types.slot_types import resolve_slot_tick
@@ -19,7 +20,52 @@ def tick(systems, ticks):
                 slot.target_ids = [target_id for target_id in slot.target_ids if target_id in all_ship_ids]
                 resolve_slot_tick(system, ship_id, slot, ticks)
 
+
+        exploded_missiles = []
+        for missile_id, missile in system.in_flight_missiles.items():
+            if missile.exploded:
+                exploded_missiles.append(missile_id)
+
+        for missile_id in exploded_missiles:
+            del system.in_flight_missiles[missile_id]
+
         _resolve_laser_damage(system)
+        missiles_to_detonate = _get_detonatable_missiles(system)
+
+        for missile_id in missiles_to_detonate:
+            _detonate_missile(system, missile_id)
+
+def _get_detonatable_missiles(system):
+
+    detonated_missile_ids = []
+
+    for missile_id, missile in system.in_flight_missiles.items():
+
+        target_ship = system.ships[missile.target_id]
+
+        if missile.ticks_alive >= missile.max_flight_ticks:
+            detonated_missile_ids.append(missile_id)
+        elif dist(missile.x, missile.y, target_ship.x, target_ship.y) < missile.explosion_range:
+            detonated_missile_ids.append(missile_id)
+
+    return detonated_missile_ids
+
+
+def _detonate_missile(system, missile_id):
+    missile = system.in_flight_missiles[missile_id]
+    missile.exploded = True
+    # get all ships in range
+    for _id, ship in system.ships.items():
+        if dist(missile.x, missile.y, ship.x, ship.y) <= missile.explosion_range:
+            _apply_damage_to_ship(ship, missile.damage)
+
+    queue_message_for_broadcast(
+        ExplosionMessage(
+            missile.x,
+            missile.y,
+            radius=missile.explosion_range,
+        )
+    )
 
 def _resolve_laser_damage(system):
     for _id, shot in system.active_laser_shots.items():
@@ -31,30 +77,6 @@ def _resolve_laser_damage(system):
         if not shot.miss and not shooting_ship.dead and not target_ship.dead and range <= laser_range:
             target_ship = system.ships[shot.being_shot_ship_id]
             _apply_damage_to_ship(target_ship, shot.power)
-
-
-# def _get_new_laser_shots(system, ticks):
-#     shots = {}
-#     for _, ship in system.ships.items():
-#         all_ship_slots
-#         for slot in ship.weapon_slots
-#         if ship.targeting_ship_id and ship.targeting_ship_id > -1:
-#
-#             if ship.targeting_ship_id not in system.ships:
-#                 ship.targeting_ship_id = -1
-#                 continue
-#
-#             time_since_last_shot = ticks - ship.last_shot_time
-#             if time_since_last_shot * ship.shot_frequency >= 1.0:
-#                 shot = LaserShot(
-#                     ship.id,
-#                     ship.targeting_ship_id,
-#                     int(math.floor(BASE_LASER_DAMAGE)),
-#                     id_fun=new_id
-#                 )
-#                 shots[shot.id] = shot
-#                 ship.last_shot_time = ticks
-#     return shots
 
 def _apply_damage_to_ship(ship, damage):
     death = False

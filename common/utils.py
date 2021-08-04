@@ -16,6 +16,10 @@ def mag(v):
 def dist(ax, ay, bx, by):
     return mag((bx - ax, by - ay))
 
+def normalise(x, y):
+    m = mag((x, y))
+    return (x/m, y/m)
+
 def get_transversal_from_perspective_of_a(ax, ay, avx, avy, bx, by, bvx, bvy):
     bvx_relative = bvx - avx
     bvy_relative = bvy - avy

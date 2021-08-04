@@ -83,8 +83,11 @@ def render_game_view(game, screen, screenRect):
         )
 
         reticule = pygame.Rect(ship_screen_space_coords[0] - RETICULE_SIZE/2, ship_screen_space_coords[1] - RETICULE_SIZE/2, RETICULE_SIZE, RETICULE_SIZE)
-        # if ship_id == game.targeting_ship_id:
-        #     pygame.draw.rect(screen, scheme["targeted_reticule"], reticule, width=2)
+
+        for slot in game.weapon_slots:
+            if ship_id in slot.target_ids:
+                pygame.draw.rect(screen, scheme["targeted_reticule"], reticule, width=2)
+
         if ship_id != game.ship_id and pick_ship(game, ship, get_mouse()):
             pygame.draw.rect(screen, scheme["hover_reticule"], reticule, width=2)
 
@@ -116,6 +119,14 @@ def render_game_view(game, screen, screenRect):
             world_to_screen(game, being_shot_ship.x, being_shot_ship.y),
             width=1
         )
+
+    for _, missile in game.in_flight_missiles.items():
+        pygame.draw.circle(screen, scheme["entity"], world_to_screen(game, missile.x, missile.y), 1)
+
+    for explosion in game.explosions:
+        pygame.draw.circle(screen, scheme["explosion_radius"], world_to_screen(game, explosion.x, explosion.y), explosion.radius/get_camera_zoom(), width=1)
+        pygame.draw.circle(screen, scheme["explosion_frontier"], world_to_screen(game, explosion.x, explosion.y),
+                           explosion.drawRadius / get_camera_zoom(), width=1)
 
     for _, crate in game.crates.items():
         crate_screen_space_cords = world_to_screen(game, crate.x, crate.y)

@@ -29,7 +29,7 @@ class Entity(Serializable):
                 else:
                     stringified_fields.append(",".join([str(NONE_MARKER)]))
             else:
-                raise Exception("only FIELD_TYPE_VALUE allowed in Entity types")
+                raise Exception("only FIELD_TYPE_VALUE and FIELD_TYPE_MULTIPLE_VALUES allowed in Entity types")
 
         return ":".join(stringified_fields)
 

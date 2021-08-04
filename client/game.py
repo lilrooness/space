@@ -1,7 +1,9 @@
 from datetime import datetime
 
 from client import camera
+from client.effects_only.explosion import Explosion
 from common.messages.crate_contents import CrateContentsMessage
+from common.messages.explosion import ExplosionMessage
 from common.messages.messages import ServerTickMessage
 from client.const import SHIP_HEIGHT, SHIP_WIDTH
 from common.messages.ship_damage import ShipDamageMessage
@@ -15,9 +17,9 @@ class Game():
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
         self.resources = resources
-        # self.targeting_ship_id = None
         self.targeted_by_ship_id = None
         self.active_laser_shots = {}
+        self.in_flight_missiles = {}
         self.power_allocation_guns = 1.0
         self.power_allocation_shields = 0.0
         self.power_allocation_engines = 0.0
@@ -32,12 +34,26 @@ class Game():
         self.engine_slots =[]
         self.hull_slots =[]
         self.selected_slot_id = None
+        self.explosions = []
+        self.corrected_locations = {}
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
         delta = float(time_since_last_tick.microseconds) / float(SERVER_TICK_TIME)
         for _id, ship in self.ships.items():
             ship.tick(delta=2*(delta - self.last_delta))
+
+        for _id, missile in self.in_flight_missiles.items():
+            missile.tick(self.ships, delta=2*(delta - self.last_delta))
+
+        done_explosions = []
+        for explosion in self.explosions:
+            explosion.tick()
+            if explosion.done:
+                done_explosions.append(explosion)
+
+        for explosion in done_explosions:
+            self.explosions.remove(explosion)
 
         self.last_delta = delta
 
@@ -55,6 +71,10 @@ def handle_server_tick_message(game, message):
     for laser in message.active_laser_shots:
         active_laser_shots[laser.id] = laser
 
+    in_flight_missiles = {}
+    for missile in message.in_flight_missiles:
+        in_flight_missiles[missile.id] = missile
+
     crates = {}
     for crate in message.crates:
         if crate.id in game.crates:
@@ -62,6 +82,7 @@ def handle_server_tick_message(game, message):
         crates[crate.id] = crate
 
     game.active_laser_shots = active_laser_shots
+    game.in_flight_missiles = in_flight_missiles
     game.ships = ships
     game.crates = crates
     game.resources = message.resources
@@ -73,10 +94,6 @@ def handle_server_tick_message(game, message):
     game.engine_slots = message.engine_slots
     game.hull_slots = message.hull_slots
 
-    # if message.targeting_ship_id > -1:
-    #     game.targeting_ship_id = message.targeting_ship_id
-    # else:
-    #     game.targeting_ship_id = None
     if message.targeted_by_ship_id > -1:
         game.targeted_by_ship_id = message.targeted_by_ship_id
     else:
@@ -94,6 +111,14 @@ def handle_crate_contents_message(game, message):
     if message.crate_id in game.crate_requests:
         game.crate_requests.remove(message.crate_id)
 
+def handle_explosion_message(game, message):
+
+    game.explosions.append(Explosion(
+        message.x,
+        message.y,
+        message.radius,
+    ))
+
 def pick_ship(game, ship, mouse):
     shipX, shipY = camera.world_to_screen(game, ship.x, ship.y)
     if mouse.x >= shipX - SHIP_WIDTH/2 and mouse.x <= shipX + SHIP_WIDTH/2:
@@ -105,4 +130,5 @@ message_handlers = {
     ServerTickMessage: handle_server_tick_message,
     ShipDamageMessage: handle_ship_damage_message,
     CrateContentsMessage: handle_crate_contents_message,
+    ExplosionMessage: handle_explosion_message,
 }

@@ -49,7 +49,7 @@ class Ship(Entity):
         self.weapon_slots = weapon_slots
         self.hull_slots   = hull_slots
 
-    def tick(self, delta=1.0):
+    def tick(self, delta=1.0, corrected_location=None):
         if self.warp:
             if self.x != self.warp.endPos[0] or self.y != self.warp.endPos[1]:
                 dp = (self.warp.vector[0] * self.warp.speed, self.warp.vector[1] * self.warp.speed)

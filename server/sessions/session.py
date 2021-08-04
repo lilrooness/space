@@ -77,12 +77,13 @@ class Session():
             visible_ships = self._get_visible_ships_list(session_system_object.ships)
             active_laser_shots = [shot for _id, shot in session_system_object.active_laser_shots.items()]
             visible_crates = [crate for _id, crate, in session_system_object.crates.items()]
+            in_flight_missiles = [missile for _id, missile in session_system_object.in_flight_missiles.items()]
             message = ServerTickMessage(
                 self.ship_id,
                 self.solar_system_id,
                 visible_ships,
-                # targeting_ship_id=session_ship_object.targeting_ship_id,
                 active_laser_shots=active_laser_shots,
+                in_flight_missiles=in_flight_missiles,
                 power_allocation_guns=session_ship_object.power_allocation_guns,
                 power_allocation_shields=session_ship_object.power_allocation_shields,
                 power_allocation_engines=session_ship_object.power_allocation_engines,

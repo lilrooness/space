@@ -1,6 +1,9 @@
 BASE_LASER_DAMAGE = 10
 BASE_LASER_RANGE = 400
 
+BASE_MISSILE_DAMAGE = 0
+BASE_MISSILE_RANGE = 1000
+
 # above this threshold, the ship will take more damage when hit by weapons
 ENGINE_POWER_DAMAGE_THRESHOLD = 0.3
 

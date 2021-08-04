@@ -59,6 +59,8 @@ scheme = {
     "crate": WHITE,
     "banner_background": DARK_GRAY,
     "banner_foreground": WHITE,
+    "explosion_radius": RED,
+    "explosion_frontier": CYAN,
 }
 
 MISSILE_LAUNCHER_ICON = "client/res/ui/texture/icons/missile-pod.png"
