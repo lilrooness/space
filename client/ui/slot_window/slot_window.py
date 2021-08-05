@@ -1,7 +1,6 @@
 import pygame
 
 from client.const import scheme, LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT
-from client.texture import get_loot_icon_texture
 from client.ui.components.icon import icon
 
 
@@ -10,7 +9,7 @@ def slot_window(screen, game, x=0, y=0):
         max(len(game.hull_slots), len(game.weapon_slots)),
         max(len(game.shield_slots), len(game.engine_slots))
     )
-    x_spacing = 50
+    x_spacing = LOOT_ICON_WIDTH + 10
     window_rect = pygame.Rect(
         x,
         y,
@@ -30,7 +29,9 @@ def slot_window(screen, game, x=0, y=0):
             LOOT_ICON_HEIGHT,
         )
         slot_xpos += x_spacing
-        icon(screen, slot.type_id, rect)
+        pygame.draw.rect(screen, scheme["ui_background_highlight"], rect)
+        if slot.type_id:
+            icon(screen, slot.type_id, rect)
 
     slot_xpos = 0
     for slot in game.shield_slots:

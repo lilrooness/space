@@ -8,7 +8,7 @@ class Crate(Entity):
             self,
             x=0,
             y=0,
-            contents=[],
+            contents={},
             id=None,
             id_fun=None,
             open=False
@@ -27,3 +27,15 @@ class Crate(Entity):
             "y": (FIELD_TYPE_VALUE, float),
             "open": (FIELD_TYPE_VALUE, bool),
         }
+
+    def get(self, type_id):
+        for _id, item in self.contents.items():
+            if item.type_id == type_id:
+                return item
+
+        return None
+
+    def remove(self, type_id):
+        item = self.get(type_id)
+        if item:
+            del self.contents[item.id]

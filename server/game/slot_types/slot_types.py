@@ -110,7 +110,7 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                     target_vx,
                     target_vy
                 )
-                miss_chance = transversal_velocity * BASE_LASER_MISS_CHANCE
+                miss_chance = transversal_velocity * 10 * BASE_LASER_MISS_CHANCE
 
                 missed = True
                 if random.random() > miss_chance:

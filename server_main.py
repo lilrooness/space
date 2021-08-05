@@ -2,7 +2,7 @@ import socket
 from datetime import datetime
 from select import select
 
-from common.const import LASER_TURRET, MISSILE_LAUNCHER
+from common.const import LASER_TURRET
 from common.entities.ship import Ship
 from common.entities.slot import Slot, SHIELD_CONSTRAINT, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, HULL_CONSTRAINT
 from common.entities.solar_system import SolarSystem
@@ -19,7 +19,7 @@ def accept_new_connections(server_socket, sessions, systems):
     if len(readable) == 1:
         connection, address = server_socket.accept()
 
-        weapon_slot = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=MISSILE_LAUNCHER, id_fun=new_id)
+        weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=LASER_TURRET, id_fun=new_id)
         engine_slot = Slot(type_constraint=ENGINE_CONSTRAINT, id_fun=new_id)
         shield_slot = Slot(type_constraint=SHIELD_CONSTRAINT, id_fun=new_id)
         hull_slot = Slot(type_constraint=HULL_CONSTRAINT, id_fun=new_id)
@@ -32,7 +32,7 @@ def accept_new_connections(server_socket, sessions, systems):
             id_fun=new_id,
             shield_slots= {shield_slot.id: shield_slot},
             engine_slots = {engine_slot.id: engine_slot},
-            weapon_slots = {weapon_slot.id: weapon_slot},
+            weapon_slots = {weapon_slot_1.id: weapon_slot_1},
             hull_slots = {hull_slot.id: hull_slot},
         )
 

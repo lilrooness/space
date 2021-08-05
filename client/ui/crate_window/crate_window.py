@@ -2,10 +2,11 @@ import pygame
 
 from client.camera import world_to_screen
 from client.const import LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT, scheme
-from client.session import request_crate_content
+from client.session import request_crate_content, queue_to_send
 from client.ui.components.banner import banner
 from client.ui.components.button import button
 from client.ui.components.icon import icon
+from common.commands.request_slot_change import RequestSlotChange
 
 
 def crate_window(game, screen, font, crate_id):
@@ -63,5 +64,32 @@ def _crate_window_contents(game, screen, font, x, y, crate_id):
                 LOOT_ICON_HEIGHT-4,
             )
         )
+        button_rect = pygame.Rect(
+            xpos + 2 + x_counter,
+            ypos + 2 + LOOT_ICON_HEIGHT-4,
+            LOOT_ICON_WIDTH-4,
+            10,
+        )
+
+        def loot():
+            _take_loot(game, item.type_id)
+
+        button(screen, button_rect, callback=loot)
         x_counter += LOOT_ICON_WIDTH
 
+def _take_loot(game, type_id):
+
+    slot_id = None
+
+    for slot in game.weapon_slots:
+        if slot.type_id == 0:
+            slot_id = slot.id
+            break
+
+    if slot_id is None and game.weapon_slots:
+        slot_id = game.weapon_slots[0].id
+
+    if slot_id:
+        queue_to_send(
+            RequestSlotChange(slot_id, type_id)
+        )

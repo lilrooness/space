@@ -1,16 +1,50 @@
 from common.commands.request_look_in_crate import RequestLookInCrateCommand
 from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_power_change import RequestPowerChange
+from common.commands.request_slot_change import RequestSlotChange
 from common.commands.request_target import RequestTargetCommand
 from common.commands.request_untarget import RequestUnTargetCommand
 from common.const import CRATE_LOOT_RANGE
+from common.entities.loot.lootitem import LootItem
 from common.messages.crate_contents import CrateContentsMessage
 from common.utils import dist, normalise
 from server.game.slot_types.slot_types import slot_type_can_target, set_slot_target
+from server.id import new_id
 from server.sessions.sessions import queue_message
 
 
 def process_command(systems, session, command):
+
+    if command.COMMAND_NAME == RequestSlotChange.COMMAND_NAME:
+        session_system = systems[session.solar_system_id]
+        session_ship = session_system.ships[session.ship_id]
+
+        type_in_crate = False
+        crate_id = None
+        for id, crate in session_system.crates.items():
+            if dist(crate.x, crate.y, session_ship.x, session_ship.y) <= CRATE_LOOT_RANGE:
+                if crate.get(command.type_id):
+                    type_in_crate = True
+                    crate_id = id
+                    break
+
+        slots = session_ship.weapon_slots | session_ship.hull_slots | session_ship.shield_slots | session_ship.engine_slots
+        if type_in_crate and command.slot_id in slots:
+            slot = slots[command.slot_id]
+            session_system.crates[crate_id].remove(command.type_id)
+
+            if slot.type_id != 0:
+                item = LootItem(id_fun=new_id, type_id=slot.type_id)
+                session_system.crates[crate_id].contents[item.id] = item
+
+            slot.type_id = command.type_id
+
+        if crate_id:
+            new_contents = []
+            for _id, loot in session_system.crates[crate_id].contents.items():
+                new_contents.append(loot)
+
+            queue_message(CrateContentsMessage(crate_id, new_contents), [session.id])
 
     if command.COMMAND_NAME == RequestMoveToCommand.COMMAND_NAME:
         ship = systems[session.solar_system_id].ships[session.ship_id]
