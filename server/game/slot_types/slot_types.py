@@ -8,8 +8,8 @@ from common.utils import dist, get_transversal_from_perspective_of_a
 from server.id import new_id
 
 BASE_LASER_MISS_CHANCE = 0.1
-LASER_SHOT_FREQUENCY = 0.5
-MISSILE_SHOT_FREQUENCY = 0.25
+LASER_SHOT_FREQUENCY = 0.05
+MISSILE_SHOT_FREQUENCY = 0.025
 
 def slot_type_can_target(systems, owner_session, slot_type_id, target_id):
     if slot_type_id == LASER_TURRET:

@@ -27,6 +27,8 @@ def accept_new_connections(server_socket, sessions, systems):
         new_ship = Ship(
             10,
             10,
+            vx=0,
+            vy=0,
             id_fun=new_id,
             shield_slots= {shield_slot.id: shield_slot},
             engine_slots = {engine_slot.id: engine_slot},

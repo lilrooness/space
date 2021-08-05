@@ -1,3 +1,4 @@
+from common.const import BASE_MISSILE_SPEED
 from common.entities.entity import Entity
 from common.serializable.serializable import FIELD_TYPE_VALUE
 from common.utils import normalise
@@ -11,8 +12,8 @@ class InFlightMissile(Entity):
             owner_id=None,
             target_id=None,
             id=None,
-            max_flight_ticks=10,
-            speed=30,
+            max_flight_ticks=100,
+            speed=BASE_MISSILE_SPEED,
             x=0,
             y=0,
             vx=0,
@@ -33,17 +34,15 @@ class InFlightMissile(Entity):
         self.speed=speed
         self.ticks_alive=0
         self.explosion_range=explosion_range
-        self.exploded=False
 
     @classmethod
     def fields(cls):
         return {
+            "id": (FIELD_TYPE_VALUE, int),
             "owner_id": (FIELD_TYPE_VALUE, int),
             "target_id": (FIELD_TYPE_VALUE, int),
             "x": (FIELD_TYPE_VALUE, float),
             "y": (FIELD_TYPE_VALUE, float),
-            "vx": (FIELD_TYPE_VALUE, float),
-            "vy": (FIELD_TYPE_VALUE, float),
             "speed": (FIELD_TYPE_VALUE, float),
         }
 

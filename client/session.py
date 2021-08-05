@@ -1,5 +1,6 @@
 from select import select
 
+from client.optimistic_command import optimistic_command
 from common.commands.request_look_in_crate import RequestLookInCrateCommand
 from common.net_const import HEADER_SIZE
 
@@ -12,8 +13,11 @@ def send_request(client_socket, request):
     print("sending message {}".format(header + bytes))
     client_socket.send(header + bytes)
 
-def queue_to_send(request):
+def queue_to_send(request, optimistic_state=None):
     global _out_message_queue
+
+    if optimistic_state:
+        optimistic_command.commands[request.COMMAND_NAME](optimistic_state, request)
 
     _out_message_queue.append(request)
 

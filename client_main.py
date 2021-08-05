@@ -44,7 +44,7 @@ def process_input(game):
                     queue_to_send(RequestTargetCommand(ship_id, game.selected_slot_id))
                     return
 
-        queue_to_send(RequestMoveToCommand(mouseX + camera_x_transform, mouseY + camera_y_transform))
+        queue_to_send(RequestMoveToCommand(mouseX + camera_x_transform, mouseY + camera_y_transform), optimistic_state=game)
 
     if get_mouse().wheel_scrolled:
         set_camera_zoom(get_camera_zoom() + get_mouse().wheel_scroll_amount)

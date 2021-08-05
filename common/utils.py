@@ -18,6 +18,8 @@ def dist(ax, ay, bx, by):
 
 def normalise(x, y):
     m = mag((x, y))
+    if not m:
+        return x, y
     return (x/m, y/m)
 
 def get_transversal_from_perspective_of_a(ax, ay, avx, avy, bx, by, bvx, bvy):

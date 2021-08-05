@@ -35,16 +35,21 @@ class Game():
         self.hull_slots =[]
         self.selected_slot_id = None
         self.explosions = []
-        self.corrected_locations = {}
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
-        delta = float(time_since_last_tick.microseconds) / float(SERVER_TICK_TIME)
-        for _id, ship in self.ships.items():
-            ship.tick(delta=2*(delta - self.last_delta))
 
-        for _id, missile in self.in_flight_missiles.items():
-            missile.tick(self.ships, delta=2*(delta - self.last_delta))
+        delta = float(time_since_last_tick.microseconds) / float(SERVER_TICK_TIME)
+        for ship_id, ship in self.ships.items():
+            ship.tick(
+                delta=2*(delta - self.last_delta),
+            )
+
+        for missile_id, missile in self.in_flight_missiles.items():
+            missile.tick(
+                self.ships,
+                delta=2*(delta - self.last_delta),
+            )
 
         done_explosions = []
         for explosion in self.explosions:
@@ -59,11 +64,13 @@ class Game():
 
 
 def handle_server_tick_message(game, message):
+    game.last_delta = 0.0
     game.last_tick_time = datetime.now()
     game.tick_number += 1
     game.ship_id = message.ship_id
     game.solar_system_id = message.solar_system_id
     ships = {}
+
     for ship in message.ships:
         ships[ship.id] = ship
 

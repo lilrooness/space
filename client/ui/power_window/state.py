@@ -23,6 +23,7 @@ class PowerWindowState():
             return
 
         self.engines = newEngines
+        self._push_request(game)
 
     def tick(self, game):
         now = datetime.now()
@@ -45,5 +46,6 @@ class PowerWindowState():
                     max(0, self.engines + game.power_allocation_engines),
                     max(0, self.shields + game.power_allocation_shields),
                     max(0, self.guns + game.power_allocation_guns)
-                )
+                ),
+                optimistic_state=game,
             )

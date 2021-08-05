@@ -39,7 +39,7 @@ def power_window(game, screen, last_state):
         scheme["ui_background_highlight"],
         scheme["engines_power"],
         engine_power_cont_rect,
-        game.power_allocation_engines + new_state.engines,
+        game.power_allocation_engines,
         scroll_callback=lambda change : engine_power_change(0.05 * change, new_state, game)
     )
     button(screen, pygame.Rect(

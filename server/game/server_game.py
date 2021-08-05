@@ -21,39 +21,32 @@ def tick(systems, ticks):
                 resolve_slot_tick(system, ship_id, slot, ticks)
 
 
-        exploded_missiles = []
-        for missile_id, missile in system.in_flight_missiles.items():
-            if missile.exploded:
-                exploded_missiles.append(missile_id)
-
-        for missile_id in exploded_missiles:
-            del system.in_flight_missiles[missile_id]
 
         _resolve_laser_damage(system)
         missiles_to_detonate = _get_detonatable_missiles(system)
 
         for missile_id in missiles_to_detonate:
             _detonate_missile(system, missile_id)
+            del system.in_flight_missiles[missile_id]
+
 
 def _get_detonatable_missiles(system):
 
     detonated_missile_ids = []
 
     for missile_id, missile in system.in_flight_missiles.items():
+            target_ship = system.ships[missile.target_id]
 
-        target_ship = system.ships[missile.target_id]
-
-        if missile.ticks_alive >= missile.max_flight_ticks:
-            detonated_missile_ids.append(missile_id)
-        elif dist(missile.x, missile.y, target_ship.x, target_ship.y) < missile.explosion_range:
-            detonated_missile_ids.append(missile_id)
+            if missile.ticks_alive >= missile.max_flight_ticks:
+                detonated_missile_ids.append(missile_id)
+            elif dist(missile.x, missile.y, target_ship.x, target_ship.y) < missile.explosion_range:
+                detonated_missile_ids.append(missile_id)
 
     return detonated_missile_ids
 
 
 def _detonate_missile(system, missile_id):
     missile = system.in_flight_missiles[missile_id]
-    missile.exploded = True
     # get all ships in range
     for _id, ship in system.ships.items():
         if dist(missile.x, missile.y, ship.x, ship.y) <= missile.explosion_range:
