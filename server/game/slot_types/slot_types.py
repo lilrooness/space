@@ -9,7 +9,7 @@ from server.id import new_id
 
 BASE_LASER_MISS_CHANCE = 0.1
 LASER_SHOT_FREQUENCY = 0.05
-MISSILE_SHOT_FREQUENCY = 0.025
+MISSILE_SHOT_FREQUENCY = 0.005
 
 def slot_type_can_target(systems, owner_session, slot_type_id, target_id):
     if slot_type_id == LASER_TURRET:
