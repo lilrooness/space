@@ -1,4 +1,4 @@
-class Explosion():
+class ExplosionEffect():
 
     def __init__(self, x, y, radius, animation_ticks=500):
         self.x = x

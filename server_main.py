@@ -2,7 +2,7 @@ import socket
 from datetime import datetime
 from select import select
 
-from common.const import LASER_TURRET
+from common.const import LASER_TURRET, MINI_GUN
 from common.entities.ship import Ship
 from common.entities.slot import Slot, SHIELD_CONSTRAINT, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, HULL_CONSTRAINT
 from common.entities.solar_system import SolarSystem
@@ -19,7 +19,7 @@ def accept_new_connections(server_socket, sessions, systems):
     if len(readable) == 1:
         connection, address = server_socket.accept()
 
-        weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=LASER_TURRET, id_fun=new_id)
+        weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=MINI_GUN, id_fun=new_id)
         engine_slot = Slot(type_constraint=ENGINE_CONSTRAINT, id_fun=new_id)
         shield_slot = Slot(type_constraint=SHIELD_CONSTRAINT, id_fun=new_id)
         hull_slot = Slot(type_constraint=HULL_CONSTRAINT, id_fun=new_id)
@@ -101,3 +101,14 @@ if __name__ == "__main__":
                 session.send_server_tick(systems)
 
             process_out_message_queue(get_message_queue(), get_sessions())
+
+            # do some cleanup here of objects that no longer need to be around
+            # because we've informed the clients about them
+            for sys_id, system in systems.items():
+                minigunshot_ids_to_delete = []
+                for id, shot in system.mini_gun_shots.items():
+                    if shot.resolved:
+                        minigunshot_ids_to_delete.append(id)
+
+                for id in minigunshot_ids_to_delete:
+                    del system.mini_gun_shots[id]

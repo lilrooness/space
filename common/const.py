@@ -5,6 +5,10 @@ BASE_MISSILE_DAMAGE = 30
 BASE_MISSILE_RANGE = 1000
 BASE_MISSILE_SPEED = 3.0
 
+BASE_MINI_GUN_RANGE = 400
+BASE_MINI_GUN_DAMAGE = 6
+BASE_MINI_GUN_VELOCITY = 6.0
+
 # above this threshold, the ship will take more damage when hit by weapons
 ENGINE_POWER_DAMAGE_THRESHOLD = 0.3
 

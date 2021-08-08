@@ -123,6 +123,10 @@ def render_game_view(game, screen, screenRect):
     for _, missile in game.in_flight_missiles.items():
         pygame.draw.circle(screen, scheme["entity"], world_to_screen(game, missile.x, missile.y), 1)
 
+    for shot in game.mini_gun_shots_effects:
+        if not shot.done:
+            pygame.draw.circle(screen, scheme["entity"], world_to_screen(game, shot.x, shot.y), 1)
+
     for explosion in game.explosions:
         pygame.draw.circle(screen, scheme["explosion_radius"], world_to_screen(game, explosion.x, explosion.y), explosion.radius/get_camera_zoom(), width=1)
         pygame.draw.circle(screen, scheme["explosion_frontier"], world_to_screen(game, explosion.x, explosion.y),

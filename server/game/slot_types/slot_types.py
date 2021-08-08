@@ -1,15 +1,18 @@
 import random
 
 from common.const import LASER_TURRET, BASE_LASER_RANGE, get_speed, BASE_LASER_DAMAGE, MISSILE_LAUNCHER, \
-    BASE_MISSILE_RANGE, BASE_MISSILE_DAMAGE
+    BASE_MISSILE_RANGE, BASE_MISSILE_DAMAGE, MINI_GUN, BASE_MINI_GUN_RANGE, BASE_MINI_GUN_VELOCITY
 from common.entities.inflight_missile import InFlightMissile
 from common.entities.laser_shot import LaserShot
-from common.utils import dist, get_transversal_from_perspective_of_a
+from common.entities.mini_gun_shot import MinigunShot
+from common.utils import dist, get_transversal_from_perspective_of_a, get_radial_velocity
 from server.id import new_id
 
 BASE_LASER_MISS_CHANCE = 0.1
+BASE_MINI_GUN_MISS_CHANCE = 0.1
 LASER_SHOT_FREQUENCY = 0.05
 MISSILE_SHOT_FREQUENCY = 0.005
+MINI_GUN_SHOT_FREQUENCY = 0.05
 
 def slot_type_can_target(systems, owner_session, slot_type_id, target_id):
     if slot_type_id == LASER_TURRET:
@@ -32,12 +35,24 @@ def slot_type_can_target(systems, owner_session, slot_type_id, target_id):
 
             if dist(owner_ship.x, owner_ship.y, target_ship.x, target_ship.y) <= BASE_MISSILE_RANGE:
                 return True
+    if slot_type_id == MINI_GUN:
+        if owner_session.ship_id != target_id:
+            if target_id not in systems[owner_session.solar_system_id].ships:
+                return False
+
+            owner_ship = systems[owner_session.solar_system_id].ships[owner_session.ship_id]
+            target_ship = systems[owner_session.solar_system_id].ships[target_id]
+
+            if dist(owner_ship.x, owner_ship.y, target_ship.x, target_ship.y) <= BASE_MINI_GUN_RANGE:
+                return True
 
 
 def set_slot_target(slot, target_id):
     if slot.type_id == LASER_TURRET:
         slot.target_ids = [target_id]
     if slot.type_id == MISSILE_LAUNCHER:
+        slot.target_ids = [target_id]
+    if slot.type_id == MINI_GUN:
         slot.target_ids = [target_id]
 
 def resolve_slot_tick(system, owner_id, slot, tick):
@@ -47,7 +62,65 @@ def resolve_slot_tick(system, owner_id, slot, tick):
     owner_ship = system.ships[owner_id]
     type_id = slot.type_id
 
-    if type_id == MISSILE_LAUNCHER:
+    if type_id == MINI_GUN:
+        if slot.target_ids:
+            shoot_now = False
+            if system.ships[slot.target_ids[0]].dead:
+                slot.target_ids = []
+                return
+
+            if "last_shot_tick" not in slot.userdata:
+                shoot_now = True
+            else:
+                last_shot_tick = slot.userdata["last_shot_tick"]
+                ticks_since_last_shot = tick - last_shot_tick
+                if ticks_since_last_shot * MINI_GUN_SHOT_FREQUENCY >= 1.0:
+                    shoot_now = True
+
+            if shoot_now:
+                slot.userdata["last_shot_tick"] = tick
+                target_ship = system.ships[slot.target_ids[0]]
+                owner_vx = owner_ship.vx * get_speed(owner_ship.power_allocation_engines)
+                owner_vy = owner_ship.vy * get_speed(owner_ship.power_allocation_engines)
+
+                target_vx = target_ship.vx * get_speed(target_ship.power_allocation_engines)
+                target_vy = target_ship.vy * get_speed(target_ship.power_allocation_engines)
+
+                transversal_velocity = get_transversal_from_perspective_of_a(
+                    owner_ship.x,
+                    owner_ship.y,
+                    owner_vx,
+                    owner_vy,
+                    target_ship.x,
+                    target_ship.y,
+                    target_vx,
+                    target_vy
+                )
+                miss_chance = transversal_velocity * 5 * BASE_MINI_GUN_MISS_CHANCE
+                missed = True
+                if random.random() > miss_chance:
+                    missed =  False
+
+                radial_velocity = -1.0 * get_radial_velocity(
+                    owner_ship.x,
+                    owner_ship.y,
+                    owner_vx,
+                    owner_vy,
+                    target_ship.x,
+                    target_ship.y,
+                    target_vx,
+                    target_vy
+                )
+                shot = MinigunShot(
+                    owner_ship.id,
+                    target_ship.id,
+                    BASE_MINI_GUN_VELOCITY + radial_velocity,
+                    miss=missed,
+                    id_fun=new_id
+                )
+                system.mini_gun_shots[shot.id] = shot
+
+    elif type_id == MISSILE_LAUNCHER:
 
         if slot.target_ids:
             shoot_now = False
@@ -110,7 +183,7 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                     target_vx,
                     target_vy
                 )
-                miss_chance = transversal_velocity * 10 * BASE_LASER_MISS_CHANCE
+                miss_chance = transversal_velocity * 5 * BASE_LASER_MISS_CHANCE
 
                 missed = True
                 if random.random() > miss_chance:

@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from client import camera
-from client.effects_only.explosion import Explosion
+from client.vfx.explosion_effect import ExplosionEffect
+from client.vfx.minigun_shot_effect import MinigunShotEffect
 from common.messages.crate_contents import CrateContentsMessage
 from common.messages.explosion import ExplosionMessage
 from common.messages.messages import ServerTickMessage
@@ -20,6 +21,7 @@ class Game():
         self.targeted_by_ship_id = None
         self.active_laser_shots = {}
         self.in_flight_missiles = {}
+        self.mini_gun_shots_effects = []
         self.power_allocation_guns = 1.0
         self.power_allocation_shields = 0.0
         self.power_allocation_engines = 0.0
@@ -60,8 +62,29 @@ class Game():
         for explosion in done_explosions:
             self.explosions.remove(explosion)
 
+        done_minigun_shots = []
+        for shot in self.mini_gun_shots_effects:
+            shot.tick(self)
+            if shot.done:
+                done_minigun_shots.append(shot)
+
+        for shot in done_minigun_shots:
+            self.mini_gun_shots_effects.remove(shot)
+
         self.last_delta = delta
 
+def crate_minigun_shot_burst_effect(game, minigun_shot):
+    origin_ship = game.ships[minigun_shot.shooter_ship_id]
+    for i in range(100):
+        game.mini_gun_shots_effects.append(
+            MinigunShotEffect(
+                minigun_shot.shooter_ship_id,
+                minigun_shot.being_shot_ship_id,
+                origin_ship.x,
+                origin_ship.y,
+                delay=i*1000,
+            )
+        )
 
 def handle_server_tick_message(game, message):
     game.last_delta = 0.0
@@ -81,6 +104,10 @@ def handle_server_tick_message(game, message):
     in_flight_missiles = {}
     for missile in message.in_flight_missiles:
         in_flight_missiles[missile.id] = missile
+
+    for shot in message.mini_gun_shots:
+        if shot.being_shot_ship_id in game.ships and shot.shooter_ship_id in game.ships:
+            crate_minigun_shot_burst_effect(game, shot)
 
     crates = {}
     for crate in message.crates:
@@ -120,7 +147,7 @@ def handle_crate_contents_message(game, message):
 
 def handle_explosion_message(game, message):
 
-    game.explosions.append(Explosion(
+    game.explosions.append(ExplosionEffect(
         message.x,
         message.y,
         message.radius,

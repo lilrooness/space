@@ -22,6 +22,11 @@ def normalise(x, y):
         return x, y
     return (x/m, y/m)
 
+def get_radial_velocity(ax, ay, avx, avy, bx, by, bvx, bvy):
+    d1 = dist(ax, ay, bx, by)
+    d2 = dist(ax+avx, ay+avy, bx+bvx, by+bvy)
+    return d2 - d1
+
 def get_transversal_from_perspective_of_a(ax, ay, avx, avy, bx, by, bvx, bvy):
     bvx_relative = bvx - avx
     bvy_relative = bvy - avy

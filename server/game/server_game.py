@@ -1,4 +1,5 @@
-from common.const import ENGINE_POWER_DAMAGE_THRESHOLD, ENGINE_DAMAGE_INCREASE_RATE, get_laser_range
+from common.const import ENGINE_POWER_DAMAGE_THRESHOLD, ENGINE_DAMAGE_INCREASE_RATE, get_laser_range, \
+    BASE_MINI_GUN_RANGE, BASE_MINI_GUN_VELOCITY, BASE_MINI_GUN_DAMAGE
 from common.messages.explosion import ExplosionMessage
 from common.messages.ship_damage import ShipDamageMessage
 from common.utils import dist
@@ -20,9 +21,8 @@ def tick(systems, ticks):
                 slot.target_ids = [target_id for target_id in slot.target_ids if target_id in all_ship_ids]
                 resolve_slot_tick(system, ship_id, slot, ticks)
 
-
-
         _resolve_laser_damage(system)
+        _resolve_mini_gun_damage(system)
         missiles_to_detonate = _get_detonatable_missiles(system)
 
         for missile_id in missiles_to_detonate:
@@ -60,6 +60,22 @@ def _detonate_missile(system, missile_id):
         )
     )
 
+def _resolve_mini_gun_damage(system):
+    for _id, shot in system.mini_gun_shots.items():
+        if shot.resolved:
+            continue
+        shooting_ship = system.ships[shot.shooter_ship_id]
+        target_ship = system.ships[shot.being_shot_ship_id]
+        range = dist(target_ship.x, target_ship.y, shooting_ship.x, shooting_ship.y)
+
+        if not shot.miss and not target_ship.dead and range <= BASE_MINI_GUN_RANGE:
+            velocityDamageModifier = shot.velocity / BASE_MINI_GUN_VELOCITY * 2
+            damage = velocityDamageModifier * BASE_MINI_GUN_DAMAGE
+            _apply_damage_to_ship(target_ship, damage)
+
+        shot.resolved = True
+
+# TODO: shorter distance means more damage
 def _resolve_laser_damage(system):
     for _id, shot in system.active_laser_shots.items():
         shooting_ship = system.ships[shot.shooter_ship_id]
@@ -68,12 +84,11 @@ def _resolve_laser_damage(system):
         laser_range = get_laser_range()
 
         if not shot.miss and not shooting_ship.dead and not target_ship.dead and range <= laser_range:
-            target_ship = system.ships[shot.being_shot_ship_id]
             _apply_damage_to_ship(target_ship, shot.power)
 
 def _apply_damage_to_ship(ship, damage):
     death = False
-    modified_damage = damage + _get_additional_damage_from_target_multipliers(ship, damage)
+    modified_damage = damage# + _get_additional_damage_from_target_multipliers(ship, damage)
     shield_after_damage = max(ship.shield - modified_damage, 0)
     if shield_after_damage == 0:
         damage_after_shield = max(modified_damage - ship.shield, 0)

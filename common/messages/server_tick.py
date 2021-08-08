@@ -1,6 +1,7 @@
 from common.entities.crate import Crate
 from common.entities.inflight_missile import InFlightMissile
 from common.entities.laser_shot import LaserShot
+from common.entities.mini_gun_shot import MinigunShot
 from common.entities.ship import Ship
 from common.entities.slot import Slot
 from common.messages.message import Message
@@ -30,6 +31,7 @@ class ServerTickMessage(Message):
             engine_slots = [],
             weapon_slots = [],
             hull_slots = [],
+            mini_gun_shots = [],
     ):
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
@@ -47,6 +49,7 @@ class ServerTickMessage(Message):
         self.weapon_slots = weapon_slots
         self.hull_slots   = hull_slots
         self.in_flight_missiles = in_flight_missiles
+        self.mini_gun_shots = mini_gun_shots
 
     @classmethod
     def fields(cls):
@@ -57,6 +60,7 @@ class ServerTickMessage(Message):
             "targeted_by_ship_id": (FIELD_TYPE_VALUE, int),
             "active_laser_shots": (FIELD_TYPE_MULTIPLE_ENTITIES, LaserShot),
             "in_flight_missiles": (FIELD_TYPE_MULTIPLE_ENTITIES, InFlightMissile),
+            "mini_gun_shots": (FIELD_TYPE_MULTIPLE_ENTITIES, MinigunShot),
             "power_allocation_guns": (FIELD_TYPE_VALUE, float),
             "power_allocation_shields": (FIELD_TYPE_VALUE, float),
             "power_allocation_engines": (FIELD_TYPE_VALUE, float),
@@ -72,6 +76,7 @@ class ServerTickMessage(Message):
         marshalled_ships = [ship.marshal() for ship in self.ships]
         active_laser_shots = [laser.marshal() for laser in self.active_laser_shots]
         marshalled_in_flight_missiles = [missile.marshal() for missile in self.in_flight_missiles]
+        marshalled_mini_gun_shots = [shot.marshal() for shot in self.mini_gun_shots]
         marshalled_crates = [crate.marshal() for crate in self.crates]
         marshalled_shield_slots = [slot.marshal() for slot in self.shield_slots]
         marshalled_engine_slots = [slot.marshal() for slot in self.engine_slots]
@@ -89,6 +94,8 @@ class ServerTickMessage(Message):
             ":".join(active_laser_shots or [str(NONE_MARKER)]),
             "%d" % len(marshalled_in_flight_missiles),
             ":".join(marshalled_in_flight_missiles or [str(NONE_MARKER)]),
+            "%d" % len(marshalled_mini_gun_shots),
+            ":".join(marshalled_mini_gun_shots or [str(NONE_MARKER)]),
             "%f" % self.power_allocation_guns,
             "%f" % self.power_allocation_shields,
             "%f" % self.power_allocation_engines,
@@ -124,5 +131,6 @@ class ServerTickMessage(Message):
             weapon_slots=fields_map["weapon_slots"],
             engine_slots=fields_map["engine_slots"],
             shield_slots=fields_map["shield_slots"],
-            in_flight_missiles=fields_map["in_flight_missiles"]
+            in_flight_missiles=fields_map["in_flight_missiles"],
+            mini_gun_shots=fields_map["mini_gun_shots"],
         )

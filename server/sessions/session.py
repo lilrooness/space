@@ -92,6 +92,7 @@ class Session():
                 shield_slots=list(session_ship_object.shield_slots.values()),
                 engine_slots=list(session_ship_object.engine_slots.values()),
                 hull_slots=list(session_ship_object.hull_slots.values()),
+                mini_gun_shots=list(session_system_object.mini_gun_shots.values())
             ).marshal()
 
             bytes = message.encode()
