@@ -88,7 +88,7 @@ if __name__ == "__main__":
                 except Exception:
                     session.alive = False
                 if request:
-                    process_command(systems, session, request)
+                    process_command(systems, session, request, ticks)
 
         if delta.microseconds >= SERVER_TICK_TIME:
             ticks += 1

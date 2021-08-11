@@ -11,7 +11,7 @@ def tick(systems, ticks):
 
     for _, system in systems.items():
         system.active_laser_shots = {}
-        system.tick()
+        system.tick(tick=ticks)
 
         # tick_ship_slots
         all_ship_ids = list(system.ships.keys())

@@ -1,7 +1,6 @@
 from common.const import get_speed
 from common.entities.entity import Entity
 from common.serializable.serializable import FIELD_TYPE_VALUE
-from common.utils import dist
 
 
 class Ship(Entity):
@@ -49,12 +48,14 @@ class Ship(Entity):
         self.weapon_slots = weapon_slots
         self.hull_slots   = hull_slots
 
-    def tick(self, delta=1.0):
+    def tick(self, delta=1.0, currentTick=None):
         if self.warp:
-            if self.x != self.warp.endPos[0] or self.y != self.warp.endPos[1]:
-                dp = (self.warp.vector[0] * self.warp.speed, self.warp.vector[1] * self.warp.speed)
-                self.x += dp[0]
-                self.y += dp[1]
+            if self.warp.done:
+                self.x = self.warp.endPos[0]
+                self.y = self.warp.endPos[1]
+                self.warp = None
+            else:
+                self.warp.tick(currentTick)
         else:
             speed = get_speed(self.power_allocation_engines)
             self.x += (self.vx * speed) * delta
@@ -78,10 +79,12 @@ class Ship(Entity):
 
 class Warp():
 
-    def __init__(self, startPos, endPos):
-        self.startPos = startPos
+    def __init__(self, endPos, serverTickStarted, warpTicks=100000):
         self.endPos = endPos
+        self.warpTicks = warpTicks
+        self.serverTickStarted = serverTickStarted
+        self.done = False
 
-        d = dist(endPos[0], endPos[1], startPos[0], startPos[1])
-        self.vector = ((endPos[0] - startPos[0]) / d, (endPos[1] - startPos[1]) / d)
-        self.speed = d / 5
+    def tick(self, tick):
+        ticksSinceStarted = tick - self.serverTickStarted
+        self.done = ticksSinceStarted >= self.warpTicks

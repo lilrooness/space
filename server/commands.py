@@ -4,8 +4,10 @@ from common.commands.request_power_change import RequestPowerChange
 from common.commands.request_slot_change import RequestSlotChange
 from common.commands.request_target import RequestTargetCommand
 from common.commands.request_untarget import RequestUnTargetCommand
+from common.commands.request_warp import RequestWarpCommand
 from common.const import CRATE_LOOT_RANGE
 from common.entities.loot.lootitem import LootItem
+from common.entities.ship import Warp
 from common.messages.crate_contents import CrateContentsMessage
 from common.utils import dist, normalise
 from server.game.slot_types.slot_types import slot_type_can_target, set_slot_target
@@ -13,9 +15,16 @@ from server.id import new_id
 from server.sessions.sessions import queue_message
 
 
-def process_command(systems, session, command):
+def process_command(systems, session, command, current_tick):
 
-    if command.COMMAND_NAME == RequestSlotChange.COMMAND_NAME:
+    if command.COMMAND_NAME == RequestWarpCommand.COMMAND_NAME:
+        session_system = systems[session.solar_system_id]
+        session_ship = session_system.ships[session.ship_id]
+
+        if not session_ship.warp:
+            session_ship.warp = Warp((command.x, command.y), current_tick)
+
+    elif command.COMMAND_NAME == RequestSlotChange.COMMAND_NAME:
         session_system = systems[session.solar_system_id]
         session_ship = session_system.ships[session.ship_id]
 

@@ -25,9 +25,9 @@ class SolarSystem(Entity):
             crate_2.id: crate_2,
         }
 
-    def tick(self, delta=1.0):
+    def tick(self, delta=1.0, tick=None):
         for _id, ship in self.ships.items():
-            ship.tick(delta=delta)
+            ship.tick(delta=delta, currentTick=tick)
 
         for _id, missile in self.in_flight_missiles.items():
             missile.tick(self.ships, delta=delta)
