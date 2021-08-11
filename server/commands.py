@@ -9,6 +9,7 @@ from common.const import CRATE_LOOT_RANGE
 from common.entities.loot.lootitem import LootItem
 from common.entities.ship import Warp
 from common.messages.crate_contents import CrateContentsMessage
+from common.messages.warp_started import WarpStartedMessage
 from common.utils import dist, normalise
 from server.game.slot_types.slot_types import slot_type_can_target, set_slot_target
 from server.id import new_id
@@ -23,6 +24,16 @@ def process_command(systems, session, command, current_tick):
 
         if not session_ship.warp:
             session_ship.warp = Warp((command.x, command.y), current_tick)
+            queue_message(
+                WarpStartedMessage(
+                    session_ship.id,
+                    session_ship.warp.warpTicks,
+                    session_ship.warp.endPos[0],
+                    session_ship.warp.endPos[1]
+                ),
+                [session.id],
+            )
+
 
     elif command.COMMAND_NAME == RequestSlotChange.COMMAND_NAME:
         session_system = systems[session.solar_system_id]

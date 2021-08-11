@@ -79,7 +79,7 @@ class Ship(Entity):
 
 class Warp():
 
-    def __init__(self, endPos, serverTickStarted, warpTicks=100000):
+    def __init__(self, endPos, serverTickStarted, warpTicks=100):
         self.endPos = endPos
         self.warpTicks = warpTicks
         self.serverTickStarted = serverTickStarted

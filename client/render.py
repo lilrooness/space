@@ -132,6 +132,12 @@ def render_game_view(game, screen, screenRect):
         pygame.draw.circle(screen, scheme["explosion_frontier"], world_to_screen(game, explosion.x, explosion.y),
                            explosion.drawRadius / get_camera_zoom(), width=1)
 
+    for warp_effect in game.warp_effects:
+        pygame.draw.circle(screen, scheme["explosion_radius"], world_to_screen(game, warp_effect.x, warp_effect.y),
+                           warp_effect.radius / get_camera_zoom(), width=1)
+        pygame.draw.circle(screen, scheme["explosion_frontier"], world_to_screen(game, warp_effect.x, warp_effect.y),
+                           warp_effect.drawRadius / get_camera_zoom(), width=1)
+
     for _, crate in game.crates.items():
         crate_screen_space_cords = world_to_screen(game, crate.x, crate.y)
         crate_rect = pygame.Rect(

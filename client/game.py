@@ -3,11 +3,13 @@ from datetime import datetime
 from client import camera
 from client.vfx.explosion_effect import ExplosionEffect
 from client.vfx.minigun_shot_effect import MinigunShotEffect
+from client.vfx.warp_effect import WarpEffect
 from common.messages.crate_contents import CrateContentsMessage
 from common.messages.explosion import ExplosionMessage
 from common.messages.messages import ServerTickMessage
 from client.const import SHIP_HEIGHT, SHIP_WIDTH
 from common.messages.ship_damage import ShipDamageMessage
+from common.messages.warp_started import WarpStartedMessage
 from common.net_const import SERVER_TICK_TIME
 
 
@@ -37,11 +39,13 @@ class Game():
         self.hull_slots =[]
         self.selected_slot_id = None
         self.explosions = []
+        self.warp_effects = []
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
 
         delta = float(time_since_last_tick.microseconds) / float(SERVER_TICK_TIME)
+
         for ship_id, ship in self.ships.items():
             ship.tick(
                 delta=2*(delta - self.last_delta),
@@ -61,6 +65,15 @@ class Game():
 
         for explosion in done_explosions:
             self.explosions.remove(explosion)
+
+        done_warp_effects = []
+        for warp_effect in self.warp_effects:
+            warp_effect.tick(self.tick_number, delta)
+            if warp_effect.done:
+                done_warp_effects.append(warp_effect)
+
+        for warp_effect in done_warp_effects:
+            self.warp_effects.remove(warp_effect)
 
         done_minigun_shots = []
         for shot in self.mini_gun_shots_effects:
@@ -153,6 +166,16 @@ def handle_explosion_message(game, message):
         message.radius,
     ))
 
+def handle_warp_started_message(game, message):
+    warping_ship = game.ships[message.ship_id]
+    game.warp_effects.append(WarpEffect(
+        game.tick_number,
+        warping_ship.x,
+        warping_ship.y,
+        200,
+        animation_ticks=message.ticks_to_complete,
+    ))
+
 def pick_ship(game, ship, mouse):
     shipX, shipY = camera.world_to_screen(game, ship.x, ship.y)
     if mouse.x >= shipX - SHIP_WIDTH/2 and mouse.x <= shipX + SHIP_WIDTH/2:
@@ -160,9 +183,12 @@ def pick_ship(game, ship, mouse):
             return True
     return False
 
+
+
 message_handlers = {
     ServerTickMessage: handle_server_tick_message,
     ShipDamageMessage: handle_ship_damage_message,
     CrateContentsMessage: handle_crate_contents_message,
     ExplosionMessage: handle_explosion_message,
+    WarpStartedMessage: handle_warp_started_message,
 }

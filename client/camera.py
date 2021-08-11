@@ -81,3 +81,12 @@ def world_to_screen(game, x, y):
     screen_space_y = (camera_space_y + ship.y) - _camera_y_transform
 
     return (screen_space_x, screen_space_y)
+
+def screen_to_world(game, screen_x, screen_y):
+    ship = game.ships[game.ship_id]
+
+    # inverse equation of world_to_screen
+    world_x = ((screen_x + _camera_x_transform - ship.x) * _zoom) + ship.x
+    world_y = ((screen_y + _camera_y_transform - ship.y) * _zoom) + ship.y
+
+    return (world_x, world_y)

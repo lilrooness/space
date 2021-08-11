@@ -4,7 +4,7 @@ from select import select
 import pygame
 
 from client import camera
-from client.camera import set_camera, get_camera_zoom, set_camera_zoom
+from client.camera import set_camera, get_camera_zoom, set_camera_zoom, screen_to_world
 from client.const import SCREEN_H, SCREEN_W
 from client.game import Game, message_handlers, pick_ship
 from client.mouse import get_mouse
@@ -13,6 +13,7 @@ from client.session import process_out_message_queue, queue_to_send
 from client.texture import load_loot_icon_textures
 from common.commands.request_moveto import RequestMoveToCommand
 from common.commands.request_target import RequestTargetCommand
+from common.commands.request_warp import RequestWarpCommand
 from common.messages.messages import message_types
 from common.net_const import HEADER_SIZE
 
@@ -36,7 +37,6 @@ def receive(client_socket):
     return messages
 
 def process_input(game):
-    camera_x_transform, camera_y_transform = camera.get_camera()
     if get_mouse().down_this_frame:
         for ship_id, ship in game.ships.items():
             if ship_id != game.ship_id and game.selected_slot_id:
@@ -44,7 +44,12 @@ def process_input(game):
                     queue_to_send(RequestTargetCommand(ship_id, game.selected_slot_id))
                     return
 
-        queue_to_send(RequestMoveToCommand(mouseX + camera_x_transform, mouseY + camera_y_transform), optimistic_state=game)
+
+        world_coords = screen_to_world(game, mouseX, mouseY)
+        if get_camera_zoom() < 8:
+            queue_to_send(RequestMoveToCommand(*world_coords), optimistic_state=game)
+        else:
+            queue_to_send(RequestWarpCommand(*world_coords))
 
     if get_mouse().wheel_scrolled:
         set_camera_zoom(get_camera_zoom() + get_mouse().wheel_scroll_amount)

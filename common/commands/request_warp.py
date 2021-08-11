@@ -5,12 +5,11 @@ class RequestWarpCommand(Command):
     COMMAND_NAME = "request_warp"
 
     def __init__(self, x, y):
-        super(RequestWarpCommand).__init__(self)
         self.x = x
         self.y = y
 
     def marshal(self):
-        return self.COMMAND_NAME + ":" + self.x + ":" + self.y
+        return self.COMMAND_NAME + ":" + str(self.x) + ":" + str(self.y)
 
     @classmethod
     def unmarshal(cls, serialized_string):
