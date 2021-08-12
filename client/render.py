@@ -10,7 +10,7 @@ from client.ui.action_bar.action_bar import action_bar
 from client.ui.crate_window.crate_window import crate_window
 from client.ui.power_window.power_window import power_window
 from client.ui.slot_window.slot_window import slot_window
-from common.const import get_laser_range, CRATE_LOOT_RANGE
+from common.const import get_laser_range, CRATE_LOOT_RANGE, BASE_SENSOR_RANGE
 from common.utils import dist
 
 
@@ -38,6 +38,9 @@ def render_game(game, screen, screenRect):
         render_map_view(game, screen, screenRect)
 
 def render_map_view(game, screen, _screenRect):
+    this_ship = game.ships[game.ship_id]
+    pygame.draw.circle(screen, scheme["sensor_range_marker"], world_to_screen(game, this_ship.x, this_ship.y),
+                       BASE_SENSOR_RANGE / float(get_camera_zoom()), width=1)
     for ship_id, ship in game.ships.items():
         ship_screen_space_coords = world_to_screen(
             game,
@@ -73,6 +76,8 @@ def render_game_view(game, screen, screenRect):
         laser_range * 2,
     )
     pygame.draw.arc(screen, scheme["range_marker"], laserRangeRect, 0, math.pi * 2, width=1)
+
+    pygame.draw.circle(screen, scheme["sensor_range_marker"], world_to_screen(game, ship.x, ship.y), BASE_SENSOR_RANGE / float(get_camera_zoom()), width=1)
 
     for ship_id, ship in game.ships.items():
 

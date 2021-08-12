@@ -22,3 +22,11 @@ def queue_message_for_broadcast(message):
             _message_queue[id].append(message)
         else:
             _message_queue[id] = [message]
+
+def get_session_ids_for_ship_ids(ship_ids):
+    session_ids = []
+    for session_id, session in _sessions.items():
+        if session.ship_id in ship_ids:
+            session_ids.append(session_id)
+
+    return session_ids

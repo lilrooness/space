@@ -1,5 +1,5 @@
 from common.const import ENGINE_POWER_DAMAGE_THRESHOLD, ENGINE_DAMAGE_INCREASE_RATE, get_laser_range, \
-    BASE_MINI_GUN_RANGE, BASE_MINI_GUN_VELOCITY, BASE_MINI_GUN_DAMAGE
+    BASE_MINI_GUN_RANGE, BASE_MINI_GUN_VELOCITY, BASE_MINI_GUN_DAMAGE, BASE_SENSOR_RANGE
 from common.messages.explosion import ExplosionMessage
 from common.messages.ship_damage import ShipDamageMessage
 from common.utils import dist
@@ -29,6 +29,22 @@ def tick(systems, ticks):
             _detonate_missile(system, missile_id)
             del system.in_flight_missiles[missile_id]
 
+def get_ship_ids_in_sensor_range_of_point(system, x, y):
+    ids = []
+    for _, ship in system.ships.items():
+        if dist(x, y, ship.x, ship.y) <= BASE_SENSOR_RANGE:
+            ids.append(ship.id)
+
+    return ids
+
+def get_ship_ids_in_sensor_range_of_ship(system, ship_id):
+    ids = []
+    this_ship = system.ships[ship_id]
+    for _, ship in system.ships.items():
+        if ship.id is not ship_id and dist(ship.x, ship.y, this_ship.x, this_ship.y) <= BASE_SENSOR_RANGE:
+            ids.append(ship.id)
+
+    return ids
 
 def _get_detonatable_missiles(system):
 

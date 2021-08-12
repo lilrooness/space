@@ -56,6 +56,7 @@ scheme = {
     "button_hover": LIGHT_GRAY,
     "button_down": BLACK,
     "range_marker": YELLOW,
+    "sensor_range_marker": LIGHT_GRAY,
     "crate": WHITE,
     "banner_background": DARK_GRAY,
     "banner_foreground": WHITE,

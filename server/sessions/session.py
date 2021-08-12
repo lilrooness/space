@@ -4,6 +4,7 @@ from common.commands.commands import commands
 from common.entities.ship import Warp
 from common.messages.server_tick import ServerTickMessage
 from common.net_const import HEADER_SIZE
+from server.game.server_game import get_ship_ids_in_sensor_range_of_ship
 from server.id import new_id
 
 
@@ -74,7 +75,7 @@ class Session():
             session_system_object = systems[self.solar_system_id]
             session_ship_object = session_system_object.ships[self.ship_id]
 
-            visible_ships = self._get_visible_ships_list(session_system_object.ships)
+            visible_ships = self._get_visible_ships_list(session_system_object)
             active_laser_shots = [shot for _id, shot in session_system_object.active_laser_shots.items()]
             visible_crates = [crate for _id, crate, in session_system_object.crates.items()]
             in_flight_missiles = [missile for _id, missile in session_system_object.in_flight_missiles.items()]
@@ -110,9 +111,10 @@ class Session():
             except Exception:
                 self.alive = False
 
-    def _get_visible_ships_list(self, ships):
-        visible_ships = []
-        for id, ship in ships.items():
-            visible_ships.append(ship)
+    def _get_visible_ships_list(self, system):
+        visible_ships = [system.ships[self.ship_id]]
+
+        in_range_ships = [system.ships[ship_id] for ship_id in get_ship_ids_in_sensor_range_of_ship(system, self.ship_id)]
+        visible_ships = visible_ships + in_range_ships
 
         return visible_ships

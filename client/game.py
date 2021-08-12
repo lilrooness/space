@@ -9,6 +9,7 @@ from common.messages.explosion import ExplosionMessage
 from common.messages.messages import ServerTickMessage
 from client.const import SHIP_HEIGHT, SHIP_WIDTH
 from common.messages.ship_damage import ShipDamageMessage
+from common.messages.warp_exit_appeared import WarpExitAppearedMessage
 from common.messages.warp_started import WarpStartedMessage
 from common.net_const import SERVER_TICK_TIME
 
@@ -176,6 +177,15 @@ def handle_warp_started_message(game, message):
         animation_ticks=message.ticks_to_complete,
     ))
 
+def handle_warp_exit_appeared_message(game, message):
+    game.warp_effects.append(WarpEffect(
+        game.tick_number,
+        message.x,
+        message.y,
+        200,
+        animation_ticks=message.ticks_to_complete,
+    ))
+
 def pick_ship(game, ship, mouse):
     shipX, shipY = camera.world_to_screen(game, ship.x, ship.y)
     if mouse.x >= shipX - SHIP_WIDTH/2 and mouse.x <= shipX + SHIP_WIDTH/2:
@@ -191,4 +201,5 @@ message_handlers = {
     CrateContentsMessage: handle_crate_contents_message,
     ExplosionMessage: handle_explosion_message,
     WarpStartedMessage: handle_warp_started_message,
+    WarpExitAppearedMessage: handle_warp_exit_appeared_message,
 }

@@ -9,11 +9,13 @@ from common.const import CRATE_LOOT_RANGE
 from common.entities.loot.lootitem import LootItem
 from common.entities.ship import Warp
 from common.messages.crate_contents import CrateContentsMessage
+from common.messages.warp_exit_appeared import WarpExitAppearedMessage
 from common.messages.warp_started import WarpStartedMessage
 from common.utils import dist, normalise
+from server.game.server_game import get_ship_ids_in_sensor_range_of_ship, get_ship_ids_in_sensor_range_of_point
 from server.game.slot_types.slot_types import slot_type_can_target, set_slot_target
 from server.id import new_id
-from server.sessions.sessions import queue_message
+from server.sessions.sessions import queue_message, get_session_ids_for_ship_ids
 
 
 def process_command(systems, session, command, current_tick):
@@ -24,6 +26,12 @@ def process_command(systems, session, command, current_tick):
 
         if not session_ship.warp:
             session_ship.warp = Warp((command.x, command.y), current_tick)
+            session_ids_in_range = get_session_ids_for_ship_ids(
+                get_ship_ids_in_sensor_range_of_ship(
+                    session_system,
+                    session_ship.id
+                )
+            )
             queue_message(
                 WarpStartedMessage(
                     session_ship.id,
@@ -31,7 +39,24 @@ def process_command(systems, session, command, current_tick):
                     session_ship.warp.endPos[0],
                     session_ship.warp.endPos[1]
                 ),
-                [session.id],
+                [session.id] + session_ids_in_range,
+            )
+
+            session_ids_can_see_dest = get_session_ids_for_ship_ids(
+                get_ship_ids_in_sensor_range_of_point(
+                    session_system,
+                    session_ship.warp.endPos[0],
+                    session_ship.warp.endPos[1]
+                )
+            )
+
+            queue_message(
+                WarpExitAppearedMessage(
+                    session_ship.warp.warpTicks,
+                    session_ship.warp.endPos[0],
+                    session_ship.warp.endPos[1]
+                ),
+                session_ids_can_see_dest,
             )
 
 
