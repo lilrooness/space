@@ -41,6 +41,8 @@ class Game():
         self.selected_slot_id = None
         self.explosions = []
         self.warp_effects = []
+        self.sensor_towers = {}
+        self.sensor_tower_boost = False
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
@@ -129,10 +131,15 @@ def handle_server_tick_message(game, message):
             crate.contents = game.crates[crate.id].contents
         crates[crate.id] = crate
 
+    sensor_towers = {}
+    for tower in message.sensor_towers:
+        sensor_towers[tower.id] = tower
+
     game.active_laser_shots = active_laser_shots
     game.in_flight_missiles = in_flight_missiles
     game.ships = ships
     game.crates = crates
+    game.sensor_towers = sensor_towers
     game.resources = message.resources
     game.power_allocation_shields = message.power_allocation_shields
     game.power_allocation_guns = message.power_allocation_guns
@@ -141,6 +148,7 @@ def handle_server_tick_message(game, message):
     game.shield_slots = message.shield_slots
     game.engine_slots = message.engine_slots
     game.hull_slots = message.hull_slots
+    game.sensor_tower_boost = message.sensor_tower_boost
 
     if message.targeted_by_ship_id > -1:
         game.targeted_by_ship_id = message.targeted_by_ship_id

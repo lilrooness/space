@@ -3,7 +3,7 @@ import pygame
 from client.const import SCREEN_W, scheme
 from client.mouse import get_mouse
 from client.ui.components.button import button
-from client.ui.components.gauge import verticle_gauge
+from client.ui.components.gauge import gauge
 from client.ui.power_window.state import PowerWindowState
 
 
@@ -34,7 +34,7 @@ def power_window(game, screen, last_state):
         20,
         bar_height
     )
-    verticle_gauge(
+    gauge(
         screen,
         scheme["ui_background_highlight"],
         scheme["engines_power"],

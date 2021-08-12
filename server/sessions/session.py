@@ -4,7 +4,7 @@ from common.commands.commands import commands
 from common.entities.ship import Warp
 from common.messages.server_tick import ServerTickMessage
 from common.net_const import HEADER_SIZE
-from server.game.server_game import get_ship_ids_in_sensor_range_of_ship
+from server.game.server_game import get_ship_ids_in_sensor_range_of_ship, does_ship_have_sensor_tower_buff
 from server.id import new_id
 
 
@@ -93,7 +93,9 @@ class Session():
                 shield_slots=list(session_ship_object.shield_slots.values()),
                 engine_slots=list(session_ship_object.engine_slots.values()),
                 hull_slots=list(session_ship_object.hull_slots.values()),
-                mini_gun_shots=list(session_system_object.mini_gun_shots.values())
+                mini_gun_shots=list(session_system_object.mini_gun_shots.values()),
+                sensor_towers=list(session_system_object.sensor_towers.values()),
+                sensor_tower_boost=does_ship_have_sensor_tower_buff(session_system_object, self.ship_id)
             ).marshal()
 
             bytes = message.encode()
@@ -112,9 +114,15 @@ class Session():
                 self.alive = False
 
     def _get_visible_ships_list(self, system):
-        visible_ships = [system.ships[self.ship_id]]
 
-        in_range_ships = [system.ships[ship_id] for ship_id in get_ship_ids_in_sensor_range_of_ship(system, self.ship_id)]
-        visible_ships = visible_ships + in_range_ships
+        visible_ships = []
+
+        if does_ship_have_sensor_tower_buff(system, self.ship_id):
+            visible_ships = list(system.ships.values())
+        else:
+            visible_ships = [system.ships[self.ship_id]]
+
+            in_range_ships = [system.ships[ship_id] for ship_id in get_ship_ids_in_sensor_range_of_ship(system, self.ship_id)]
+            visible_ships = visible_ships + in_range_ships
 
         return visible_ships

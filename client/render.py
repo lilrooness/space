@@ -3,13 +3,15 @@ import math
 import pygame
 
 from client.camera import get_camera_zoom, world_to_screen
-from client.const import scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, RETICULE_SIZE, CRATE_WIDTH, CRATE_HEIGHT
+from client.const import scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, RETICULE_SIZE, CRATE_WIDTH, CRATE_HEIGHT, \
+    TOWER_WIDTH, TOWER_HEIGHT
 from client.game import pick_ship
 from client.mouse import get_mouse
 from client.ui.action_bar.action_bar import action_bar
 from client.ui.crate_window.crate_window import crate_window
 from client.ui.power_window.power_window import power_window
 from client.ui.slot_window.slot_window import slot_window
+from client.ui.tower_ui.tower_ui import tower_ui
 from common.const import get_laser_range, CRATE_LOOT_RANGE, BASE_SENSOR_RANGE
 from common.utils import dist
 
@@ -24,13 +26,21 @@ def render_static_ui(game, screen, old_state, font):
         if dist_to_crate <= CRATE_LOOT_RANGE:
             crate_window(game, screen, font, crate_id)
 
+    for tower_id, _tower in game.sensor_towers.items():
+        tower_ui(game, screen, tower_id)
+
     slot_window(screen, game, 50, 50)
     action_bar(screen, game, font)
 
     return state
 
 def render_game(game, screen, screenRect):
-    pygame.draw.rect(screen, scheme["background"], screenRect)
+    background_color = scheme["background"]
+
+    if game.sensor_tower_boost:
+        background_color = scheme["sensor_tower_boost_background"]
+
+    pygame.draw.rect(screen, background_color, screenRect)
 
     if get_camera_zoom() < 8:
         render_game_view(game, screen, screenRect)
@@ -39,8 +49,11 @@ def render_game(game, screen, screenRect):
 
 def render_map_view(game, screen, _screenRect):
     this_ship = game.ships[game.ship_id]
-    pygame.draw.circle(screen, scheme["sensor_range_marker"], world_to_screen(game, this_ship.x, this_ship.y),
-                       BASE_SENSOR_RANGE / float(get_camera_zoom()), width=1)
+
+    if not game.sensor_tower_boost:
+        pygame.draw.circle(screen, scheme["sensor_range_marker"], world_to_screen(game, this_ship.x, this_ship.y),
+                           BASE_SENSOR_RANGE / float(get_camera_zoom()), width=1)
+
     for ship_id, ship in game.ships.items():
         ship_screen_space_coords = world_to_screen(
             game,
@@ -58,6 +71,11 @@ def render_map_view(game, screen, _screenRect):
     for _id, crate in game.crates.items():
         crate_screen_space_coords = world_to_screen(game, crate.x, crate.y)
         pygame.draw.circle(screen, scheme["crate"], crate_screen_space_coords, 2)
+
+    for _id, tower in game.sensor_towers.items():
+        tower_screen_space_coords = world_to_screen(game, tower.x, tower.y)
+        pygame.draw.circle(screen, scheme["sensor_tower"], tower_screen_space_coords, 2)
+        pygame.draw.circle(screen, scheme["sensor_tower_range"], tower_screen_space_coords, tower.connection_range / float(get_camera_zoom()), width=1)
 
 def render_game_view(game, screen, screenRect):
     ship = game.ships[game.ship_id]
@@ -77,7 +95,8 @@ def render_game_view(game, screen, screenRect):
     )
     pygame.draw.arc(screen, scheme["range_marker"], laserRangeRect, 0, math.pi * 2, width=1)
 
-    pygame.draw.circle(screen, scheme["sensor_range_marker"], world_to_screen(game, ship.x, ship.y), BASE_SENSOR_RANGE / float(get_camera_zoom()), width=1)
+    if not game.sensor_tower_boost:
+        pygame.draw.circle(screen, scheme["sensor_range_marker"], world_to_screen(game, ship.x, ship.y), BASE_SENSOR_RANGE / float(get_camera_zoom()), width=1)
 
     for ship_id, ship in game.ships.items():
 
@@ -142,6 +161,20 @@ def render_game_view(game, screen, screenRect):
                            warp_effect.radius / get_camera_zoom(), width=1)
         pygame.draw.circle(screen, scheme["explosion_frontier"], world_to_screen(game, warp_effect.x, warp_effect.y),
                            warp_effect.drawRadius / get_camera_zoom(), width=1)
+
+
+    for _, tower in game.sensor_towers.items():
+        tower_screen_space_coords = world_to_screen(game, tower.x, tower.y)
+        tower_rect = pygame.Rect(
+            tower_screen_space_coords[0] - TOWER_WIDTH/2,
+            tower_screen_space_coords[1] - TOWER_HEIGHT/2,
+            TOWER_WIDTH,
+            TOWER_HEIGHT,
+        )
+        pygame.draw.rect(screen, scheme["sensor_tower"], tower_rect)
+        pygame.draw.circle(screen, scheme["sensor_tower_range"], tower_screen_space_coords,
+                           tower.connection_range / float(get_camera_zoom()), width=1)
+
 
     for _, crate in game.crates.items():
         crate_screen_space_cords = world_to_screen(game, crate.x, crate.y)

@@ -2,6 +2,7 @@ from common.entities.crate import Crate
 from common.entities.inflight_missile import InFlightMissile
 from common.entities.laser_shot import LaserShot
 from common.entities.mini_gun_shot import MinigunShot
+from common.entities.sensor_tower import SensorTower
 from common.entities.ship import Ship
 from common.entities.slot import Slot
 from common.messages.message import Message
@@ -32,6 +33,8 @@ class ServerTickMessage(Message):
             weapon_slots = [],
             hull_slots = [],
             mini_gun_shots = [],
+            sensor_towers = [],
+            sensor_tower_boost = False,
     ):
         self.ship_id = ship_id
         self.solar_system_id = solar_system_id
@@ -50,6 +53,8 @@ class ServerTickMessage(Message):
         self.hull_slots   = hull_slots
         self.in_flight_missiles = in_flight_missiles
         self.mini_gun_shots = mini_gun_shots
+        self.sensor_towers = sensor_towers
+        self.sensor_tower_boost = sensor_tower_boost
 
     @classmethod
     def fields(cls):
@@ -69,6 +74,8 @@ class ServerTickMessage(Message):
             "engine_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
             "weapon_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
             "hull_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
+            "sensor_towers": (FIELD_TYPE_MULTIPLE_ENTITIES, SensorTower),
+            "sensor_tower_boost": (FIELD_TYPE_VALUE, bool)
         }
 
     def marshal(self):
@@ -82,6 +89,7 @@ class ServerTickMessage(Message):
         marshalled_engine_slots = [slot.marshal() for slot in self.engine_slots]
         marshalled_weapon_slots = [slot.marshal() for slot in self.weapon_slots]
         marshalled_hull_slots = [slot.marshal() for slot in self.hull_slots]
+        marshalled_sensor_towers = [tower.marshal() for tower in self.sensor_towers]
 
         message = [
             self.MESSAGE_NAME,
@@ -109,6 +117,9 @@ class ServerTickMessage(Message):
             ":".join(marshalled_weapon_slots),
             "%d" % len(self.hull_slots),
             ":".join(marshalled_hull_slots),
+            "%d" % len(self.sensor_towers),
+            ":".join(marshalled_sensor_towers or [str(NONE_MARKER)]),
+            str(self.sensor_tower_boost),
         ]
 
         return ":".join(message)
@@ -133,4 +144,6 @@ class ServerTickMessage(Message):
             shield_slots=fields_map["shield_slots"],
             in_flight_missiles=fields_map["in_flight_missiles"],
             mini_gun_shots=fields_map["mini_gun_shots"],
+            sensor_towers=fields_map["sensor_towers"],
+            sensor_tower_boost=fields_map["sensor_tower_boost"],
         )

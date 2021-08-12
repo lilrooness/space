@@ -27,11 +27,15 @@ SHIP_SHIELD_ARC_DIAM = 30
 CRATE_WIDTH = 10
 CRATE_HEIGHT = 10
 
+TOWER_WIDTH = 10
+TOWER_HEIGHT = 30
+
 LOOT_ICON_WIDTH = 50
 LOOT_ICON_HEIGHT = 50
 
 scheme = {
     "background": BLACK,
+    "sensor_tower_boost_background": GRAY,
     "entity": WHITE,
     "map_me": GREEN,
     "map_other": RED,
@@ -62,6 +66,10 @@ scheme = {
     "banner_foreground": WHITE,
     "explosion_radius": RED,
     "explosion_frontier": CYAN,
+    "sensor_tower": CYAN,
+    "sensor_tower_range": LIGHT_GRAY,
+    "online_tower_gauge": CYAN,
+    "offline_tower_gauge": WHITE,
 }
 
 MISSILE_LAUNCHER_ICON = "client/res/ui/texture/icons/missile-pod.png"
