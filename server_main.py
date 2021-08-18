@@ -19,7 +19,7 @@ def accept_new_connections(server_socket, sessions, systems):
     if len(readable) == 1:
         connection, address = server_socket.accept()
 
-        weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=MINI_GUN, id_fun=new_id)
+        weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=LASER_TURRET, id_fun=new_id)
         engine_slot = Slot(type_constraint=ENGINE_CONSTRAINT, id_fun=new_id)
         shield_slot = Slot(type_constraint=SHIELD_CONSTRAINT, id_fun=new_id)
         hull_slot = Slot(type_constraint=HULL_CONSTRAINT, id_fun=new_id)

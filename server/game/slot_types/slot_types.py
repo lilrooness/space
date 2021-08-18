@@ -1,18 +1,15 @@
 import random
 
+from common.ballistics import get_laser_turret_miss_chance, get_mini_gun_miss_chance
 from common.const import LASER_TURRET, BASE_LASER_RANGE, get_speed, BASE_LASER_DAMAGE, MISSILE_LAUNCHER, \
-    BASE_MISSILE_RANGE, BASE_MISSILE_DAMAGE, MINI_GUN, BASE_MINI_GUN_RANGE, BASE_MINI_GUN_VELOCITY
+    BASE_MISSILE_RANGE, BASE_MISSILE_DAMAGE, MINI_GUN, BASE_MINI_GUN_RANGE, BASE_MINI_GUN_VELOCITY, \
+    MINI_GUN_SHOT_FREQUENCY, MISSILE_SHOT_FREQUENCY, LASER_SHOT_FREQUENCY
 from common.entities.inflight_missile import InFlightMissile
 from common.entities.laser_shot import LaserShot
 from common.entities.mini_gun_shot import MinigunShot
 from common.utils import dist, get_transversal_from_perspective_of_a, get_radial_velocity
 from server.id import new_id
 
-BASE_LASER_MISS_CHANCE = 0.1
-BASE_MINI_GUN_MISS_CHANCE = 0.1
-LASER_SHOT_FREQUENCY = 0.05
-MISSILE_SHOT_FREQUENCY = 0.005
-MINI_GUN_SHOT_FREQUENCY = 0.05
 
 def slot_type_can_target(systems, owner_session, slot_type_id, target_id):
     if slot_type_id == LASER_TURRET:
@@ -96,7 +93,7 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                     target_vx,
                     target_vy
                 )
-                miss_chance = transversal_velocity * 5 * BASE_MINI_GUN_MISS_CHANCE
+                miss_chance = get_mini_gun_miss_chance(transversal_velocity)
                 missed = True
                 if random.random() > miss_chance:
                     missed =  False
@@ -183,7 +180,7 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                     target_vx,
                     target_vy
                 )
-                miss_chance = transversal_velocity * 5 * BASE_LASER_MISS_CHANCE
+                miss_chance = get_laser_turret_miss_chance(transversal_velocity)
 
                 missed = True
                 if random.random() > miss_chance:

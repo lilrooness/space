@@ -1,5 +1,6 @@
+from common.ballistics import get_mini_gun_shot_damage
 from common.const import ENGINE_POWER_DAMAGE_THRESHOLD, ENGINE_DAMAGE_INCREASE_RATE, get_laser_range, \
-    BASE_MINI_GUN_RANGE, BASE_MINI_GUN_VELOCITY, BASE_MINI_GUN_DAMAGE, BASE_SENSOR_RANGE
+    BASE_MINI_GUN_RANGE, BASE_SENSOR_RANGE
 from common.entities.sensor_tower import ACTIVATION_TICK_AMOUNT
 from common.messages.explosion import ExplosionMessage
 from common.messages.ship_damage import ShipDamageMessage
@@ -101,8 +102,7 @@ def _resolve_mini_gun_damage(system):
         range = dist(target_ship.x, target_ship.y, shooting_ship.x, shooting_ship.y)
 
         if not shot.miss and not target_ship.dead and range <= BASE_MINI_GUN_RANGE:
-            velocityDamageModifier = shot.velocity / BASE_MINI_GUN_VELOCITY * 2
-            damage = velocityDamageModifier * BASE_MINI_GUN_DAMAGE
+            damage = get_mini_gun_shot_damage(shot.velocity)
             _apply_damage_to_ship(target_ship, damage)
 
         shot.resolved = True

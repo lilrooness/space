@@ -12,6 +12,7 @@ YELLOW = pygame.Color(255, 255, 0, 255)
 RED = pygame.Color(255, 0, 0, 255)
 RED_TRANSPARENT = pygame.Color(255, 0, 0, 1)
 CYAN = pygame.Color(0, 255, 255, 255)
+PINK = pygame.Color(255, 20, 147, 255)
 
 SCREEN_W = 640*2
 SCREEN_H = 480*2
@@ -41,7 +42,7 @@ scheme = {
     "map_other": RED,
     "foreground": GRAY,
     "hover_reticule": YELLOW,
-    "targeted_reticule": GREEN,
+    "targeted_reticule": PINK,
     "targeted_by_reticule": RED,
     "laser": YELLOW,
     "death_overlay": RED_TRANSPARENT,

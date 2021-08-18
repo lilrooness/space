@@ -7,6 +7,7 @@ from client.const import scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, RET
     TOWER_WIDTH, TOWER_HEIGHT
 from client.game import pick_ship
 from client.mouse import get_mouse
+from client.reticules import draw_hover_reticule, draw_targetted_reticule
 from client.ui.action_bar.action_bar import action_bar
 from client.ui.crate_window.crate_window import crate_window
 from client.ui.power_window.power_window import power_window
@@ -106,14 +107,12 @@ def render_game_view(game, screen, screenRect):
             ship.y,
         )
 
-        reticule = pygame.Rect(ship_screen_space_coords[0] - RETICULE_SIZE/2, ship_screen_space_coords[1] - RETICULE_SIZE/2, RETICULE_SIZE, RETICULE_SIZE)
-
         for slot in game.weapon_slots:
             if ship_id in slot.target_ids:
-                pygame.draw.rect(screen, scheme["targeted_reticule"], reticule, width=2)
+                draw_targetted_reticule(screen, game, slot.type_id, ship_id)
 
         if ship_id != game.ship_id and pick_ship(game, ship, get_mouse()):
-            pygame.draw.rect(screen, scheme["hover_reticule"], reticule, width=2)
+            draw_hover_reticule(screen, game, ship_id)
 
         pygame.draw.circle(screen, scheme["entity"], world_to_screen(game, ship.x, ship.y), 5)
 
