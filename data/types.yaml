@@ -1,0 +1,9 @@
+- name: Mini gun
+  type_id: 3
+  icon_path: client/res/ui/texture/icons/minigun.png
+- name: Laser Turret
+  type_id: 2
+  icon_path: client/res/ui/texture/icons/laser-turret.png
+- name: Missile Launcher
+  type_id: 1
+  icon_path: client/res/ui/texture/icons/missile-pod.png

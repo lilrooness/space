@@ -3,9 +3,8 @@ from select import select
 
 import pygame
 
-from client import camera
 from client.camera import set_camera, get_camera_zoom, set_camera_zoom, screen_to_world
-from client.const import SCREEN_H, SCREEN_W
+from client.const import SCREEN_H, SCREEN_W, load_types
 from client.game import Game, message_handlers, pick_ship
 from client.mouse import get_mouse
 from client.render import render_game, render_static_ui
@@ -63,6 +62,7 @@ if __name__ == "__main__":
     pygame.font.init()
     pygame.image.get_extended()
 
+    load_types()
     load_loot_icon_textures()
 
     font = pygame.font.SysFont("sourcecodeproblack", 27)

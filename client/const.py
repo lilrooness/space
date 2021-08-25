@@ -1,6 +1,5 @@
 import pygame
-
-from common.const import MINI_GUN, LASER_TURRET, MISSILE_LAUNCHER
+import yaml
 
 BLACK = pygame.Color(0, 0, 0, 255)
 WHITE = pygame.Color(255, 255, 255, 255)
@@ -73,12 +72,14 @@ scheme = {
     "offline_tower_gauge": WHITE,
 }
 
-MISSILE_LAUNCHER_ICON = "client/res/ui/texture/icons/missile-pod.png"
-LASER_TURRET_ICON = "client/res/ui/texture/icons/laser-turret.png"
-MINI_GUN_ICON = "client/res/ui/texture/icons/minigun.png"
+loot_type_icons = {}
 
-loot_type_icons = {
-    MINI_GUN: MINI_GUN_ICON,
-    LASER_TURRET: LASER_TURRET_ICON,
-    MISSILE_LAUNCHER: MISSILE_LAUNCHER_ICON,
-}
+def load_types():
+    global loot_type_icons
+
+    types = []
+    with open('data/types.yaml') as file:
+        types = yaml.safe_load(file)
+
+    for type in types:
+        loot_type_icons[type["type_id"]] = type["icon_path"]
