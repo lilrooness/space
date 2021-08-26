@@ -7,3 +7,11 @@
 - name: Missile Launcher
   type_id: 1
   icon_path: client/res/ui/texture/icons/missile-pod.png
+- name: Tower
+  type_id: -1
+  icon_path: client/res/ui/texture/icons/radio-tower.png
+  placeable: True
+- name: Crate
+  type_id: -2
+  icon_path: client/res/ui/texture/icons/wooden-crate.png
+  placeable: True
