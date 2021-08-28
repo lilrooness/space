@@ -95,7 +95,8 @@ class Session():
                 hull_slots=list(session_ship_object.hull_slots.values()),
                 mini_gun_shots=list(session_system_object.mini_gun_shots.values()),
                 sensor_towers=list(session_system_object.sensor_towers.values()),
-                sensor_tower_boost=does_ship_have_sensor_tower_buff(session_system_object, self.ship_id)
+                sensor_tower_boost=does_ship_have_sensor_tower_buff(session_system_object, self.ship_id),
+                warp_points=list(session_system_object.warp_points.values()),
             ).marshal()
 
             bytes = message.encode()

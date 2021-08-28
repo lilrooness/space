@@ -70,6 +70,8 @@ scheme = {
     "sensor_tower_range": LIGHT_GRAY,
     "online_tower_gauge": CYAN,
     "offline_tower_gauge": WHITE,
+    "warp_point": PINK,
+    "warp_point_range": PINK,
 }
 
 loot_type_icons = {}

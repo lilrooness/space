@@ -78,6 +78,11 @@ def render_map_view(game, screen, _screenRect):
         pygame.draw.circle(screen, scheme["sensor_tower"], tower_screen_space_coords, 2)
         pygame.draw.circle(screen, scheme["sensor_tower_range"], tower_screen_space_coords, tower.connection_range / float(get_camera_zoom()), width=1)
 
+    for _, warp_point in game.warp_points.items():
+        warp_point_space_coords = world_to_screen(game, warp_point.x, warp_point.y)
+        pygame.draw.circle(screen, scheme["warp_point"], warp_point_space_coords, 2)
+        pygame.draw.circle(screen, scheme["warp_point_range"], warp_point_space_coords, warp_point.range / get_camera_zoom(), width=1)
+
 def render_game_view(game, screen, screenRect):
     ship = game.ships[game.ship_id]
 
@@ -161,6 +166,12 @@ def render_game_view(game, screen, screenRect):
         pygame.draw.circle(screen, scheme["explosion_frontier"], world_to_screen(game, warp_effect.x, warp_effect.y),
                            warp_effect.drawRadius / get_camera_zoom(), width=1)
 
+
+    for _, warp_point in game.warp_points.items():
+        warp_point_space_coords = world_to_screen(game, warp_point.x, warp_point.y)
+
+        pygame.draw.circle(screen, scheme["warp_point"], warp_point_space_coords, 20)
+        pygame.draw.circle(screen, scheme["warp_point_range"], warp_point_space_coords, warp_point.range / get_camera_zoom(), width=2)
 
     for _, tower in game.sensor_towers.items():
         tower_screen_space_coords = world_to_screen(game, tower.x, tower.y)

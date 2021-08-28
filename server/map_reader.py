@@ -1,5 +1,10 @@
+import yaml
+
+from common.const import TOWER_TYPE_ID, CRATE_TYPE_ID, WARP_POINT_TYPE_ID
 from common.entities.crate import Crate
 from common.entities.sensor_tower import SensorTower
+from common.entities.solar_system import SolarSystem
+from common.entities.warp_point import WarpPoint
 from server.id import new_id
 
 CRATE_MARKER = "CRATE"
@@ -11,26 +16,27 @@ entity_markers = {
 }
 
 def read_map_data(filename):
-    map = {
-        SENSOR_TOWER_MARKER: [],
-        CRATE_MARKER: [],
-    }
-
+    sensor_towers = {}
+    crates = {}
+    warp_points = {}
     with open(filename) as map_file:
-        lines = map_file.readlines()
+        map_data = yaml.safe_load(map_file)
 
-        for line in lines:
-            if line.startswith(CRATE_MARKER):
-                npop = len(CRATE_MARKER)
-                encoded_crate = line[npop:]
-                crate = Crate.unmarshal(encoded_crate)
-                crate.id = new_id()
-                map[CRATE_MARKER].append(crate)
-            elif line.startswith(SENSOR_TOWER_MARKER):
-                npop = len(SENSOR_TOWER_MARKER)
-                encoded_sensor_tower = line[npop:]
-                sensor_tower = SensorTower.unmarshal(encoded_sensor_tower)
-                sensor_tower.id = new_id()
-                map[SENSOR_TOWER_MARKER].append(sensor_tower)
+    for type_id, coords in map_data.items():
+        for coord in coords:
+            if type_id == TOWER_TYPE_ID:
+                tower = SensorTower(x=coord[0], y=coord[1], id_fun=new_id)
+                sensor_towers[tower.id] = tower
+            elif type_id == CRATE_TYPE_ID:
+                crate = Crate(x=coord[0], y=coord[1], id_fun=new_id)
+                crates[crate.id] = crate
+            elif type_id == WARP_POINT_TYPE_ID:
+                warp_point = WarpPoint(x=coord[0], y=coord[1], id_fun=new_id)
+                warp_points[warp_point.id] = warp_point
 
-    return map
+    return SolarSystem(
+        sensor_towers=sensor_towers,
+        warp_points=warp_points,
+        crates=crates,
+    )
+

@@ -5,10 +5,10 @@ from common.entities.mini_gun_shot import MinigunShot
 from common.entities.sensor_tower import SensorTower
 from common.entities.ship import Ship
 from common.entities.slot import Slot
+from common.entities.warp_point import WarpPoint
 from common.messages.message import Message
-from common.serializable.serializable import FIELD_TYPE_VALUE, Serializable, \
-    FIELD_TYPE_MULTIPLE_ENTITIES
 from common.net_const import NONE_MARKER
+from common.serializable.serializable import FIELD_TYPE_VALUE, FIELD_TYPE_MULTIPLE_ENTITIES
 
 
 class ServerTickMessage(Message):
@@ -34,6 +34,7 @@ class ServerTickMessage(Message):
             hull_slots = [],
             mini_gun_shots = [],
             sensor_towers = [],
+            warp_points = [],
             sensor_tower_boost = False,
     ):
         self.ship_id = ship_id
@@ -55,6 +56,7 @@ class ServerTickMessage(Message):
         self.mini_gun_shots = mini_gun_shots
         self.sensor_towers = sensor_towers
         self.sensor_tower_boost = sensor_tower_boost
+        self.warp_points = warp_points
 
     @classmethod
     def fields(cls):
@@ -75,7 +77,8 @@ class ServerTickMessage(Message):
             "weapon_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
             "hull_slots": (FIELD_TYPE_MULTIPLE_ENTITIES, Slot),
             "sensor_towers": (FIELD_TYPE_MULTIPLE_ENTITIES, SensorTower),
-            "sensor_tower_boost": (FIELD_TYPE_VALUE, bool)
+            "sensor_tower_boost": (FIELD_TYPE_VALUE, bool),
+            "warp_points": (FIELD_TYPE_MULTIPLE_ENTITIES, WarpPoint),
         }
 
     def marshal(self):
@@ -90,6 +93,7 @@ class ServerTickMessage(Message):
         marshalled_weapon_slots = [slot.marshal() for slot in self.weapon_slots]
         marshalled_hull_slots = [slot.marshal() for slot in self.hull_slots]
         marshalled_sensor_towers = [tower.marshal() for tower in self.sensor_towers]
+        marshalled_warp_points = [warp_point.marshal() for warp_point in self.warp_points]
 
         message = [
             self.MESSAGE_NAME,
@@ -120,6 +124,8 @@ class ServerTickMessage(Message):
             "%d" % len(self.sensor_towers),
             ":".join(marshalled_sensor_towers or [str(NONE_MARKER)]),
             str(self.sensor_tower_boost),
+            "%d" % len(self.warp_points),
+            ":".join(marshalled_warp_points or [str(NONE_MARKER)]),
         ]
 
         return ":".join(message)
@@ -146,4 +152,5 @@ class ServerTickMessage(Message):
             mini_gun_shots=fields_map["mini_gun_shots"],
             sensor_towers=fields_map["sensor_towers"],
             sensor_tower_boost=fields_map["sensor_tower_boost"],
+            warp_points=fields_map["warp_points"],
         )

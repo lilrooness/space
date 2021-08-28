@@ -34,9 +34,17 @@ WARP_POINT_RANGE=400
 CRATE_LOOT_RANGE = 100
 SPEED_BOOST_CLOUD_RANGE=400
 
+# loot
 MISSILE_LAUNCHER = 1
 LASER_TURRET = 2
 MINI_GUN = 3
+
+# map items
+TOWER_TYPE_ID = -1
+CRATE_TYPE_ID = -2
+WARP_POINT_TYPE_ID = -3
+SPAWN_POINT_TYPE_ID = -4
+SPEED_BOOST_TYPE_ID = -5
 
 def get_speed(engines_power_allocation):
     return BASE_SPEED * engines_power_allocation

@@ -182,3 +182,27 @@ def tick_tower(tower, system):
             tower.percent_activated = tower.percent_activated
         else:
             tower.percent_activated = max(0.0, tower.percent_activated - ACTIVATION_TICK_AMOUNT)
+
+def ship_can_initiate_warp(system, ship_id, warp_x, warp_y):
+    ship = system.ships[ship_id]
+
+    if ship.warp:
+        return False
+
+    warp_point_in_range_of_ship = None
+    warp_point_in_range_of_target = None
+
+    for warp_point_id, warp_point in system.warp_points.items():
+        if not warp_point_in_range_of_ship and dist(ship.x, ship.y, warp_point.x, warp_point.y) <= warp_point.range:
+            warp_point_in_range_of_ship = warp_point_id
+
+        if not warp_point_in_range_of_target and dist(warp_x, warp_y, warp_point.x, warp_point.y) <= warp_point.range:
+            warp_point_in_range_of_target = warp_point_id
+
+    if warp_point_in_range_of_target == warp_point_in_range_of_ship:
+        return False
+
+    if warp_point_in_range_of_target and warp_point_in_range_of_ship:
+        return True
+    else:
+        return False

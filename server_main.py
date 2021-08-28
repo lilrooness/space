@@ -10,6 +10,7 @@ from common.net_const import SERVER_TICK_TIME
 from server.commands import process_command
 from server.game import server_game
 from server.id import new_id
+from server.map_reader import read_map_data
 from server.sessions.session import Session
 from server.sessions.sessions import get_sessions, get_message_queue
 
@@ -50,8 +51,7 @@ def process_out_message_queue(message_queue, sessions):
 if __name__ == "__main__":
 
     systems = {
-        1: SolarSystem(id_fun=new_id),
-        2: SolarSystem(id_fun=new_id)
+        1: read_map_data("data/map.yaml")
     }
 
 

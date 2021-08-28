@@ -142,7 +142,7 @@ class EditorState():
             data = read_map_file(filename)
             self.placeables = data
             if self.placeables:
-                initial_camera_coords = self.placeables[self.placeables.keys()[0]][0]
+                initial_camera_coords = self.placeables[list(self.placeables.keys())[0]][0]
                 set_camera(*initial_camera_coords)
         except:
             self.last_error = "Error loading file: {}".format(filename)
