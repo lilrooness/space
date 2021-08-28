@@ -7,11 +7,23 @@
 - name: Missile Launcher
   type_id: 1
   icon_path: client/res/ui/texture/icons/missile-pod.png
-- name: Tower
+- name: Sensor Tower
   type_id: -1
   icon_path: client/res/ui/texture/icons/radio-tower.png
   placeable: True
-- name: Crate
+- name: Loot Crate
   type_id: -2
   icon_path: client/res/ui/texture/icons/wooden-crate.png
+  placeable: True
+- name: Warp Point
+  type_id: -3
+  icon_path: client/res/ui/texture/icons/star-gate.png
+  placeable: True
+- name: Spawn Point
+  type_id: -4
+  icon_path: client/res/ui/texture/icons/spawn-node.png
+  placeable: True
+- name: Speed-Boost Cloud
+  type_id: -5
+  icon_path: client/res/ui/texture/icons/cloud-ring-yellow.png
   placeable: True

@@ -1,3 +1,4 @@
+from common.const import TOWER_CONNECTION_RANGE
 from common.entities.entity import Entity
 from common.serializable.serializable import FIELD_TYPE_VALUE
 
@@ -14,7 +15,7 @@ class SensorTower(Entity):
             last_charged_by=-1,
             connected_ship_id=-1,
             percent_activated=0.0,
-            connection_range=400,
+            connection_range=TOWER_CONNECTION_RANGE,
             online=False,
     ):
         super().__init__(id, id_fun)

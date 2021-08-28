@@ -1,5 +1,9 @@
+import os
+from datetime import datetime
+
 import pygame
 
+from level_editor.camera import set_camera_zoom, get_camera_zoom
 from level_editor.editor import EditorState, SCREEN_W, SCREEN_H
 from level_editor.mouse import get_mouse
 from level_editor.render import render
@@ -25,6 +29,9 @@ if __name__ == "__main__":
 
     run = True
 
+    last_tick = datetime.now()
+    tick_rate = 1000/60
+
     while run:
 
         mouse_button_up_this_frame = False
@@ -34,8 +41,41 @@ if __name__ == "__main__":
                 run = False
 
             if event.type == pygame.KEYDOWN:
+
+                state.buffer_input(event)
+
                 if event.key == pygame.K_ESCAPE:
                     state.selected = None
+
+                if event.key == pygame.K_w:
+                    state.buttons_pressed["up"] = 1
+                if event.key == pygame.K_a:
+                    state.buttons_pressed["left"] = 1
+                if event.key == pygame.K_s:
+                    if pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        state.ask_save(os.getcwd().strip())
+                    elif pygame.key.get_mods() & pygame.KMOD_CTRL:
+                        if state.filename:
+                            state.save(state.filename)
+                        else:
+                            state.ask_save(os.getcwd().strip())
+                    else:
+                        state.buttons_pressed["down"] = 1
+                if event.key == pygame.K_d:
+                    state.buttons_pressed["right"] = 1
+                if event.key == pygame.K_o:
+                    if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                        state.ask_load(os.getcwd().strip())
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_w:
+                    state.buttons_pressed["up"] = 0
+                if event.key == pygame.K_a:
+                    state.buttons_pressed["left"] = 0
+                if event.key == pygame.K_s:
+                    state.buttons_pressed["down"] = 0
+                if event.key == pygame.K_d:
+                    state.buttons_pressed["right"] = 0
 
             if event.type == pygame.MOUSEMOTION:
                 mouse_x, mouse_y = event.pos
@@ -49,6 +89,14 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = get_mouse()
                 mouse.set_mouse_down(pygame.mouse.get_pressed(num_buttons=3))
+
+            if event.type == pygame.MOUSEWHEEL:
+                set_camera_zoom(get_camera_zoom() + event.y)
+
+
+        time_since_last_tick = datetime.now() - last_tick
+        if time_since_last_tick.microseconds/1000 > tick_rate:
+            state.tick()
 
         render(screen, screen_rect, state)
         get_mouse().use_all_button_events()
