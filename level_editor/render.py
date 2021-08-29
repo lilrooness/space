@@ -12,6 +12,8 @@ from level_editor.ui.components.icon import icon
 def render_ui(screen, font, state):
     mouse = get_mouse()
 
+    banner(screen, SCREEN_W - 3, 25, "|  Open: CTRL+O  |  Save As: CTRL+SHIFT+S  |  Save: CTRL+S  |  Toggle show ship: CTRL+T  |", font, anchor=ANCHOR_RIGHT)
+
     if state.selected and state.focus_editor_ui:
         dim = 30
         icon(screen, state.selected, pygame.Rect(
@@ -27,7 +29,7 @@ def render_ui(screen, font, state):
         pygame.draw.line(screen, WHITE, (mouse.x, SCREEN_H), (mouse.x, mouse.y))
 
         world_coords = screen_to_world(mouse.x, mouse.y)
-        banner(screen, SCREEN_W/2, 25, "{}, {}".format(world_coords[0], world_coords[1]), font)
+        banner(screen, mouse.x, mouse.y, "{}, {}".format(world_coords[0], world_coords[1]), font, anchor=ANCHOR_LEFT)
 
     if state.last_error:
         banner(screen, 0, SCREEN_H-20, state.last_error, font, anchor=ANCHOR_LEFT, background_color=RED, foregound_color=WHITE)
