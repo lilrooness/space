@@ -44,6 +44,7 @@ class EditorState():
         self.save_path = None
         self.focus_editor_ui = True
         self.last_error = None
+        self.show_ship_scale = True
 
         self.input_buffer = []
 
@@ -56,6 +57,7 @@ class EditorState():
     def tick(self):
         if self.focus_editor_ui:
             # we don't care about the input buffer in editor mode
+            self.process_editor_commands()
             self.input_buffer = []
             horizontal_camera_movement = (self.pan_speed * self.buttons_pressed["right"]) - (self.pan_speed * self.buttons_pressed["left"])
             vertical_camera_movement = (self.pan_speed * self.buttons_pressed["down"]) - (self.pan_speed * self.buttons_pressed["up"])
@@ -69,6 +71,12 @@ class EditorState():
                     self.placeables[self.selected] = [world_coords]
         elif self.asking_for_load_path or self.asking_for_save_path:
             self.process_text_input()
+
+    def process_editor_commands(self):
+        for event in self.input_buffer:
+            if event.key == pygame.K_t:
+                if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    self.toggle_show_ship_scale()
 
     def process_text_input(self):
         if self.asking_for_load_path:
@@ -112,6 +120,8 @@ class EditorState():
 
         return (CONTINUE_INPUT, existing_text)
 
+    def toggle_show_ship_scale(self):
+        self.show_ship_scale = not self.show_ship_scale
 
     def ask_load(self, path=None):
         self.focus_editor_ui = False

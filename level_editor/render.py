@@ -1,8 +1,9 @@
 import pygame
 
-from common.const import CRATE_LOOT_RANGE, TOWER_CONNECTION_RANGE, WARP_POINT_RANGE, SPEED_BOOST_CLOUD_RANGE
+from common.const import CRATE_LOOT_RANGE, TOWER_CONNECTION_RANGE, WARP_POINT_RANGE, SPEED_BOOST_CLOUD_RANGE, \
+    BASE_SENSOR_RANGE
 from level_editor.camera import world_to_screen, screen_to_world, get_camera_zoom
-from level_editor.editor import BLACK, WHITE, GREEN, SCREEN_W, SCREEN_H, GRAY, RED, YELLOW
+from level_editor.editor import BLACK, WHITE, GREEN, SCREEN_W, SCREEN_H, GRAY, RED, YELLOW, CYAN
 from level_editor.mouse import get_mouse
 from level_editor.types import types, CRATE_TYPE_ID, TOWER_TYPE_ID, WARP_POINT_TYPE_ID, SPEED_BOOST_TYPE_ID
 from level_editor.ui.components.banner import banner, ANCHOR_LEFT, ANCHOR_CENTER, ANCHOR_RIGHT
@@ -114,4 +115,14 @@ def render(screen, screen_rect, state):
                 s_coords[0]-dim/2, s_coords[1]-dim/2, dim, dim
             ))
 
+    if state.show_ship_scale:
+        render_ship_scale(screen)
+
     render_ui(screen, font, state)
+
+def render_ship_scale(screen):
+    pygame.draw.circle(screen, WHITE, (SCREEN_W/2, SCREEN_H/2), 4/get_camera_zoom())
+    pygame.draw.circle(screen, WHITE, (SCREEN_W/2, SCREEN_H/2), 20/get_camera_zoom(), width=2)
+    pygame.draw.circle(screen, CYAN, (SCREEN_W/2, SCREEN_H/2), 30/get_camera_zoom(), width=2)
+    pygame.draw.circle(screen, GRAY, (SCREEN_W/2, SCREEN_H/2),
+                       BASE_SENSOR_RANGE / float(get_camera_zoom()), width=1)
