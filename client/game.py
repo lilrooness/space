@@ -48,17 +48,17 @@ class Game():
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
 
-        delta = float(time_since_last_tick.microseconds) / float(SERVER_TICK_TIME)
+        delta = min(1.0, float(time_since_last_tick.microseconds) / float(SERVER_TICK_TIME))
 
         for ship_id, ship in self.ships.items():
             ship.tick(
-                delta=2*(delta - self.last_delta),
+                delta=(delta - self.last_delta),
             )
 
         for missile_id, missile in self.in_flight_missiles.items():
             missile.tick(
                 self.ships,
-                delta=2*(delta - self.last_delta),
+                delta=(delta - self.last_delta),
             )
 
         done_explosions = []
