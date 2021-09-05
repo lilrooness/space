@@ -8,7 +8,7 @@ class Crate(Entity):
             self,
             x=0,
             y=0,
-            contents={},
+            contents=None,
             id=None,
             id_fun=None,
             open=False
@@ -16,7 +16,10 @@ class Crate(Entity):
         super().__init__(id, id_fun)
         self.x = x
         self.y = y
-        self.contents = contents
+        if contents is None:
+            self.contents = {}
+        else:
+            self.contents = contents
         self.open = open
 
     @classmethod

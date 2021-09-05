@@ -49,9 +49,10 @@ def process_out_message_queue(message_queue, sessions):
             message_queue[session_id] = remaining_messages
 
 if __name__ == "__main__":
-
+    loaded_system = read_map_data("data/map.yaml")
+    server_game.seed_loot(loaded_system)
     systems = {
-        1: read_map_data("data/map.yaml")
+        1: loaded_system
     }
 
 

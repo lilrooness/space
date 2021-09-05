@@ -1,11 +1,16 @@
+import random
+
 from common.ballistics import get_mini_gun_shot_damage
 from common.const import ENGINE_POWER_DAMAGE_THRESHOLD, ENGINE_DAMAGE_INCREASE_RATE, get_laser_range, \
     BASE_MINI_GUN_RANGE, BASE_SENSOR_RANGE
+from common.entities.loot.loot_types import loot_types
+from common.entities.loot.lootitem import LootItem
 from common.entities.sensor_tower import ACTIVATION_TICK_AMOUNT
 from common.messages.explosion import ExplosionMessage
 from common.messages.ship_damage import ShipDamageMessage
 from common.utils import dist
 from server.game.slot_types.slot_types import resolve_slot_tick
+from server.id import new_id
 from server.sessions.sessions import queue_message_for_broadcast
 
 
@@ -33,6 +38,11 @@ def tick(systems, ticks):
 
         for _tower_id, tower in system.sensor_towers.items():
             tick_tower(tower, system)
+
+def seed_loot(system):
+    for id, crate in system.crates.items():
+        item = LootItem(id_fun=new_id, type_id=random.choice(loot_types))
+        crate.contents[item.id] = item
 
 def get_ship_ids_in_range_of_point(system, x, y, range, exclude_dead=False):
     ids = []
