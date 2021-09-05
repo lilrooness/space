@@ -1,9 +1,12 @@
+from math import floor
+
 import pygame
 
-from client.const import LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT, SCREEN_H, SCREEN_W, scheme
+from client.const import LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT, SCREEN_H, SCREEN_W, scheme, CYAN
 from client.mouse import get_mouse
 from client.ui.components.banner import banner, ANCHOR_TOPLEFT
 from client.ui.components.icon import icon
+from common.const import SLOT_AMMO_INFINITY
 
 
 def action_bar(screen, game, font):
@@ -35,6 +38,18 @@ def action_bar(screen, game, font):
             LOOT_ICON_WIDTH + 2,
             LOOT_ICON_HEIGHT + 2
         )
+        if slot.max_ammo != SLOT_AMMO_INFINITY:
+            for x in range(slot.ammo):
+                spacing = 2
+                ammo_square_width = floor(LOOT_ICON_WIDTH/(slot.max_ammo-0.22)) - spacing
+                ammo_rect = pygame.Rect(
+                    xpos + x * (ammo_square_width + spacing),
+                    ypos + LOOT_ICON_HEIGHT + 4,
+                    ammo_square_width,
+                    5,
+                )
+                pygame.draw.rect(screen, CYAN, ammo_rect)
+
         mouse = get_mouse()
         mouse_hover = boarder_rect.collidepoint(mouse.x, mouse.y)
         boarder_color = scheme["ui_boarder"]

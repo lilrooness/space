@@ -2,12 +2,12 @@ import socket
 from datetime import datetime
 from select import select
 
-from common.const import LASER_TURRET, MINI_GUN
+from common.const import LASER_TURRET, SHIELD_REPAIRER
 from common.entities.ship import Ship
 from common.entities.slot import Slot, SHIELD_CONSTRAINT, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, HULL_CONSTRAINT
-from common.entities.solar_system import SolarSystem
 from common.net_const import SERVER_TICK_TIME
 from server.commands import process_command
+from server.const import load_types
 from server.game import server_game
 from server.id import new_id
 from server.map_reader import read_map_data
@@ -20,7 +20,7 @@ def accept_new_connections(server_socket, sessions, systems):
     if len(readable) == 1:
         connection, address = server_socket.accept()
 
-        weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=LASER_TURRET, id_fun=new_id)
+        weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=SHIELD_REPAIRER, max_ammo=3, ammo=3, id_fun=new_id)
         engine_slot = Slot(type_constraint=ENGINE_CONSTRAINT, id_fun=new_id)
         shield_slot = Slot(type_constraint=SHIELD_CONSTRAINT, id_fun=new_id)
         hull_slot = Slot(type_constraint=HULL_CONSTRAINT, id_fun=new_id)
@@ -50,6 +50,7 @@ def process_out_message_queue(message_queue, sessions):
 
 if __name__ == "__main__":
     loaded_system = read_map_data("data/map.yaml")
+    load_types()
     server_game.seed_loot(loaded_system)
     systems = {
         1: loaded_system

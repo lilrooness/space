@@ -83,9 +83,13 @@ def resolve_slot_tick(system, owner_id, slot, tick):
     type_id = slot.type_id
 
     if type_id == SHIELD_REPAIRER:
-        # TODO: shield repairer should use fuel
         if slot.target_ids:
             pulse_now = False
+
+            if slot.ammo < 1:
+                slot.target_ids = []
+                return
+
             if system.ships[slot.target_ids[0]].dead:
                 slot.target_ids = []
                 return
@@ -99,14 +103,19 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                     pulse_now = True
 
             if pulse_now:
+                slot.ammo -= 1
                 slot.userdata["last_shot_tick"] = tick
                 target_ship = system.ships[slot.target_ids[0]]
                 target_ship.shield = min(MAX_SHIELD_HEALTH, target_ship.shield + SHIELD_REPAIRER_HEAL_AMOUNT)
 
     if type_id == HULL_REPAIRER:
-        # TODO: hull repairer should use fuel
-        if slot.target_ids:
+        if slot.target_ids and slot.ammo > 0:
             pulse_now = False
+
+            if slot.ammo < 1:
+                slot.target_ids = []
+                return
+
             if system.ships[slot.target_ids[0]].dead:
                 slot.target_ids = []
                 return
@@ -120,6 +129,7 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                     pulse_now = True
 
             if pulse_now:
+                slot.ammo -= 1
                 slot.userdata["last_shot_tick"] = tick
                 target_ship = system.ships[slot.target_ids[0]]
                 target_ship.health = min(MAX_HULL_HEALTH, target_ship.health + HULL_REPAIRER_HEAL_AMOUNT)

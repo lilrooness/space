@@ -57,6 +57,8 @@ WARP_POINT_TYPE_ID = -3
 SPAWN_POINT_TYPE_ID = -4
 SPEED_BOOST_TYPE_ID = -5
 
+SLOT_AMMO_INFINITY = -1
+
 def get_speed(engines_power_allocation):
     return BASE_SPEED * engines_power_allocation
 

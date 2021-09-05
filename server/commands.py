@@ -5,13 +5,14 @@ from common.commands.request_slot_change import RequestSlotChange
 from common.commands.request_target import RequestTargetCommand
 from common.commands.request_untarget import RequestUnTargetCommand
 from common.commands.request_warp import RequestWarpCommand
-from common.const import CRATE_LOOT_RANGE
+from common.const import CRATE_LOOT_RANGE, SLOT_AMMO_INFINITY
 from common.entities.loot.lootitem import LootItem
 from common.entities.ship import Warp
 from common.messages.crate_contents import CrateContentsMessage
 from common.messages.warp_exit_appeared import WarpExitAppearedMessage
 from common.messages.warp_started import WarpStartedMessage
 from common.utils import dist, normalise
+from server.const import global_types
 from server.game.server_game import get_ship_ids_in_sensor_range_of_ship, get_ship_ids_in_sensor_range_of_point, \
     ship_can_initiate_warp
 from server.game.slot_types.slot_types import slot_type_can_target, set_slot_target
@@ -76,14 +77,24 @@ def process_command(systems, session, command, current_tick):
 
         slots = session_ship.weapon_slots | session_ship.hull_slots | session_ship.shield_slots | session_ship.engine_slots
         if type_in_crate and command.slot_id in slots:
+
+            ammo_in_module = session_system.crates[crate_id].get(command.type_id).ammo
+
             slot = slots[command.slot_id]
             session_system.crates[crate_id].remove(command.type_id)
 
             if slot.type_id != 0:
-                item = LootItem(id_fun=new_id, type_id=slot.type_id)
+                item = LootItem(id_fun=new_id, type_id=slot.type_id, ammo=slot.ammo)
                 session_system.crates[crate_id].contents[item.id] = item
 
             slot.type_id = command.type_id
+
+            if "max_ammo" in global_types[command.type_id]:
+                slot.max_ammo = global_types[command.type_id]["max_ammo"]
+                slot.ammo = ammo_in_module
+            else:
+                slot.max_ammo = SLOT_AMMO_INFINITY
+                slot.ammo = SLOT_AMMO_INFINITY
 
         if crate_id:
             new_contents = []
@@ -138,7 +149,6 @@ def process_command(systems, session, command, current_tick):
         if command.crate_id in session_system.crates:
             crate = session_system.crates[command.crate_id]
             if dist(session_ship.x, session_ship.y, crate.x, crate.y) <= CRATE_LOOT_RANGE:
-                print("LOOTING CRATE {}".format(crate.id))
                 contents = []
                 for _id, loot in crate.contents.items():
                     contents.append(loot)
