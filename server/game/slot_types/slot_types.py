@@ -3,7 +3,9 @@ import random
 from common.ballistics import get_laser_turret_miss_chance, get_mini_gun_miss_chance
 from common.const import LASER_TURRET, BASE_LASER_RANGE, get_speed, BASE_LASER_DAMAGE, MISSILE_LAUNCHER, \
     BASE_MISSILE_RANGE, BASE_MISSILE_DAMAGE, MINI_GUN, BASE_MINI_GUN_RANGE, BASE_MINI_GUN_VELOCITY, \
-    MINI_GUN_SHOT_FREQUENCY, MISSILE_SHOT_FREQUENCY, LASER_SHOT_FREQUENCY
+    MINI_GUN_SHOT_FREQUENCY, MISSILE_SHOT_FREQUENCY, LASER_SHOT_FREQUENCY, SHIELD_REPAIRER, MAX_SHIELD_HEALTH, \
+    HULL_REPAIRER, MAX_HULL_HEALTH, SHIELD_REPAIRER_FREQUENCY, SHIELD_REPAIRER_HEAL_AMOUNT, HULL_REPAIRER_FREQUENCY, \
+    HULL_REPAIRER_HEAL_AMOUNT
 from common.entities.inflight_missile import InFlightMissile
 from common.entities.laser_shot import LaserShot
 from common.entities.mini_gun_shot import MinigunShot
@@ -12,6 +14,23 @@ from server.id import new_id
 
 
 def slot_type_can_target(systems, owner_session, slot_type_id, target_id):
+
+    if slot_type_id == SHIELD_REPAIRER:
+        system = systems[owner_session.solar_system_id]
+        target_ship = system.ships[target_id]
+        if owner_session.ship_id == target_id and target_ship.shield < MAX_SHIELD_HEALTH:
+            return True
+        else:
+            return False
+
+    if slot_type_id == HULL_REPAIRER:
+        system = systems[owner_session.solar_system_id]
+        target_ship = system.ships[target_id]
+        if owner_session.ship_id == target_id and target_ship.health < MAX_HULL_HEALTH:
+            return True
+        else:
+            return False
+
     if slot_type_id == LASER_TURRET:
         if owner_session.ship_id != target_id:
             if target_id not in systems[owner_session.solar_system_id].ships:
@@ -51,6 +70,10 @@ def set_slot_target(slot, target_id):
         slot.target_ids = [target_id]
     if slot.type_id == MINI_GUN:
         slot.target_ids = [target_id]
+    if slot.type_id == SHIELD_REPAIRER:
+        slot.target_ids = [target_id]
+    if slot.type_id == HULL_REPAIRER:
+        slot.target_ids = [target_id]
 
 def resolve_slot_tick(system, owner_id, slot, tick):
     if not slot.type_id:
@@ -58,6 +81,48 @@ def resolve_slot_tick(system, owner_id, slot, tick):
 
     owner_ship = system.ships[owner_id]
     type_id = slot.type_id
+
+    if type_id == SHIELD_REPAIRER:
+        # TODO: shield repairer should use fuel
+        if slot.target_ids:
+            pulse_now = False
+            if system.ships[slot.target_ids[0]].dead:
+                slot.target_ids = []
+                return
+
+            if "last_shot_tick" not in slot.userdata:
+                pulse_now = True
+            else:
+                last_shot_tick = slot.userdata["last_shot_tick"]
+                ticks_since_last_shot = tick - last_shot_tick
+                if ticks_since_last_shot * SHIELD_REPAIRER_FREQUENCY >= 1.0:
+                    pulse_now = True
+
+            if pulse_now:
+                slot.userdata["last_shot_tick"] = tick
+                target_ship = system.ships[slot.target_ids[0]]
+                target_ship.shield = min(MAX_SHIELD_HEALTH, target_ship.shield + SHIELD_REPAIRER_HEAL_AMOUNT)
+
+    if type_id == HULL_REPAIRER:
+        # TODO: hull repairer should use fuel
+        if slot.target_ids:
+            pulse_now = False
+            if system.ships[slot.target_ids[0]].dead:
+                slot.target_ids = []
+                return
+
+            if "last_shot_tick" not in slot.userdata:
+                pulse_now = True
+            else:
+                last_shot_tick = slot.userdata["last_shot_tick"]
+                ticks_since_last_shot = tick - last_shot_tick
+                if ticks_since_last_shot * HULL_REPAIRER_FREQUENCY >= 1.0:
+                    pulse_now = True
+
+            if pulse_now:
+                slot.userdata["last_shot_tick"] = tick
+                target_ship = system.ships[slot.target_ids[0]]
+                target_ship.health = min(MAX_HULL_HEALTH, target_ship.health + HULL_REPAIRER_HEAL_AMOUNT)
 
     if type_id == MINI_GUN:
         if slot.target_ids:

@@ -38,7 +38,7 @@ def receive(client_socket):
 def process_input(game):
     if get_mouse().down_this_frame:
         for ship_id, ship in game.ships.items():
-            if ship_id != game.ship_id and game.selected_slot_id:
+            if game.selected_slot_id:
                 if pick_ship(game, ship, get_mouse()):
                     queue_to_send(RequestTargetCommand(ship_id, game.selected_slot_id))
                     return

@@ -116,7 +116,7 @@ def render_game_view(game, screen, screenRect):
             if ship_id in slot.target_ids:
                 draw_targetted_reticule(screen, game, slot.type_id, ship_id)
 
-        if ship_id != game.ship_id and pick_ship(game, ship, get_mouse()):
+        if pick_ship(game, ship, get_mouse()):
             draw_hover_reticule(screen, game, ship_id)
 
         pygame.draw.circle(screen, scheme["entity"], world_to_screen(game, ship.x, ship.y), 5)
