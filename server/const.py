@@ -10,4 +10,4 @@ def load_types():
         types = yaml.safe_load(file)
 
     for type in types:
-        global_types[type["type_id"]] = type["icon_path"]
+        global_types[type["type_id"]] = type

@@ -46,6 +46,7 @@ def seed_loot(system):
         ammo = SLOT_AMMO_INFINITY
         if "max_ammo" in global_types[loot_type]:
             ammo = global_types[loot_type]["max_ammo"]
+
         item = LootItem(id_fun=new_id, type_id=random.choice(loot_types), ammo=ammo)
         crate.contents[item.id] = item
 
