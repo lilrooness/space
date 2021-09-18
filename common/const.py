@@ -3,20 +3,25 @@ MAX_HULL_HEALTH = 100
 
 BASE_SENSOR_RANGE = 1400
 
+# TODO: move this to types.yaml
 BASE_LASER_DAMAGE = 10
 BASE_LASER_RANGE = 400
 
+# TODO: move this to types.yaml
 BASE_MISSILE_DAMAGE = 30
 BASE_MISSILE_RANGE = 1000
 BASE_MISSILE_SPEED = 3.0
 
+# TODO: move this to types.yaml
 BASE_MINI_GUN_RANGE = 400
 BASE_MINI_GUN_DAMAGE = 6
 BASE_MINI_GUN_VELOCITY = 6.0
 
+# TODO: move this to types.yaml
 SHIELD_REPAIRER_HEAL_AMOUNT = 40
 HULL_REPAIRER_HEAL_AMOUNT = 30
 
+# TODO: move this to types.yaml
 BASE_LASER_MISS_CHANCE = 0.1
 BASE_MINI_GUN_MISS_CHANCE = 0.1
 LASER_SHOT_FREQUENCY = 0.05
@@ -25,19 +30,9 @@ MINI_GUN_SHOT_FREQUENCY = 0.05
 SHIELD_REPAIRER_FREQUENCY = 0.005
 HULL_REPAIRER_FREQUENCY = 0.005
 
-
-# above this threshold, the ship will take more damage when hit by weapons
-ENGINE_POWER_DAMAGE_THRESHOLD = 0.3
-
-# amount of extra damage per 0.1 above the damage threshold that the target ship will take
-# base_damage = 20, engine_power = 0.5, increase_rate = 1.6
-# extra_damage = base_damage * max(0, engine_power - ENGINE_POWER_DAMAGE_THRESHOLD) * increase_rate
-# (20 * (0.2 * 1.6)) = 6.4
-# final_damage = 6.4 + 20
-ENGINE_DAMAGE_INCREASE_RATE = 1.6
-
 BASE_SPEED = 5.0
 
+# TODO: move this to types.yaml
 TOWER_CONNECTION_RANGE=400
 WARP_POINT_RANGE=400
 CRATE_LOOT_RANGE = 100
@@ -50,14 +45,6 @@ MINI_GUN = 3
 SHIELD_REPAIRER = 4
 HULL_REPAIRER = 5
 
-module_ticks_frequencies = {
-    MISSILE_LAUNCHER: MISSILE_SHOT_FREQUENCY,
-    LASER_TURRET: LASER_SHOT_FREQUENCY,
-    MINI_GUN: MINI_GUN_SHOT_FREQUENCY,
-    SHIELD_REPAIRER: SHIELD_REPAIRER_FREQUENCY,
-    HULL_REPAIRER: HULL_REPAIRER_FREQUENCY,
-}
-
 # map items
 TOWER_TYPE_ID = -1
 CRATE_TYPE_ID = -2
@@ -66,6 +53,15 @@ SPAWN_POINT_TYPE_ID = -4
 SPEED_BOOST_TYPE_ID = -5
 
 SLOT_AMMO_INFINITY = -1
+
+# TODO: move the module tick frequency to types.yaml to types.yaml
+module_ticks_frequencies = {
+    MISSILE_LAUNCHER: MISSILE_SHOT_FREQUENCY,
+    LASER_TURRET: LASER_SHOT_FREQUENCY,
+    MINI_GUN: MINI_GUN_SHOT_FREQUENCY,
+    SHIELD_REPAIRER: SHIELD_REPAIRER_FREQUENCY,
+    HULL_REPAIRER: HULL_REPAIRER_FREQUENCY,
+}
 
 def get_speed(engines_power_allocation):
     return BASE_SPEED * engines_power_allocation

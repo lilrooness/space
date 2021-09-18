@@ -1,7 +1,7 @@
 import random
 
 from common.ballistics import get_mini_gun_shot_damage
-from common.const import ENGINE_POWER_DAMAGE_THRESHOLD, ENGINE_DAMAGE_INCREASE_RATE, get_laser_range, \
+from common.const import get_laser_range, \
     BASE_MINI_GUN_RANGE, BASE_SENSOR_RANGE, SLOT_AMMO_INFINITY
 from common.entities.loot.loot_types import loot_types
 from common.entities.loot.lootitem import LootItem
@@ -137,7 +137,7 @@ def _resolve_laser_damage(system):
 
 def _apply_damage_to_ship(ship, damage):
     death = False
-    modified_damage = damage# + _get_additional_damage_from_target_multipliers(ship, damage)
+    modified_damage = damage
     shield_after_damage = max(ship.shield - modified_damage, 0)
     if shield_after_damage == 0:
         damage_after_shield = max(modified_damage - ship.shield, 0)
@@ -149,11 +149,6 @@ def _apply_damage_to_ship(ship, damage):
     ship.shield = shield_after_damage
 
     queue_message_for_broadcast(ShipDamageMessage(ship.id, modified_damage, death=death))
-
-def _get_additional_damage_from_target_multipliers(ship, damage):
-    enginePowerAboveDamageThreshold = max(0, ship.power_allocation_engines - ENGINE_POWER_DAMAGE_THRESHOLD)
-
-    return enginePowerAboveDamageThreshold * ENGINE_DAMAGE_INCREASE_RATE * damage
 
 def does_ship_have_sensor_tower_buff(system, ship_id):
     activated_towers = 0
