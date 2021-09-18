@@ -125,7 +125,6 @@ def process_command(systems, session, command, current_tick):
         return
 
     if command.COMMAND_NAME == RequestUnTargetCommand.COMMAND_NAME:
-        print("doing the untarget thingy")
         ship = systems[session.solar_system_id].ships[session.ship_id]
         slot_id = command.slot_id
         all_ship_slots = ship.weapon_slots | ship.shield_slots | ship.shield_slots | ship.hull_slots
