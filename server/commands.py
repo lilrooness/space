@@ -125,14 +125,15 @@ def process_command(systems, session, command, current_tick):
         return
 
     if command.COMMAND_NAME == RequestUnTargetCommand.COMMAND_NAME:
+        print("doing the untarget thingy")
         ship = systems[session.solar_system_id].ships[session.ship_id]
-        target_ship_id = command.target_ship_id
         slot_id = command.slot_id
         all_ship_slots = ship.weapon_slots | ship.shield_slots | ship.shield_slots | ship.hull_slots
         if slot_id in all_ship_slots:
             slot = all_ship_slots[slot_id]
-            if target_ship_id in slot.target_ids:
-                slot.target_ids.remove(target_ship_id)
+            slot.target_ids = []
+
+        return
     
     if command.COMMAND_NAME == RequestPowerChange.COMMAND_NAME:
         totalPower = command.engines

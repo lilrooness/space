@@ -5,8 +5,10 @@ import pygame
 from client.camera import world_to_screen
 from client.const import LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT, SCREEN_H, SCREEN_W, scheme, CYAN, GRAY
 from client.mouse import get_mouse
+from client.session import queue_to_send
 from client.ui.components.banner import banner, ANCHOR_TOPLEFT
 from client.ui.components.icon import icon
+from common.commands.request_untarget import RequestUnTargetCommand
 from common.const import SLOT_AMMO_INFINITY, module_ticks_frequencies
 
 
@@ -79,6 +81,8 @@ def action_bar(screen, game, font):
         if mouse_hover and mouse.up_this_frame:
             if game.selected_slot_id == slot.id:
                 game.selected_slot_id = None
+                if slot.target_ids:
+                    queue_to_send(RequestUnTargetCommand(slot.id))
             else:
                 game.selected_slot_id = slot.id
         if game.selected_slot_id == slot.id:
