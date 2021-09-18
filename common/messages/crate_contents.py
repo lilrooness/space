@@ -8,8 +8,10 @@ class CrateContentsMessage(Message):
 
     MESSAGE_NAME = "crate_contents_message"
 
-    def __init__(self, crate_id=0, contents=[]):
+    def __init__(self, crate_id=0, contents=None):
         self.crate_id = crate_id
+        if contents == None:
+            self.contents = []
         self.contents = contents
 
     @classmethod

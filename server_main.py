@@ -2,7 +2,7 @@ import socket
 from datetime import datetime
 from select import select
 
-from common.const import LASER_TURRET, SHIELD_REPAIRER
+from common.const import SHIELD_REPAIRER
 from common.entities.ship import Ship
 from common.entities.slot import Slot, SHIELD_CONSTRAINT, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, HULL_CONSTRAINT
 from common.net_const import SERVER_TICK_TIME

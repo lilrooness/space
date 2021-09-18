@@ -9,12 +9,13 @@ from server.id import new_id
 
 
 class Session():
-    def __init__(self, connection, address, solar_system_id, ship_id, alive=True):
+    def __init__(self, connection, address, solar_system_id, ship_id, alive=True, admin=False):
         self.connection = connection
         self.address = address
         self.solar_system_id = solar_system_id
         self.ship_id = ship_id
         self.alive = alive
+        self.admin=admin
         self.id = new_id()
 
     # should only be used before sending data to the client

@@ -44,10 +44,11 @@ def seed_loot(system):
     for id, crate in system.crates.items():
         loot_type = random.choice(loot_types)
         ammo = SLOT_AMMO_INFINITY
+
         if "max_ammo" in global_types[loot_type]:
             ammo = global_types[loot_type]["max_ammo"]
 
-        item = LootItem(id_fun=new_id, type_id=random.choice(loot_types), ammo=ammo)
+        item = LootItem(id_fun=new_id, type_id=loot_type, ammo=ammo)
         crate.contents[item.id] = item
 
 def get_ship_ids_in_range_of_point(system, x, y, range, exclude_dead=False):
