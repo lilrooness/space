@@ -100,7 +100,7 @@ if __name__ == "__main__":
             # push state to all clients
             lastTick = datetime.now()
             for _, session in get_sessions().items():
-                session.send_server_tick(systems)
+                session.send_server_tick(systems, ticks)
 
             process_out_message_queue(get_message_queue(), get_sessions())
 

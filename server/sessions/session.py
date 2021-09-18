@@ -71,7 +71,7 @@ class Session():
 
         return messages
 
-    def send_server_tick(self, systems):
+    def send_server_tick(self, systems, ticks):
         if self.check_alive():
             session_system_object = systems[self.solar_system_id]
             session_ship_object = session_system_object.ships[self.ship_id]
@@ -98,6 +98,7 @@ class Session():
                 sensor_towers=list(session_system_object.sensor_towers.values()),
                 sensor_tower_boost=does_ship_have_sensor_tower_buff(session_system_object, self.ship_id),
                 warp_points=list(session_system_object.warp_points.values()),
+                server_tick_number=ticks,
             ).marshal()
 
             bytes = message.encode()

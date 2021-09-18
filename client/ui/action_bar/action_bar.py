@@ -2,11 +2,12 @@ from math import floor
 
 import pygame
 
+from client.camera import world_to_screen
 from client.const import LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT, SCREEN_H, SCREEN_W, scheme, CYAN, GRAY
 from client.mouse import get_mouse
 from client.ui.components.banner import banner, ANCHOR_TOPLEFT
 from client.ui.components.icon import icon
-from common.const import SLOT_AMMO_INFINITY
+from common.const import SLOT_AMMO_INFINITY, module_ticks_frequencies
 
 
 def action_bar(screen, game, font):
@@ -27,11 +28,29 @@ def action_bar(screen, game, font):
 
     slot_number = 1
     for slot in active_slots:
+        for target_id in slot.target_ids:
+            target_screen_coords = world_to_screen(game, game.ships[target_id].x, game.ships[target_id].y)
+            pygame.draw.line(screen, GRAY, (xpos, ypos), target_screen_coords)
+
         icon(
             screen,
             slot.type_id,
-            pygame.Rect(xpos, ypos, LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT)
+            pygame.Rect(xpos, ypos, LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT),
         )
+
+        proportion_loaded = 1.0
+        if slot.last_slot_tick > -1:
+            # TODO: use the server tick number here,
+            #  game.tick_number is local, rename this
+
+            ticks_since_last_tick = game.server_tick_number - slot.last_slot_tick
+            proportion_loaded = min(1.0, ticks_since_last_tick * module_ticks_frequencies[slot.type_id])
+
+        if proportion_loaded < 1.0:
+            height = float(LOOT_ICON_HEIGHT) * (1.0 - proportion_loaded)
+            loading_overlay_rect = pygame.Rect(xpos, ypos, LOOT_ICON_WIDTH, height)
+            pygame.draw.rect(screen, GRAY, loading_overlay_rect)
+
         boarder_rect = pygame.Rect(
             xpos - 1,
             ypos - 1,
@@ -52,8 +71,6 @@ def action_bar(screen, game, font):
                     pygame.draw.rect(screen, CYAN, ammo_rect)
                 else:
                     pygame.draw.rect(screen, GRAY, ammo_rect)
-        else:
-            print("were not doing this for some reason ....")
 
         mouse = get_mouse()
         mouse_hover = boarder_rect.collidepoint(mouse.x, mouse.y)
@@ -79,6 +96,7 @@ def action_bar(screen, game, font):
             boarder_rect,
             width=2,
         )
-        banner(screen, xpos+1, ypos+1, str(slot.ammo), font, anchor=ANCHOR_TOPLEFT, padding=0)
+        if slot.ammo != SLOT_AMMO_INFINITY:
+            banner(screen, xpos+1, ypos+1, str(slot.ammo), font, anchor=ANCHOR_TOPLEFT, padding=0)
         xpos += x_step
         slot_number+=1

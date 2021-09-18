@@ -94,17 +94,17 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                 slot.target_ids = []
                 return
 
-            if "last_shot_tick" not in slot.userdata:
+            if slot.last_slot_tick == -1:
                 pulse_now = True
             else:
-                last_shot_tick = slot.userdata["last_shot_tick"]
+                last_shot_tick = slot.last_slot_tick
                 ticks_since_last_shot = tick - last_shot_tick
                 if ticks_since_last_shot * SHIELD_REPAIRER_FREQUENCY >= 1.0:
                     pulse_now = True
 
             if pulse_now:
                 slot.ammo -= 1
-                slot.userdata["last_shot_tick"] = tick
+                slot.last_slot_tick = tick
                 target_ship = system.ships[slot.target_ids[0]]
                 target_ship.shield = min(MAX_SHIELD_HEALTH, target_ship.shield + SHIELD_REPAIRER_HEAL_AMOUNT)
 
@@ -120,17 +120,17 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                 slot.target_ids = []
                 return
 
-            if "last_shot_tick" not in slot.userdata:
+            if slot.last_slot_tick == -1:
                 pulse_now = True
             else:
-                last_shot_tick = slot.userdata["last_shot_tick"]
+                last_shot_tick = slot.last_slot_tick
                 ticks_since_last_shot = tick - last_shot_tick
                 if ticks_since_last_shot * HULL_REPAIRER_FREQUENCY >= 1.0:
                     pulse_now = True
 
             if pulse_now:
                 slot.ammo -= 1
-                slot.userdata["last_shot_tick"] = tick
+                slot.last_slot_tick = tick
                 target_ship = system.ships[slot.target_ids[0]]
                 target_ship.health = min(MAX_HULL_HEALTH, target_ship.health + HULL_REPAIRER_HEAL_AMOUNT)
 
@@ -141,16 +141,16 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                 slot.target_ids = []
                 return
 
-            if "last_shot_tick" not in slot.userdata:
+            if slot.last_slot_tick == -1:
                 shoot_now = True
             else:
-                last_shot_tick = slot.userdata["last_shot_tick"]
+                last_shot_tick = slot.last_slot_tick
                 ticks_since_last_shot = tick - last_shot_tick
                 if ticks_since_last_shot * MINI_GUN_SHOT_FREQUENCY >= 1.0:
                     shoot_now = True
 
             if shoot_now:
-                slot.userdata["last_shot_tick"] = tick
+                slot.last_slot_tick = tick
                 target_ship = system.ships[slot.target_ids[0]]
                 owner_vx = owner_ship.vx * get_speed(owner_ship.power_allocation_engines)
                 owner_vy = owner_ship.vy * get_speed(owner_ship.power_allocation_engines)
@@ -200,16 +200,16 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                 slot.target_ids = []
                 return
 
-            if "last_shot_tick" not in slot.userdata:
+            if slot.last_slot_tick == -1:
                 shoot_now = True
             else:
-                last_shot_tick = slot.userdata["last_shot_tick"]
+                last_shot_tick = slot.last_slot_tick
                 ticks_since_last_shot = tick - last_shot_tick
                 if ticks_since_last_shot * MISSILE_SHOT_FREQUENCY >= 1.0:
                     shoot_now = True
 
             if shoot_now:
-                slot.userdata["last_shot_tick"] = tick
+                slot.last_slot_tick = tick
                 new_missile = InFlightMissile(
                     damage=BASE_MISSILE_DAMAGE,
                     owner_id=owner_id,
@@ -228,16 +228,16 @@ def resolve_slot_tick(system, owner_id, slot, tick):
                 slot.target_ids = []
                 return
 
-            if "last_shot_tick" not in slot.userdata:
+            if slot.last_slot_tick == -1:
                 shoot_now = True
             else:
-                last_shot_tick = slot.userdata["last_shot_tick"]
+                last_shot_tick = slot.last_slot_tick
                 ticks_since_last_shot =  tick - last_shot_tick
                 if ticks_since_last_shot * LASER_SHOT_FREQUENCY >= 1.0:
                     shoot_now = True
 
             if shoot_now:
-                slot.userdata["last_shot_tick"] = tick
+                slot.last_slot_tick = tick
                 target_ship = system.ships[slot.target_ids[0]]
                 owner_vx = owner_ship.vx * get_speed(owner_ship.power_allocation_engines)
                 owner_vy = owner_ship.vy * get_speed(owner_ship.power_allocation_engines)

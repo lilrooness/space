@@ -43,7 +43,8 @@ class Game():
         self.warp_effects = []
         self.sensor_towers = {}
         self.sensor_tower_boost = False
-        self.warp_points = {}
+        self.warp_points = {},
+        self.server_tick_number = None,
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
@@ -104,6 +105,7 @@ def crate_minigun_shot_burst_effect(game, minigun_shot):
         )
 
 def handle_server_tick_message(game, message):
+    game.server_tick_number = message.server_tick_number
     game.last_delta = 0.0
     game.last_tick_time = datetime.now()
     game.tick_number += 1

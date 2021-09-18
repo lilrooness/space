@@ -13,6 +13,8 @@ from common.serializable.serializable import FIELD_TYPE_VALUE, FIELD_TYPE_MULTIP
 
 class ServerTickMessage(Message):
     MESSAGE_NAME = "server_tick"
+    # TODO: these mutable default args are going to be causing us problems real soon when we start
+    #  producing multiple server tick messages at once before we serialise them ...
 
     def __init__(
             self,
@@ -27,6 +29,7 @@ class ServerTickMessage(Message):
             power_allocation_guns = None,
             power_allocation_shields = None,
             power_allocation_engines = None,
+            server_tick_number = None,
             crates = [],
             shield_slots = [],
             engine_slots = [],
@@ -57,6 +60,7 @@ class ServerTickMessage(Message):
         self.sensor_towers = sensor_towers
         self.sensor_tower_boost = sensor_tower_boost
         self.warp_points = warp_points
+        self.server_tick_number = server_tick_number
 
     @classmethod
     def fields(cls):
@@ -79,6 +83,7 @@ class ServerTickMessage(Message):
             "sensor_towers": (FIELD_TYPE_MULTIPLE_ENTITIES, SensorTower),
             "sensor_tower_boost": (FIELD_TYPE_VALUE, bool),
             "warp_points": (FIELD_TYPE_MULTIPLE_ENTITIES, WarpPoint),
+            "server_tick_number": (FIELD_TYPE_VALUE, int),
         }
 
     def marshal(self):
@@ -126,6 +131,7 @@ class ServerTickMessage(Message):
             str(self.sensor_tower_boost),
             "%d" % len(self.warp_points),
             ":".join(marshalled_warp_points or [str(NONE_MARKER)]),
+            "%d" % self.server_tick_number,
         ]
 
         return ":".join(message)
@@ -153,4 +159,5 @@ class ServerTickMessage(Message):
             sensor_towers=fields_map["sensor_towers"],
             sensor_tower_boost=fields_map["sensor_tower_boost"],
             warp_points=fields_map["warp_points"],
+            server_tick_number=fields_map["server_tick_number"],
         )

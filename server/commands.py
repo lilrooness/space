@@ -88,6 +88,7 @@ def process_command(systems, session, command, current_tick):
                 session_system.crates[crate_id].contents[item.id] = item
 
             slot.type_id = command.type_id
+            slot.target_ids = []
 
             if "max_ammo" in global_types[command.type_id]:
                 slot.max_ammo = global_types[command.type_id]["max_ammo"]
