@@ -5,7 +5,7 @@ from common.const import CRATE_LOOT_RANGE, TOWER_CONNECTION_RANGE, WARP_POINT_RA
 from level_editor.camera import world_to_screen, screen_to_world, get_camera_zoom
 from level_editor.editor import BLACK, WHITE, GREEN, SCREEN_W, SCREEN_H, GRAY, RED, YELLOW, CYAN
 from level_editor.mouse import get_mouse
-from level_editor.types import types, CRATE_TYPE_ID, TOWER_TYPE_ID, WARP_POINT_TYPE_ID, SPEED_BOOST_TYPE_ID
+from level_editor.types import types, CRATE_TYPE_ID, TOWER_TYPE_ID, WARP_POINT_TYPE_ID, SPEED_BOOST_CLOUD_TYPE_ID
 from level_editor.ui.components.banner import banner, ANCHOR_LEFT, ANCHOR_CENTER, ANCHOR_RIGHT
 from level_editor.ui.components.icon import icon
 
@@ -109,7 +109,7 @@ def render(screen, screen_rect, state):
                 pygame.draw.circle(screen, WHITE, s_coords, TOWER_CONNECTION_RANGE / get_camera_zoom(), width=2)
             elif type_id == WARP_POINT_TYPE_ID:
                 pygame.draw.circle(screen, WHITE, s_coords, WARP_POINT_RANGE / get_camera_zoom(), width=2)
-            elif type_id == SPEED_BOOST_TYPE_ID:
+            elif type_id == SPEED_BOOST_CLOUD_TYPE_ID:
                 pygame.draw.circle(screen, YELLOW, s_coords, SPEED_BOOST_CLOUD_RANGE / get_camera_zoom(), width=2)
 
             dim = 30

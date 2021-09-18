@@ -3,7 +3,7 @@ import math
 import pygame
 
 from client.camera import get_camera_zoom, world_to_screen
-from client.const import scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, RETICULE_SIZE, CRATE_WIDTH, CRATE_HEIGHT, \
+from client.const import scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, CRATE_WIDTH, CRATE_HEIGHT, \
     TOWER_WIDTH, TOWER_HEIGHT
 from client.game import pick_ship
 from client.mouse import get_mouse
@@ -13,7 +13,7 @@ from client.ui.crate_window.crate_window import crate_window
 from client.ui.power_window.power_window import power_window
 from client.ui.slot_window.slot_window import slot_window
 from client.ui.tower_ui.tower_ui import tower_ui
-from common.const import get_laser_range, CRATE_LOOT_RANGE, BASE_SENSOR_RANGE
+from common.const import get_laser_range, CRATE_LOOT_RANGE, BASE_SENSOR_RANGE, SPEED_BOOST_CLOUD_RANGE
 from common.utils import dist
 
 
@@ -184,6 +184,11 @@ def render_game_view(game, screen, screenRect):
         pygame.draw.rect(screen, scheme["sensor_tower"], tower_rect)
         pygame.draw.circle(screen, scheme["sensor_tower_range"], tower_screen_space_coords,
                            tower.connection_range / float(get_camera_zoom()), width=1)
+
+
+    for _, cloud in game.speed_boost_clouds.items():
+        cloud_screen_coords = world_to_screen(game, cloud.x, cloud.y)
+        pygame.draw.circle(screen, scheme["speed_boost_cloud_range"], cloud_screen_coords, SPEED_BOOST_CLOUD_RANGE / float(get_camera_zoom()), width=1)
 
 
     for _, crate in game.crates.items():

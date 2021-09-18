@@ -98,6 +98,7 @@ class Session():
                 sensor_towers=list(session_system_object.sensor_towers.values()),
                 sensor_tower_boost=does_ship_have_sensor_tower_buff(session_system_object, self.ship_id),
                 warp_points=list(session_system_object.warp_points.values()),
+                speed_boost_clouds=list(session_system_object.speed_boost_clouds.values()),
                 server_tick_number=ticks,
             ).marshal()
 

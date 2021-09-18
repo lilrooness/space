@@ -43,7 +43,8 @@ class Game():
         self.warp_effects = []
         self.sensor_towers = {}
         self.sensor_tower_boost = False
-        self.warp_points = {},
+        self.warp_points = {}
+        self.speed_boost_clouds = {}
         self.server_tick_number = None,
 
     def tick(self):
@@ -142,6 +143,10 @@ def handle_server_tick_message(game, message):
     for warp_point in message.warp_points:
         warp_points[warp_point.id] = warp_point
 
+    speed_boost_clouds = {}
+    for sbc in message.speed_boost_clouds:
+        speed_boost_clouds[sbc.id] = sbc
+
     game.active_laser_shots = active_laser_shots
     game.in_flight_missiles = in_flight_missiles
     game.ships = ships
@@ -157,6 +162,7 @@ def handle_server_tick_message(game, message):
     game.hull_slots = message.hull_slots
     game.sensor_tower_boost = message.sensor_tower_boost
     game.warp_points = warp_points
+    game.speed_boost_clouds = speed_boost_clouds
 
     if message.targeted_by_ship_id > -1:
         game.targeted_by_ship_id = message.targeted_by_ship_id

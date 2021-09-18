@@ -72,6 +72,7 @@ scheme = {
     "offline_tower_gauge": WHITE,
     "warp_point": PINK,
     "warp_point_range": PINK,
+    "speed_boost_cloud_range": YELLOW,
 }
 
 loot_type_icons = {}

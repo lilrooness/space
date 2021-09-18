@@ -21,6 +21,8 @@ class Ship(Entity):
             power_allocation_guns=0.5,
             power_allocation_shields = 0.25,
             power_allocation_engines = 0.25,
+            speed_boost = 1.0,
+            speed_cap = 0,
             shield_slots = [],
             engine_slots = [],
             weapon_slots = [],
@@ -42,6 +44,8 @@ class Ship(Entity):
         self.power_allocation_guns = power_allocation_guns
         self.power_allocation_shields = power_allocation_shields
         self.power_allocation_engines = power_allocation_engines
+        self.speed_boost = speed_boost
+        self.speed_cap = speed_cap
 
         self.shield_slots = shield_slots
         self.engine_slots = engine_slots
@@ -57,7 +61,9 @@ class Ship(Entity):
             else:
                 self.warp.tick(currentTick)
         else:
-            speed = get_speed(self.power_allocation_engines)
+            speed = self.speed_boost * get_speed(self.power_allocation_engines)
+            if self.speed_cap:
+                speed = min(self.speed_cap, speed)
             self.x += (self.vx * speed) * delta
             self.y += (self.vy * speed) * delta
 
@@ -75,6 +81,8 @@ class Ship(Entity):
             "power_allocation_guns": (FIELD_TYPE_VALUE, float),
             "power_allocation_shields": (FIELD_TYPE_VALUE, float),
             "power_allocation_engines": (FIELD_TYPE_VALUE, float),
+            "speed_boost": (FIELD_TYPE_VALUE, float),
+            "speed_cap": (FIELD_TYPE_VALUE, float),
         }
 
 class Warp():

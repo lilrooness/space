@@ -5,6 +5,7 @@ from common.entities.mini_gun_shot import MinigunShot
 from common.entities.sensor_tower import SensorTower
 from common.entities.ship import Ship
 from common.entities.slot import Slot
+from common.entities.speed_boost_cloud import SpeedBoostCloud
 from common.entities.warp_point import WarpPoint
 from common.messages.message import Message
 from common.net_const import NONE_MARKER
@@ -38,6 +39,7 @@ class ServerTickMessage(Message):
             mini_gun_shots = [],
             sensor_towers = [],
             warp_points = [],
+            speed_boost_clouds = None,
             sensor_tower_boost = False,
     ):
         self.ship_id = ship_id
@@ -62,6 +64,11 @@ class ServerTickMessage(Message):
         self.warp_points = warp_points
         self.server_tick_number = server_tick_number
 
+        if speed_boost_clouds:
+            self.speed_boost_clouds = speed_boost_clouds
+        else:
+            self.speed_boost_clouds = {}
+
     @classmethod
     def fields(cls):
         return {
@@ -84,8 +91,10 @@ class ServerTickMessage(Message):
             "sensor_tower_boost": (FIELD_TYPE_VALUE, bool),
             "warp_points": (FIELD_TYPE_MULTIPLE_ENTITIES, WarpPoint),
             "server_tick_number": (FIELD_TYPE_VALUE, int),
+            "speed_boost_clouds": (FIELD_TYPE_MULTIPLE_ENTITIES, SpeedBoostCloud)
         }
 
+    # TODO: do this in message, like it's done in entity
     def marshal(self):
 
         marshalled_ships = [ship.marshal() for ship in self.ships]
@@ -99,6 +108,7 @@ class ServerTickMessage(Message):
         marshalled_hull_slots = [slot.marshal() for slot in self.hull_slots]
         marshalled_sensor_towers = [tower.marshal() for tower in self.sensor_towers]
         marshalled_warp_points = [warp_point.marshal() for warp_point in self.warp_points]
+        marshalled_speed_boost_clouds = [sbc.marshal() for sbc in self.speed_boost_clouds]
 
         message = [
             self.MESSAGE_NAME,
@@ -132,10 +142,13 @@ class ServerTickMessage(Message):
             "%d" % len(self.warp_points),
             ":".join(marshalled_warp_points or [str(NONE_MARKER)]),
             "%d" % self.server_tick_number,
+            "%d" % len(self.speed_boost_clouds),
+            ":".join(marshalled_speed_boost_clouds or [str(NONE_MARKER)])
         ]
 
         return ":".join(message)
 
+    # TODO: do this in message, like it's done in entity
     @classmethod
     def unmarshal(cls, encoded):
         fields_map, _remaining = ServerTickMessage.message_unmarshal_fields_map(encoded)
@@ -160,4 +173,5 @@ class ServerTickMessage(Message):
             sensor_tower_boost=fields_map["sensor_tower_boost"],
             warp_points=fields_map["warp_points"],
             server_tick_number=fields_map["server_tick_number"],
+            speed_boost_clouds=fields_map["speed_boost_clouds"],
         )

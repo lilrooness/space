@@ -2,7 +2,8 @@ import random
 
 from common.ballistics import get_mini_gun_shot_damage
 from common.const import get_laser_range, \
-    BASE_MINI_GUN_RANGE, BASE_SENSOR_RANGE, SLOT_AMMO_INFINITY
+    BASE_MINI_GUN_RANGE, BASE_SENSOR_RANGE, SLOT_AMMO_INFINITY, SPEED_BOOST_CLOUD_RANGE, SPEED_BOOST_CLOUD_SPEED_BOOST, \
+    SPEED_BOOST_CLOUD_SPEED_CAP
 from common.entities.loot.loot_types import loot_types
 from common.entities.loot.lootitem import LootItem
 from common.entities.sensor_tower import ACTIVATION_TICK_AMOUNT
@@ -19,6 +20,19 @@ def tick(systems, ticks):
 
     for _, system in systems.items():
         system.active_laser_shots = {}
+
+        boosted_ships = []
+        for _id, cloud in system.speed_boost_clouds.items():
+            boosted_ships = get_ship_ids_in_range_of_point(system, cloud.x, cloud.y, SPEED_BOOST_CLOUD_RANGE, exclude_dead=True)
+
+        for ship_id, ship in system.ships.items():
+            if ship_id in boosted_ships:
+                ship.speed_boost = SPEED_BOOST_CLOUD_SPEED_BOOST
+                ship.speed_cap = SPEED_BOOST_CLOUD_SPEED_CAP
+            else:
+                ship.speed_boost = 1.0
+                ship.speed_cap = 0
+
         system.tick(tick=ticks)
 
         # tick_ship_slots

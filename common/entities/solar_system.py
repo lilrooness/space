@@ -3,36 +3,52 @@ from common.entities.entity import Entity
 
 class SolarSystem(Entity):
 
-    def __init__(self, ships={}, projectiles={}, active_laser_shots={}, in_flight_missiles={}, mini_gun_shots={}, sensor_towers={}, warp_points={}, crates={}, id=None, id_fun=None):
+    def __init__(self, ships=None, projectiles=None, active_laser_shots=None, in_flight_missiles=None, mini_gun_shots=None, sensor_towers=None, warp_points=None, crates=None, speed_boost_clouds=None, id=None, id_fun=None):
         super().__init__(id=id, id_fun=id_fun)
-        self.ships = ships
-        self.projectiles = projectiles
-        self.active_laser_shots = active_laser_shots
-        self.in_flight_missiles = in_flight_missiles
-        self.mini_gun_shots = mini_gun_shots
-        self.sensor_towers = sensor_towers
-        self.warp_points = warp_points
-        self.crates = crates
+        if ships:
+            self.ships = ships
+        else:
+            self.ships = {}
 
-        # item_1 = LootItem(id_fun=new_id, type_id=MINI_GUN)
-        # crate_1 = Crate(x=250, y=250, id_fun=new_id,  contents={item_1.id: item_1})
-        #
-        # item_2 = LootItem(id_fun=new_id, type_id=MISSILE_LAUNCHER)
-        # crate_2 = Crate(x=250, y=50, id_fun=new_id,  contents={item_2.id: item_2})
-        #
-        # self.crates = {
-        #     crate_1.id: crate_1,
-        #     crate_2.id: crate_2,
-        # }
-        #
-        # tower_1 = SensorTower(
-        #     x=50,
-        #     y=100,
-        #     id_fun=new_id,
-        # )
-        # self.sensor_towers = {
-        #     tower_1.id: tower_1
-        # }
+        if projectiles:
+            self.projectiles = projectiles
+        else:
+            self.projectiles = {}
+
+        if active_laser_shots:
+            self.active_laser_shots = active_laser_shots
+        else:
+            self.active_laser_shots = {}
+
+        if in_flight_missiles:
+            self.in_flight_missiles = in_flight_missiles
+        else:
+            self.in_flight_missiles = {}
+
+        if mini_gun_shots:
+            self.mini_gun_shots = mini_gun_shots
+        else:
+            self.mini_gun_shots = {}
+
+        if sensor_towers:
+            self.sensor_towers = sensor_towers
+        else:
+            self.sensor_towers = {}
+
+        if warp_points:
+            self.warp_points = warp_points
+        else:
+            self.warp_points = {}
+
+        if crates:
+            self.crates = crates
+        else:
+            self.crates = {}
+
+        if speed_boost_clouds:
+            self.speed_boost_clouds = speed_boost_clouds
+        else:
+            self.speed_boost_clouds = {}
 
     def tick(self, delta=1.0, tick=None):
         for _id, ship in self.ships.items():
