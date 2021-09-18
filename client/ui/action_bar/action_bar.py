@@ -48,7 +48,7 @@ def action_bar(screen, game, font):
                     ammo_square_width,
                     5,
                 )
-                if x <= slot.ammo:
+                if x < slot.ammo:
                     pygame.draw.rect(screen, CYAN, ammo_rect)
                 else:
                     pygame.draw.rect(screen, GRAY, ammo_rect)
