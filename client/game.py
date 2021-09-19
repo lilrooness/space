@@ -4,6 +4,7 @@ from client import camera
 from client.vfx.explosion_effect import ExplosionEffect
 from client.vfx.minigun_shot_effect import MinigunShotEffect
 from client.vfx.warp_effect import WarpEffect
+from common.const import CRATE_LOOT_RANGE
 from common.messages.crate_contents import CrateContentsMessage
 from common.messages.explosion import ExplosionMessage
 from common.messages.messages import ServerTickMessage
@@ -12,6 +13,7 @@ from common.messages.ship_damage import ShipDamageMessage
 from common.messages.warp_exit_appeared import WarpExitAppearedMessage
 from common.messages.warp_started import WarpStartedMessage
 from common.net_const import SERVER_TICK_TIME
+from common.utils import dist
 
 
 class Game():
@@ -45,12 +47,19 @@ class Game():
         self.sensor_tower_boost = False
         self.warp_points = {}
         self.speed_boost_clouds = {}
-        self.server_tick_number = None,
+        self.server_tick_number = None
+        self.dragged_item = None
 
     def tick(self):
         time_since_last_tick = datetime.now() - self.last_tick_time
 
         delta = min(1.0, float(time_since_last_tick.microseconds) / float(SERVER_TICK_TIME))
+
+        if self.dragged_item:
+            ship = self.ships[self.ship_id]
+            crate = self.crates[self.dragged_item.crate_id]
+            if dist(ship.x, ship.y, crate.x, crate.y) > CRATE_LOOT_RANGE:
+                self.dragged_item = None
 
         for ship_id, ship in self.ships.items():
             ship.tick(

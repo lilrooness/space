@@ -1,6 +1,7 @@
 import pygame
 
 from client.const import scheme, LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT
+from client.mouse import get_mouse
 from client.ui.components.icon import icon
 
 
@@ -33,6 +34,10 @@ def slot_window(screen, game, x=0, y=0):
         if slot.type_id:
             icon(screen, slot.type_id, rect)
 
+        mouse = get_mouse()
+        if game.dragged_item and rect.collidepoint(mouse.x, mouse.y) and mouse.up_this_frame:
+            _drop_onto_slot(game, slot.id)
+
     slot_xpos = 0
     for slot in game.shield_slots:
         rect = pygame.Rect(
@@ -43,6 +48,12 @@ def slot_window(screen, game, x=0, y=0):
         )
         slot_xpos += x_spacing
         pygame.draw.rect(screen, scheme["ui_background_highlight"], rect)
+        if slot.type_id:
+            icon(screen, slot.type_id, rect)
+
+        mouse = get_mouse()
+        if game.dragged_item and rect.collidepoint(mouse.x, mouse.y) and mouse.up_this_frame:
+            _drop_onto_slot(game, slot.id)
 
     slot_xpos = 0
     for slot in game.engine_slots:
@@ -54,6 +65,12 @@ def slot_window(screen, game, x=0, y=0):
         )
         slot_xpos += x_spacing
         pygame.draw.rect(screen, scheme["ui_background_highlight"], rect)
+        if slot.type_id:
+            icon(screen, slot.type_id, rect)
+
+        mouse = get_mouse()
+        if game.dragged_item and rect.collidepoint(mouse.x, mouse.y) and mouse.down_this_frame:
+            _drop_onto_slot(game, slot.id)
 
     slot_xpos = 0
     for slot in game.hull_slots:
@@ -65,3 +82,14 @@ def slot_window(screen, game, x=0, y=0):
         )
         slot_xpos += x_spacing
         pygame.draw.rect(screen, scheme["ui_background_highlight"], rect)
+        if slot.type_id:
+            icon(screen, slot.type_id, rect)
+
+        mouse = get_mouse()
+        if game.dragged_item and rect.collidepoint(mouse.x, mouse.y) and mouse.up_this_frame:
+            _drop_onto_slot(game, slot.id)
+
+def _drop_onto_slot(game, slot_id):
+    game.dragged_item.dropped_callback(slot_id)
+    game.dragged_item = None
+    get_mouse().use_button_event("down_this_frame")

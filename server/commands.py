@@ -116,7 +116,7 @@ def process_command(systems, session, command, current_tick):
         ship = systems[session.solar_system_id].ships[session.ship_id]
         target_ship_id = command.target_ship_id
         slot_id = command.slot_id
-        all_ship_slots = ship.weapon_slots | ship.shield_slots | ship.shield_slots | ship.hull_slots
+        all_ship_slots = ship.weapon_slots | ship.shield_slots | ship.engine_slots | ship.hull_slots
         if slot_id in all_ship_slots:
 
             slot = all_ship_slots[slot_id]
@@ -127,7 +127,7 @@ def process_command(systems, session, command, current_tick):
     if command.COMMAND_NAME == RequestUnTargetCommand.COMMAND_NAME:
         ship = systems[session.solar_system_id].ships[session.ship_id]
         slot_id = command.slot_id
-        all_ship_slots = ship.weapon_slots | ship.shield_slots | ship.shield_slots | ship.hull_slots
+        all_ship_slots = ship.weapon_slots | ship.shield_slots | ship.engine_slots | ship.hull_slots
         if slot_id in all_ship_slots:
             slot = all_ship_slots[slot_id]
             slot.target_ids = []

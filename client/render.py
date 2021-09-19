@@ -4,11 +4,12 @@ import pygame
 
 from client.camera import get_camera_zoom, world_to_screen
 from client.const import scheme, SHIP_HEALTH_ARC_DIAM, SHIP_SHIELD_ARC_DIAM, CRATE_WIDTH, CRATE_HEIGHT, \
-    TOWER_WIDTH, TOWER_HEIGHT
+    TOWER_WIDTH, TOWER_HEIGHT, LOOT_ICON_WIDTH, LOOT_ICON_HEIGHT
 from client.game import pick_ship
 from client.mouse import get_mouse
 from client.reticules import draw_hover_reticule, draw_targetted_reticule
 from client.ui.action_bar.action_bar import action_bar
+from client.ui.components.icon import icon
 from client.ui.crate_window.crate_window import crate_window
 from client.ui.power_window.power_window import power_window
 from client.ui.slot_window.slot_window import slot_window
@@ -32,6 +33,20 @@ def render_static_ui(game, screen, old_state, font):
 
     slot_window(screen, game, 50, 50)
     action_bar(screen, game, font)
+
+    if game.dragged_item:
+        mouse = get_mouse()
+
+        icon(
+            screen,
+            game.dragged_item.type_id,
+            pygame.Rect(
+                mouse.x,
+                mouse.y,
+                LOOT_ICON_WIDTH,
+                LOOT_ICON_HEIGHT
+            )
+        )
 
     return state
 

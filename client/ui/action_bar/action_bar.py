@@ -102,5 +102,6 @@ def action_bar(screen, game, font):
         )
         if slot.ammo != SLOT_AMMO_INFINITY:
             banner(screen, xpos+1, ypos+1, str(slot.ammo), font, anchor=ANCHOR_TOPLEFT, padding=0)
+
         xpos += x_step
         slot_number+=1

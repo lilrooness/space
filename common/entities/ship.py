@@ -23,10 +23,10 @@ class Ship(Entity):
             power_allocation_engines = 0.25,
             speed_boost = 1.0,
             speed_cap = 0,
-            shield_slots = [],
-            engine_slots = [],
-            weapon_slots = [],
-            hull_slots = [],
+            shield_slots = None,
+            engine_slots = None,
+            weapon_slots = None,
+            hull_slots = None,
     ):
         super().__init__(id, id_fun)
         self.ammo = ammo
@@ -47,10 +47,25 @@ class Ship(Entity):
         self.speed_boost = speed_boost
         self.speed_cap = speed_cap
 
-        self.shield_slots = shield_slots
-        self.engine_slots = engine_slots
-        self.weapon_slots = weapon_slots
-        self.hull_slots   = hull_slots
+        if shield_slots:
+            self.shield_slots = shield_slots
+        else:
+            self.shield_slots = []
+
+        if engine_slots:
+            self.engine_slots = engine_slots
+        else:
+            self.engine_slots = []
+
+        if weapon_slots:
+            self.weapon_slots = weapon_slots
+        else:
+            self.weapon_slots = []
+
+        if hull_slots:
+            self.hull_slots = hull_slots
+        else:
+            self.hull_slots = []
 
     def tick(self, delta=1.0, currentTick=None):
         if self.warp:
