@@ -7,6 +7,8 @@ from common.const import get_laser_range, \
 from common.entities.loot.loot_types import loot_types
 from common.entities.loot.lootitem import LootItem
 from common.entities.sensor_tower import ACTIVATION_TICK_AMOUNT
+from common.entities.ship import Ship
+from common.entities.slot import Slot, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, SHIELD_CONSTRAINT, HULL_CONSTRAINT
 from common.messages.explosion import ExplosionMessage
 from common.messages.ship_damage import ShipDamageMessage
 from common.utils import dist
@@ -232,3 +234,27 @@ def ship_can_initiate_warp(system, ship_id, warp_x, warp_y):
         return True
     else:
         return False
+
+def spawn_new_ship(system):
+
+    weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, id_fun=new_id)
+    engine_slot = Slot(type_constraint=ENGINE_CONSTRAINT, id_fun=new_id)
+    shield_slot = Slot(type_constraint=SHIELD_CONSTRAINT, id_fun=new_id)
+    hull_slot = Slot(type_constraint=HULL_CONSTRAINT, id_fun=new_id)
+
+    spawn_point = random.choice(list(system.spawn_points.values()))
+
+    new_ship = Ship(
+        spawn_point.x,
+        spawn_point.y,
+        vx=0,
+        vy=0,
+        id_fun=new_id,
+        shield_slots={shield_slot.id: shield_slot},
+        engine_slots={engine_slot.id: engine_slot},
+        weapon_slots={weapon_slot_1.id: weapon_slot_1},
+        hull_slots={hull_slot.id: hull_slot},
+    )
+
+    system.ships[new_ship.id] = new_ship
+    return new_ship

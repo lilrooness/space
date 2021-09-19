@@ -3,7 +3,7 @@ from common.entities.entity import Entity
 
 class SolarSystem(Entity):
 
-    def __init__(self, ships=None, projectiles=None, active_laser_shots=None, in_flight_missiles=None, mini_gun_shots=None, sensor_towers=None, warp_points=None, crates=None, speed_boost_clouds=None, id=None, id_fun=None):
+    def __init__(self, ships=None, projectiles=None, active_laser_shots=None, in_flight_missiles=None, mini_gun_shots=None, sensor_towers=None, warp_points=None, crates=None, speed_boost_clouds=None, spawn_points=None, id=None, id_fun=None):
         super().__init__(id=id, id_fun=id_fun)
         if ships:
             self.ships = ships
@@ -49,6 +49,11 @@ class SolarSystem(Entity):
             self.speed_boost_clouds = speed_boost_clouds
         else:
             self.speed_boost_clouds = {}
+
+        if spawn_points:
+            self.spawn_points = spawn_points
+        else:
+            self.spawn_points = {}
 
     def tick(self, delta=1.0, tick=None):
         for _id, ship in self.ships.items():

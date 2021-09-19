@@ -1,12 +1,14 @@
 import yaml
 
-from common.const import TOWER_TYPE_ID, CRATE_TYPE_ID, WARP_POINT_TYPE_ID, SPEED_BOOST_CLOUD_TYPE_ID
+from common.const import TOWER_TYPE_ID, CRATE_TYPE_ID, WARP_POINT_TYPE_ID, SPEED_BOOST_CLOUD_TYPE_ID, \
+    SPAWN_POINT_TYPE_ID
 from common.entities.crate import Crate
 from common.entities.sensor_tower import SensorTower
 from common.entities.solar_system import SolarSystem
 from common.entities.speed_boost_cloud import SpeedBoostCloud
 from common.entities.warp_point import WarpPoint
 from server.id import new_id
+from server.server_entities.spawn_point import SpawnPoint
 
 CRATE_MARKER = "CRATE"
 SENSOR_TOWER_MARKER = "SENSOR_TOWER"
@@ -21,6 +23,8 @@ def read_map_data(filename):
     crates = {}
     warp_points = {}
     speed_boost_clouds = {}
+    spawn_points = {}
+
     with open(filename) as map_file:
         map_data = yaml.safe_load(map_file)
 
@@ -38,11 +42,15 @@ def read_map_data(filename):
             elif type_id == SPEED_BOOST_CLOUD_TYPE_ID:
                 speed_boost_cloud = SpeedBoostCloud(x=coord[0], y=coord[1], id_fun=new_id)
                 speed_boost_clouds[speed_boost_cloud.id] = speed_boost_cloud
+            elif type_id == SPAWN_POINT_TYPE_ID:
+                spawn_point = SpawnPoint(x=coord[0], y=coord[1], id_fun=new_id)
+                spawn_points[spawn_point.id] = spawn_point
 
     return SolarSystem(
         sensor_towers=sensor_towers,
         warp_points=warp_points,
         crates=crates,
         speed_boost_clouds=speed_boost_clouds,
+        spawn_points=spawn_points,
     )
 

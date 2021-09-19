@@ -2,14 +2,11 @@ import socket
 from datetime import datetime
 from select import select
 
-from common.const import SHIELD_REPAIRER
-from common.entities.ship import Ship
-from common.entities.slot import Slot, SHIELD_CONSTRAINT, ENGINE_CONSTRAINT, WEAPON_CONSTRAINT, HULL_CONSTRAINT
 from common.net_const import SERVER_TICK_TIME
 from server.commands import process_command
 from server.const import load_types
 from server.game import server_game
-from server.id import new_id
+from server.game.server_game import spawn_new_ship
 from server.map_reader import read_map_data
 from server.sessions.session import Session
 from server.sessions.sessions import get_sessions, get_message_queue
@@ -20,24 +17,7 @@ def accept_new_connections(server_socket, sessions, systems):
     if len(readable) == 1:
         connection, address = server_socket.accept()
 
-        weapon_slot_1 = Slot(type_constraint=WEAPON_CONSTRAINT, type_id=SHIELD_REPAIRER, max_ammo=3, ammo=3, id_fun=new_id)
-        engine_slot = Slot(type_constraint=ENGINE_CONSTRAINT, id_fun=new_id)
-        shield_slot = Slot(type_constraint=SHIELD_CONSTRAINT, id_fun=new_id)
-        hull_slot = Slot(type_constraint=HULL_CONSTRAINT, id_fun=new_id)
-
-        new_ship = Ship(
-            10,
-            10,
-            vx=0,
-            vy=0,
-            id_fun=new_id,
-            shield_slots= {shield_slot.id: shield_slot},
-            engine_slots = {engine_slot.id: engine_slot},
-            weapon_slots = {weapon_slot_1.id: weapon_slot_1},
-            hull_slots = {hull_slot.id: hull_slot},
-        )
-
-        systems[1].ships[new_ship.id] = new_ship
+        new_ship = spawn_new_ship(systems[1])
         new_session = Session(connection, address, 1, new_ship.id)
         sessions[new_session.id] = new_session
 

@@ -4,4 +4,3 @@ class DraggedItem():
         self.crate_id = crate_id
         self.dropped_callback = dropped_callback
         self.type_id = type_id
-
