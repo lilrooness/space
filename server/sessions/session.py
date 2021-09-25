@@ -6,6 +6,7 @@ from common.messages.server_tick import ServerTickMessage
 from common.net_const import HEADER_SIZE
 from server.game.server_game import get_ship_ids_in_sensor_range_of_ship, does_ship_have_sensor_tower_buff
 from server.id import new_id
+from server.logger import get_session_logger
 
 
 class Session():
@@ -50,6 +51,7 @@ class Session():
             parts = message.decode().split(":")
             request_name = parts[0]
             request = commands[request_name].unmarshal(message.decode())
+            get_session_logger().to_server_log(self.id, request)
             return request
 
         return None
@@ -63,6 +65,7 @@ class Session():
             bytes = message.marshal().encode()
             length = len(bytes)
             header = length.to_bytes(HEADER_SIZE, "big")
+            get_session_logger().to_client_log(self.id, message)
             try:
                 self.connection.send(header + bytes)
                 messages = messages[1:]
@@ -80,7 +83,7 @@ class Session():
             active_laser_shots = [shot for _id, shot in session_system_object.active_laser_shots.items()]
             visible_crates = [crate for _id, crate, in session_system_object.crates.items()]
             in_flight_missiles = [missile for _id, missile in session_system_object.in_flight_missiles.items()]
-            message = ServerTickMessage(
+            serverTickMessage = ServerTickMessage(
                 self.ship_id,
                 self.solar_system_id,
                 visible_ships,
@@ -100,7 +103,10 @@ class Session():
                 warp_points=list(session_system_object.warp_points.values()),
                 speed_boost_clouds=list(session_system_object.speed_boost_clouds.values()),
                 server_tick_number=ticks,
-            ).marshal()
+            )
+
+            get_session_logger().to_client_log(self.id, serverTickMessage)
+            message = serverTickMessage.marshal()
 
             bytes = message.encode()
             message_size = len(bytes)

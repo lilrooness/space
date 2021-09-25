@@ -7,6 +7,7 @@ from server.commands import process_command
 from server.const import load_types
 from server.game import server_game
 from server.game.server_game import spawn_new_ship
+from server.logger import get_session_logger
 from server.map_reader import read_map_data
 from server.sessions.session import Session
 from server.sessions.sessions import get_sessions, get_message_queue
@@ -28,7 +29,7 @@ def process_out_message_queue(message_queue, sessions):
             remaining_messages = session.send_messages(messages)
             message_queue[session_id] = remaining_messages
 
-if __name__ == "__main__":
+def run_game():
     loaded_system = read_map_data("data/map.yaml")
     load_types()
     server_game.seed_loot(loaded_system)
@@ -60,6 +61,7 @@ if __name__ == "__main__":
                 sessions_to_delete.append(session_id)
 
         for session_id in sessions_to_delete:
+            get_session_logger().flush_session_logs(session_id)
             del get_sessions()[session_id]
 
         # receive from clients
@@ -94,3 +96,11 @@ if __name__ == "__main__":
 
                 for id in minigunshot_ids_to_delete:
                     del system.mini_gun_shots[id]
+
+if __name__ == "__main__":
+    try:
+        run_game()
+    finally:
+        print("Flushing session logs after error...")
+        get_session_logger().flush_all_session_logs()
+
