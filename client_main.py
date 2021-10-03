@@ -54,9 +54,25 @@ def process_input(game):
         set_camera_zoom(get_camera_zoom() + get_mouse().wheel_scroll_amount)
         get_mouse().use_button_event("wheel_scrolled")
 
+def get_host_settings(filename):
+    with open(filename, "r") as settings_file:
+        settings = {}
+        lines = settings_file.readlines()
+        for line in lines:
+            parts = line.split(":", 1)
+            if not line.startswith("#") and len(parts) == 2:
+                settings[parts[0].strip()] = parts[1].strip()
+
+        return settings
+
 if __name__ == "__main__":
     client_socket = socket.socket()
-    client_socket.connect(("localhost", 12345))
+    host_settings = get_host_settings("client_settings.txt")
+
+    if host_settings:
+        client_socket.connect((host_settings["hostname"], int(host_settings["port"])))
+    else:
+        raise Exception("ERROR: Could not read settings file")
 
     pygame.init()
     pygame.font.init()

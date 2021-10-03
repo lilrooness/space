@@ -19,18 +19,6 @@ class Session():
         self.admin=admin
         self.id = new_id()
 
-    # should only be used before sending data to the client
-    # between syncronisation ticks, just check alive flag
-    def check_alive(self):
-        if not self.alive:
-            return False
-
-        if self.connection.fileno() == -1:
-            self.alive = False
-            return False
-
-        return True
-
     # TODO: move this to command handler
     def request_warp_to(self, systems, x, y):
         current_system = systems[self.solar_system_id]
@@ -75,7 +63,7 @@ class Session():
         return messages
 
     def send_server_tick(self, systems, ticks):
-        if self.check_alive():
+        if self.alive:
             session_system_object = systems[self.solar_system_id]
             session_ship_object = session_system_object.ships[self.ship_id]
 

@@ -66,7 +66,7 @@ def run_game():
 
         # receive from clients
         for _, session in get_sessions().items():
-            if session.check_alive():
+            if session.alive:
                 try:
                     request = session.receive_request()
                 except Exception:
