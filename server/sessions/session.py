@@ -17,6 +17,10 @@ class Session():
         self.ship_id = ship_id
         self.alive = alive
         self.admin=admin
+
+        self.remaining_message_size_to_read = 0
+        self.remaining_message_buffer = None
+
         self.id = new_id()
 
     # TODO: move this to command handler
@@ -30,19 +34,38 @@ class Session():
 
         ship.warp = Warp((ship.x, ship.y), (x, y))
 
+    def _decode_message(self, message):
+        parts = message.decode().split(":")
+        request_name = parts[0]
+        request = commands[request_name].unmarshal(message.decode())
+        return request
+
     def receive_request(self):
         readable, _, _ = select([self.connection], [], [], 0)
-        if len(readable) > 0:
-            header = self.connection.recv(HEADER_SIZE)
-            message_size = int.from_bytes(header, "big")
-            message = self.connection.recv(message_size)
-            parts = message.decode().split(":")
-            request_name = parts[0]
-            request = commands[request_name].unmarshal(message.decode())
-            get_session_logger().to_server_log(self.id, request)
-            return request
+        request = None
 
-        return None
+        if len(readable) > 0:
+
+            if self.remaining_message_size_to_read:
+                message = self.connection.recv(self.remaining_message_size_to_read)
+                self.remaining_message_size_to_read -= len(message)
+                self.remaining_message_buffer = self.remaining_message_size_to_read + message
+                if not self.remaining_message_size_to_read:
+                    request = self._decode_message(self.remaining_message_buffer)
+                    self.remaining_message_buffer = None
+                    get_session_logger().to_server_log(self.id, request)
+            else:
+                header = self.connection.recv(HEADER_SIZE)
+                message_size = int.from_bytes(header, "big")
+                message = self.connection.recv(message_size)
+                self.remaining_message_size_to_read = message_size - len(message)
+                if self.remaining_message_size_to_read:
+                    self.remaining_message_buffer = message
+                else:
+                    request = self._decode_message(message)
+                    get_session_logger().to_server_log(self.id, request)
+
+        return request
 
     def send_messages(self, messages):
         def can_snd():

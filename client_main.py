@@ -16,8 +16,12 @@ from common.commands.request_warp import RequestWarpCommand
 from common.messages.messages import message_types
 from common.net_const import HEADER_SIZE
 
+remaining_size_to_read = 0
+remaining_message_buffer = None
 
 def receive(client_socket):
+    global remaining_size_to_read
+    global remaining_message_buffer
     def can_rcv():
         readable, _, _ = select([client_socket], [], [], 0)
         return len(readable) > 0
@@ -25,15 +29,36 @@ def receive(client_socket):
     messages = []
 
     while can_rcv():
-        header = client_socket.recv(HEADER_SIZE)
-        message_size = int.from_bytes(header, 'big')
-        message = client_socket.recv(message_size)
-        parts = message.decode().split(":")
-        message_name = parts[0]
-        message = message_types[message_name].unmarshal(message.decode())
-        messages.append(message)
+        if remaining_size_to_read:
+            remaining_message = client_socket.recv(remaining_size_to_read)
+            remaining_message_buffer = remaining_message_buffer + remaining_message
+            if len(remaining_message) == remaining_size_to_read:
+                print("completing old message")
+                remaining_size_to_read = 0
+                message = decode_bytes_to_message(remaining_message_buffer)
+                messages.append(message)
+                remaining_message_buffer = None
+        else:
+            header = client_socket.recv(HEADER_SIZE)
+            message_size = int.from_bytes(header, 'big')
+            message = client_socket.recv(message_size)
+            actual_size = len(message)
+            remaining_size_to_read = message_size - actual_size
+            if remaining_size_to_read == 0:
+                message = decode_bytes_to_message(message)
+                messages.append(message)
+            else:
+                print("saving message for later")
+                remaining_message_buffer = message
+
 
     return messages
+
+def decode_bytes_to_message(bytes):
+    parts = bytes.decode().split(":")
+    message_name = parts[0]
+    message = message_types[message_name].unmarshal(bytes.decode())
+    return message
 
 def process_input(game):
     if get_mouse().down_this_frame:
